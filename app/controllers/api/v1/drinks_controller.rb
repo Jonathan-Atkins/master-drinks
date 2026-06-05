@@ -1,6 +1,6 @@
 class Api::V1::DrinksController < ApplicationController
   def index
-    require 'pry-nav'; binding.pry
     drinks = Drink.all
+    render json: drinks, status: :ok
   end
 end
