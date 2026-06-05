@@ -40,7 +40,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "rspec-rails"
   gem "factory_bot_rails"
-
+  gem "pry"
+  gem "pry-nav"
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
 
