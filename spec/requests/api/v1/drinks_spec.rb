@@ -39,6 +39,5 @@ RSpec.describe "Drinks App", type: :request do
     #     expect(response).to have_http_status(:ok)
     #     expect(drinks).to eq([])
     #   end
-    end
   end
 end
