@@ -5,13 +5,13 @@ class Api::V1::DrinksController < ApplicationController
   end
 
   def create
-    drink = Drink.create!(drink_params)
+    drink = Drink.create(drink_params)
 
-    if drink
+    if drink.valid?
       drink.save
       render json: drink, status: :created
     else
-      render json: { error: "Unable to create drink" }, status: :unprocessable_entity
+      render json: ErrorSerializer.format(drink), status: :unprocessable_entity
     end
   end
 

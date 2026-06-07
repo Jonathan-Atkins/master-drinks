@@ -1,0 +1,8 @@
+{
+  "[ruby]": {
+    "editor.defaultFormatter": "mbessey.vscode-rufo",
+    "editor.formatOnSave": true
+  },
+  "solargraph.formatting": true,
+  "solargraph.formattingMethod": "standard"
+}
