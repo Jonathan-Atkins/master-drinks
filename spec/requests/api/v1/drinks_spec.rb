@@ -22,14 +22,13 @@ RSpec.describe "Drinks App", type: :request do
         expect(drinks.count).to eq(2)
 
         expect(drinks.first["name"]).to eq("Mojito")
-        expect(drinks.first["category"]).to eq("Rum")
+        expect(drinks.first["category"]).to eq("rum")
         expect(drinks.first["alcoholic"]).to eq(true)
 
         expect(drinks.second["name"]).to eq("Old Fashioned")
-        expect(drinks.second["category"]).to eq("Whiskey")
+        expect(drinks.second["category"]).to eq("whiskey")
         expect(drinks.second["alcoholic"]).to eq(true)
       end
-
     end  
 
     describe "POST api/v1/drinks" do
@@ -43,9 +42,8 @@ RSpec.describe "Drinks App", type: :request do
         drink = JSON.parse(response.body)
 
         expect(response).to have_http_status(:created)
-        # expect(Drink.all.count).to eq(1)
         expect(drink["name"]).to eq("Margarita")
-        expect(drink["category"]).to eq("Tequila")
+        expect(drink["category"]).to eq("tequila")
         expect(drink["alcoholic"]).to eq(true)
       end
     end
@@ -71,7 +69,8 @@ RSpec.describe "Drinks App", type: :request do
         }
         error = JSON.parse(response.body)
 
-        expect(error["errors"][0]).to eq("Name can't be blank")
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(error["errors"]).to include("Name can't be blank")
       end
 
       it "returns an error message for duplicated drink names" do
@@ -82,7 +81,22 @@ RSpec.describe "Drinks App", type: :request do
         }
         
         error = JSON.parse(response.body)
-        expect(error["errors"][0]).to eq("Name has already been taken")
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(error["errors"]).to include("Name has already been taken")
+      end
+
+      it "returns an error message for invalid category type" do
+        drink = Drink.new(name: "BTS", category: "milkshake", alcoholic: true)
+
+        post "/api/v1/drinks", params: {
+          name: "Milkshake",
+          category: "Milkshake",
+          alcoholic: true
+        }
+
+        error = JSON.parse(response.body)
+        expect(error["errors"]).to include("Category is not included in the list")
       end
     end
   end
