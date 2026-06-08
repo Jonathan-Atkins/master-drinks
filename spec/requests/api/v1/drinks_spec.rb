@@ -56,6 +56,10 @@ RSpec.describe "Drinks App", type: :request do
         expect(drink["alcoholic"]).to eq(true)
       end
     end
+    describe "PATCH /api/v1/drinks/:id" do
+      it "can update a drink" do
+      end
+    end
   end
 
   describe "sad path" do
@@ -71,6 +75,18 @@ RSpec.describe "Drinks App", type: :request do
         expect(drinks).to eq([])
       end
     end
+
+    describe "GET /api/v1/drinks/:id" do
+      it "returns an error if the drink doesnt exist" do
+        get "/api/v1/drinks/999"
+
+        error = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:not_found)
+        expect(error["errors"]).to include("Couldn't find Drink with 'id'=\"999\"")
+      end
+    end
+
     describe "POST" do
       it "returns a 422 status code if the drink is not created" do
         post "/api/v1/drinks", params: {
