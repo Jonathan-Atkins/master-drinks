@@ -29,8 +29,17 @@ RSpec.describe "Drinks App", type: :request do
         expect(drinks.second["category"]).to eq("whiskey")
         expect(drinks.second["alcoholic"]).to eq(true)
       end
-    end  
+    end
+    
+    describe "GET api/v1/drinks/:id" do
+      it "returns one drink" do
+        get "/api/v1/drinks/#{@mojito.id}"
 
+        drink = JSON.parse(response.body)
+        expect(drink["id"]).to eq(@mojito["id"])
+        expect(drink["name"]).to eq(@mojito["name"])
+      end
+    end
     describe "POST api/v1/drinks" do
       it "can add a drink to the drink menu" do
         post "/api/v1/drinks", params: {

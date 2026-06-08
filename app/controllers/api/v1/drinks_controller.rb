@@ -4,6 +4,15 @@ class Api::V1::DrinksController < ApplicationController
     render json: drinks, status: :ok
   end
 
+  def show
+    drink = Drink.find(params[:id])
+    if drink
+      render json: drink, status: :ok
+    else
+      render json: ErrorSerializer.format(drink), status: :not_found
+    end
+  end
+
   def create
     drink = Drink.create(drink_params)
 
@@ -19,5 +28,4 @@ class Api::V1::DrinksController < ApplicationController
   def drink_params
     params.permit(:name, :category, :alcoholic)
   end
-  
 end
