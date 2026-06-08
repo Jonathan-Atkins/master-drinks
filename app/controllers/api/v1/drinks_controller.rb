@@ -17,12 +17,15 @@ class Api::V1::DrinksController < ApplicationController
     if drink.save
       render json: drink, status: :created
     else
-      render json: ErrorSerializer.format(drink), status: :unprocessable_entity
+      render json: ErrorSerializer.format(drink), status: :unprocessable_content
     end
   end
 
   def update
-    require 'pry-nav'; binding.pry
+    drink = Drink.find(params[:id])
+    drink.update(drink_params)
+
+    render json: drink, status: :created
   end
  private
 

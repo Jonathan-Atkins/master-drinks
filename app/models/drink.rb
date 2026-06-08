@@ -3,6 +3,7 @@ class Drink < ApplicationRecord
     vodka: "vodka",
     gin: "gin",
     rum: "rum",
+    white_rum: "white rum",
     tequila: "tequila",
     mezcal: "mezcal",
     whiskey: "whiskey",

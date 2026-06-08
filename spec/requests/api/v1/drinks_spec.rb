@@ -136,6 +136,15 @@ RSpec.describe "Drinks App", type: :request do
     end
     describe "PATCH /api/v1/drinks/:id" do
       it "can update a drink" do
+        patch "/api/v1/drinks/#{@mojito[:id]}", params: {
+          name: "Mojito Rio",
+          category: "White Rum"
+        }
+
+        @mojito = JSON.parse(response.body)
+
+        expect(@mojito["name"]).to eq("Mojito Rio")
+        expect(@mojito["category"]).to eq("white_rum")
       end
     end
   end
@@ -212,6 +221,9 @@ RSpec.describe "Drinks App", type: :request do
         error = JSON.parse(response.body)
         expect(error["errors"]).to include("Category is not included in the list")
       end
+    end
+    describe "PATCH" do
+      
     end
   end
 end
