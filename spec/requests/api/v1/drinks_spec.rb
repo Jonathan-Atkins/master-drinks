@@ -59,6 +59,18 @@ RSpec.describe "Drinks App", type: :request do
   end
 
   describe "sad path" do
+    describe "GET /api/v1/drinks" do
+      it "returns an empty array if there are no drinks" do
+        Drink.destroy_all
+
+        get "/api/v1/drinks"
+
+        drinks = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(drinks).to eq([])
+      end
+    end
     describe "POST" do
       it "returns a 422 status code if the drink is not created" do
         post "/api/v1/drinks", params: {
