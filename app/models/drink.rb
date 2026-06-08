@@ -31,6 +31,21 @@ class Drink < ApplicationRecord
   validates :category, presence: true
   validates :alcoholic, inclusion: { in: [true, false] }
 
+  def self.sorted_by(sort_param)
+    case sort_param
+    when "name"
+      order(name: :asc)
+    when "category"
+      order(category: :asc)
+    when "date_added"
+      order(created_at: :desc)
+    when "date_edited"
+      order(updated_at: :desc)
+    else
+      all
+    end
+  end
+
   private
 
   def normalize_category

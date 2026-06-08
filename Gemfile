@@ -55,3 +55,5 @@ group :development, :test do
     gem "simplecov", require: false
   end
 end
+
+gem "rufo", "~> 0.18.2", group: :development

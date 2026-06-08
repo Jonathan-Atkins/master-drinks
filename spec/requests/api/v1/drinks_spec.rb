@@ -13,7 +13,6 @@ RSpec.describe "Drinks App", type: :request do
 
         expect(response).to have_http_status(:ok)
       end
-
       it "returns all drinks" do
         get "/api/v1/drinks"
 
@@ -29,8 +28,87 @@ RSpec.describe "Drinks App", type: :request do
         expect(drinks.second["category"]).to eq("whiskey")
         expect(drinks.second["alcoholic"]).to eq(true)
       end
+      it "returns drinks in alphabetical order" do
+        Drink.destroy_all
+
+        Drink.create!(name: "Whiskey Sour", category: "whiskey", alcoholic: true)
+        Drink.create!(name: "Daiquiri", category: "rum", alcoholic: true)
+        Drink.create!(name: "Margarita", category: "tequila", alcoholic: true)
+
+        get "/api/v1/drinks?sort=name"
+
+        drinks = JSON.parse(response.body)
+        expect(response).to have_http_status(:ok)
+        expect(drinks.map { |drink| drink["name"] }).to eq([
+          "Daiquiri",
+          "Margarita",
+          "Whiskey Sour"
+        ])
+      end
+      it "returns drinks sorted by category" do
+        Drink.destroy_all
+
+        Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+        Drink.create!(name: "Margarita", category: "tequila", alcoholic: true)
+        Drink.create!(name: "Daiquiri", category: "rum", alcoholic: true)
+
+        get "/api/v1/drinks?sort=category"
+
+        drinks = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(drinks.map { |drink| drink["category"] }).to eq([
+          "rum",
+          "tequila",
+          "whiskey"
+        ])
+      end
+      it "returns drinks sorted by date added with newest first" do
+        Drink.destroy_all
+
+        daiquiri = Drink.create!(name: "Daiquiri", category: "rum", alcoholic: true)
+        margarita = Drink.create!(name: "Margarita", category: "tequila", alcoholic: true)
+        old_fashioned = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+
+        daiquiri.update_columns(created_at: 3.days.ago)
+        margarita.update_columns(created_at: 2.days.ago)
+        old_fashioned.update_columns(created_at: 1.day.ago)
+
+        get "/api/v1/drinks?sort=date_added"
+
+        drinks = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(drinks.map { |drink| drink["name"] }).to eq([
+          "Old Fashioned",
+          "Margarita",
+          "Daiquiri"
+        ])
+      end
+      
+      it "returns drinks sorted by date edited with most recently edited first" do
+        Drink.destroy_all
+
+        daiquiri = Drink.create!(name: "Daiquiri", category: "rum", alcoholic: true)
+        margarita = Drink.create!(name: "Margarita", category: "tequila", alcoholic: true)
+        old_fashioned = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+
+        daiquiri.update_columns(updated_at: 3.days.ago)
+        margarita.update_columns(updated_at: 2.days.ago)
+        old_fashioned.update_columns(updated_at: 1.day.ago)
+
+        get "/api/v1/drinks?sort=date_edited"
+
+        drinks = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(drinks.map { |drink| drink["name"] }).to eq([
+          "Old Fashioned",
+          "Margarita",
+          "Daiquiri"
+        ])
+      end
     end
-    
     describe "GET api/v1/drinks/:id" do
       it "returns one drink" do
         get "/api/v1/drinks/#{@mojito.id}"
@@ -61,7 +139,6 @@ RSpec.describe "Drinks App", type: :request do
       end
     end
   end
-
   describe "sad path" do
     describe "GET /api/v1/drinks" do
       it "returns an empty array if there are no drinks" do
@@ -116,7 +193,7 @@ RSpec.describe "Drinks App", type: :request do
           category: "Tequila",
           alcoholic: true
         }
-        
+
         error = JSON.parse(response.body)
 
         expect(response).to have_http_status(:unprocessable_entity)

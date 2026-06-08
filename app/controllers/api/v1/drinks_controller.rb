@@ -1,7 +1,7 @@
 class Api::V1::DrinksController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   def index
-    drinks = Drink.all
+    drinks = Drink.sorted_by(params[:sort])
     render json: drinks, status: :ok
   end
 
@@ -12,7 +12,7 @@ class Api::V1::DrinksController < ApplicationController
   end
 
   def create
-    drink = Drink.create(drink_params)
+    drink = Drink.new(drink_params)
 
     if drink.save
       render json: drink, status: :created
