@@ -1,4 +1,6 @@
 class Api::V1::DrinksController < ApplicationController
+  before_action :set_drink, only: [:show, :update, :destroy]
+
   def index
     drinks = Drink.sorted_by(params[:sort])
     render json: drinks, status: :ok
@@ -41,5 +43,9 @@ class Api::V1::DrinksController < ApplicationController
 
   def drink_params
     params.permit(:name, :category, :alcoholic)
+  end
+
+  def set_drink
+    @drink = Drink.find(params[:id])
   end
 end
