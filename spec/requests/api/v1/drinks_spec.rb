@@ -21,7 +21,6 @@ RSpec.describe "Drinks App", type: :request do
           drinks = JSON.parse(response.body)
 
           expect(drinks.count).to eq(2)
-
           expect(drinks.first["name"]).to eq("Mojito")
           expect(drinks.first["category"]).to eq("rum")
           expect(drinks.first["alcoholic"]).to eq(true)
@@ -147,9 +146,21 @@ RSpec.describe "Drinks App", type: :request do
 
         drink = JSON.parse(response.body)
 
-        expect(response).to have_http_status(:created)
+        expect(response).to have_http_status(:ok)
         expect(drink["name"]).to eq("Mojito Rio")
         expect(drink["category"]).to eq("white_rum")
+      end
+    end
+
+    describe "DELETE /api/v1/drinks/:id" do
+      before(:each) do
+        @drink = Drink.create!(name: "Rum & Coke", category: "rum", alcoholic: true)
+      end
+      it "can delete a drink" do
+        delete "/api/v1/drinks/#{@drink.id}"
+
+        expect(response).to have_http_status(:no_content)
+        expect(Drink.exists?(@drink.id)).to eq(false)
       end
     end
   end
@@ -230,6 +241,68 @@ RSpec.describe "Drinks App", type: :request do
         expect(response).to have_http_status(:unprocessable_content)
         expect(error["errors"]).to include("Category is not included in the list")
       end
+    end
+    describe "PATCH /api/v1/drinks/:id" do
+      before(:each) do
+        @mojito = Drink.create!(name: "Mojito", category: "rum", alcoholic: true)
+        @old_fashioned = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+      end
+      it "returns a 404 if the drink does not exist" do
+        patch "/api/v1/drinks/999", params: {
+          name: "Mojito Rio",
+          category: "white_rum"
+        }
+
+        error = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:not_found)
+        expect(error["errors"]).to include("Couldn't find Drink with 'id'=\"999\"")
+      end
+      it "returns a 422 if the update has invalid attributes" do
+        patch "/api/v1/drinks/#{@mojito.id}", params: {
+          name: nil,
+          category: "white_rum"
+        }
+
+        error = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(error["errors"]).to include("Name can't be blank")
+      end
+      it "returns an error if the updated name is already taken" do
+        patch "/api/v1/drinks/#{@mojito.id}", params: {
+          name: "Old Fashioned",
+          category: "rum"
+        }
+
+        error = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(error["errors"]).to include("Name has already been taken")
+      end
+
+      it "returns an error if the updated category is invalid" do
+        patch "/api/v1/drinks/#{@mojito.id}", params: {
+          name: "Mojito Rio",
+          category: "milkshake"
+        }
+
+        error = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(error["errors"]).to include("Category is not included in the list")
+      end
+    end
+    describe "DELETE /api/v1/drinks/:id" do
+      it "returns a 404 if object id does not exist" do
+        delete "/api/v1/drinks/999"
+        
+        error = JSON.parse(response.body)
+        
+        expect(response).to have_http_status(:not_found)
+        expect(error["errors"]).to include("Couldn't find Drink with 'id'=\"999\"")
+      end
+
     end
   end
 end

@@ -23,10 +23,21 @@ class Api::V1::DrinksController < ApplicationController
 
   def update
     drink = Drink.find(params[:id])
-    drink.update(drink_params)
 
-    render json: drink, status: :created
+    if drink.update(drink_params)
+      render json: drink, status: :ok
+    else
+      render json: ErrorSerializer.format(drink), status: :unprocessable_content
+    end
   end
+
+  def destroy
+    drink = Drink.find(params[:id])
+    drink.destroy
+
+    head :no_content
+  end
+
  private
 
   def drink_params
