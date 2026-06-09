@@ -1,5 +1,4 @@
 class Api::V1::DrinksController < ApplicationController
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   def index
     drinks = Drink.sorted_by(params[:sort])
     render json: drinks, status: :ok
@@ -42,9 +41,5 @@ class Api::V1::DrinksController < ApplicationController
 
   def drink_params
     params.permit(:name, :category, :alcoholic)
-  end
-
-  def record_not_found(error)
-    render json: { errors: [error.message] }, status: :not_found
   end
 end
