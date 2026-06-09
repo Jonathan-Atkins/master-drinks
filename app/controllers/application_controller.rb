@@ -4,6 +4,6 @@ class ApplicationController < ActionController::API
   private
 
   def record_not_found(error)
-    render json: { errors: [error.message] }, status: :not_found
+    render json: { errors: [ error.message ] }, status: :not_found
   end
 end

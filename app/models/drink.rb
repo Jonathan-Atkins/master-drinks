@@ -30,7 +30,7 @@ class Drink < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
   validates :category, presence: true
-  validates :alcoholic, inclusion: { in: [true, false] }
+  validates :alcoholic, inclusion: { in: [ true, false ] }
 
   def self.sorted_by(sort_param)
     case sort_param

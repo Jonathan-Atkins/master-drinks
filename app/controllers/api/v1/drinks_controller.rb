@@ -1,5 +1,5 @@
 class Api::V1::DrinksController < ApplicationController
-  before_action :set_drink, only: [:show, :update, :destroy]
+  before_action :set_drink, only: [ :show, :update, :destroy ]
 
   def index
     drinks = Drink.sorted_by(params[:sort])
@@ -8,7 +8,7 @@ class Api::V1::DrinksController < ApplicationController
 
   def show
     drink = Drink.find(params[:id])
-    
+
     render json: drink, status: :ok
   end
 

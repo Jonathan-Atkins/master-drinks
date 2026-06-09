@@ -296,13 +296,12 @@ RSpec.describe "Drinks App", type: :request do
     describe "DELETE /api/v1/drinks/:id" do
       it "returns a 404 if object id does not exist" do
         delete "/api/v1/drinks/999"
-        
+
         error = JSON.parse(response.body)
-        
+
         expect(response).to have_http_status(:not_found)
         expect(error["errors"]).to include("Couldn't find Drink with 'id'=\"999\"")
       end
-
     end
   end
 end
