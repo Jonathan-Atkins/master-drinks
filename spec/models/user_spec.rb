@@ -97,4 +97,22 @@ RSpec.describe User, type: :model do
       expect(duplicate.errors.full_messages).to include("Email has already been taken")
     end
   end
+  describe "relationships" do
+    it "can have many drinks through user_drinks" do
+      user = User.create!(
+        name: "Jonathan",
+        username: "jonathan",
+        email: "jonathan@example.com",
+        password_digest: "password"
+      )
+
+      margarita = Drink.create!(name: "Margarita", category: "tequila", alcoholic: true)
+      mojito = Drink.create!(name: "Mojito", category: "rum", alcoholic: true)
+
+      UserDrink.create!(user: user, drink: margarita)
+      UserDrink.create!(user: user, drink: mojito)
+
+      expect(user.drinks).to contain_exactly(margarita, mojito)
+    end
+  end
 end
