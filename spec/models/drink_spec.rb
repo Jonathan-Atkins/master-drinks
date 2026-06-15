@@ -122,4 +122,28 @@ RSpec.describe Drink, type: :model do
       expect(drinks.count).to eq(3)
     end
   end
+  
+  describe "relationships" do
+    it "has many recipes" do
+      drink = Drink.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+        )
+
+      recipe1 = Recipe.create!(
+        drink: drink,
+        name: "Classic Old Fashioned",
+        instructions: "Stir with ice."
+      )
+
+      recipe2 = Recipe.create!(
+        drink: drink,
+        name: "Maple Old Fashioned",
+        instructions: "Stir with maple syrup and ice."
+      )
+
+      expect(drink.recipes).to contain_exactly(recipe1, recipe2)
+    end
+  end
 end

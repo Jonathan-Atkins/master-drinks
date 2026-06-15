@@ -26,6 +26,8 @@ class Drink < ApplicationRecord
     non_spirit: "non_spirit"
   }, validate: true
 
+  has_many :recipes, dependent: :destroy
+  
   before_validation :normalize_category
 
   validates :name, presence: true, uniqueness: true
