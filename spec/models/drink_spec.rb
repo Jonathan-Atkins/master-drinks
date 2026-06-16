@@ -145,5 +145,22 @@ RSpec.describe Drink, type: :model do
 
       expect(drink.recipes).to contain_exactly(recipe1, recipe2)
     end
+    it "destroys its recipes when the drink is destroyed" do
+      drink = Drink.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
+
+      recipe = Recipe.create!(
+        drink: drink,
+        name: "Classic Old Fashioned",
+        instructions: "Stir with ice."
+      )
+      
+      drink.destroy
+      
+      expect(Recipe.exists?(recipe.id)).to eq(false)
+    end
   end
 end
