@@ -6,7 +6,8 @@ RSpec.describe User, type: :model do
       name: "John Doe",
       username: "JohnDoe",
       email: "johndoe@example.com",
-      password_digest: "password"
+      password_digest: "password",
+      password_confirmation: "password123"
     }
   end
 
@@ -75,6 +76,19 @@ RSpec.describe User, type: :model do
       expect(duplicate.errors.full_messages).to include(
         "Email has already been taken"
       )
+    end
+
+    it "authenticates with the correct password" do
+      user = User.create!(
+        name: "Jonathan",
+        username: "jonathan",
+        email: "jonathan@example.com",
+        password: "password123",
+        password_confirmation: "password123"
+      )
+
+      expect(user.authenticate("password123")).to eq(user)
+      expect(user.authenticate("wrong-password")).to eq(false)
     end
   end
 

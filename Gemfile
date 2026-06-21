@@ -50,10 +50,8 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-
-  group :test do
-    gem "simplecov", require: false
-  end
+  gem "simplecov", require: false
 end
 
 gem "rufo", "~> 0.18.2", group: :development
+gem "bcrypt", "~> 3.1.7"
