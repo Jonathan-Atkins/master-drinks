@@ -122,7 +122,7 @@ RSpec.describe Drink, type: :model do
       expect(drinks.count).to eq(3)
     end
   end
-  
+
   describe "relationships" do
     it "has many recipes" do
       drink = Drink.create!(
@@ -157,9 +157,9 @@ RSpec.describe Drink, type: :model do
         name: "Classic Old Fashioned",
         instructions: "Stir with ice."
       )
-      
+
       drink.destroy
-      
+
       expect(Recipe.exists?(recipe.id)).to eq(false)
     end
   end

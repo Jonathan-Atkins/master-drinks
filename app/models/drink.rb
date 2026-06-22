@@ -27,7 +27,7 @@ class Drink < ApplicationRecord
   }, validate: true
 
   has_many :recipes, dependent: :destroy
-  
+
   before_validation :normalize_category
 
   validates :name, presence: true, uniqueness: true
