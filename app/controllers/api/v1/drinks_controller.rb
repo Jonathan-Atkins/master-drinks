@@ -7,9 +7,7 @@ class Api::V1::DrinksController < ApplicationController
   end
 
   def show
-    drink = Drink.find(params[:id])
-
-    render json: drink, status: :ok
+    render json: @drink, status: :ok
   end
 
   def create
@@ -23,19 +21,15 @@ class Api::V1::DrinksController < ApplicationController
   end
 
   def update
-    drink = Drink.find(params[:id])
-
-    if drink.update(drink_params)
-      render json: drink, status: :ok
+    if @drink.update(drink_params)
+      render json: @drink, status: :ok
     else
-      render json: ErrorSerializer.format(drink), status: :unprocessable_content
+      render json: ErrorSerializer.format(@drink), status: :unprocessable_content
     end
   end
 
   def destroy
-    drink = Drink.find(params[:id])
-    drink.destroy
-
+    @drink.destroy
     head :no_content
   end
 
