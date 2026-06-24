@@ -70,7 +70,7 @@ RSpec.describe "User App", type: :request do
         expect(result).not_to have_key("password_confirmation")
 
         # Add after creating the user serializer:
-        # expect(result).not_to have_key("password_digest")
+        expect(result).not_to have_key("password_digest")
       end
     end
 
@@ -184,7 +184,6 @@ RSpec.describe "User App", type: :request do
         delete "/api/v1/users/999"
 
         result = JSON.parse(response.body)
-
         expect(response).to have_http_status(:not_found)
         expect(result["errors"]).to include(
           "Couldn't find User with 'id'=\"999\""

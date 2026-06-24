@@ -1,20 +1,20 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :set_user, only: [:show, :update, :destroy]
+  before_action :set_user, only: [ :show, :update, :destroy ]
 
   def index
     users = User.all
-    render json: users, status: :ok
+    render json: UserSerializer.all_users(users), status: :ok
   end
 
   def show
-    render json: @user, status: :ok
+    render json: UserSerializer.format(@user), status: :ok
   end
 
   def create
     user = User.new(user_params)
 
     if user.save
-      render json: user, status: :created
+      render json: UserSerializer.format(user), status: :created
     else
       render json: ErrorSerializer.format(user),
              status: :unprocessable_content
