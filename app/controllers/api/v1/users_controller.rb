@@ -1,7 +1,9 @@
 class Api::V1::UsersController < ApplicationController
   before_action :set_user, only: [ :show, :update, :destroy ]
+  before_action :require_login, except: [:create]
 
   def index
+
     users = User.all
     render json: UserSerializer.all_users(users), status: :ok
   end

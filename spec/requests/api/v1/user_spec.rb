@@ -1,6 +1,13 @@
 require "rails_helper"
 
 RSpec.describe "User App", type: :request do
+  def log_in(user)
+    post "/api/v1/login", params: {
+      email: user.email,
+      password: "12345"
+    }
+  end
+
   before(:each) do
     @user_params = {
       name: "Alice",
@@ -14,7 +21,8 @@ RSpec.describe "User App", type: :request do
   describe "happy path" do
     describe "GET /api/v1/users" do
       it "can get all users" do
-        User.create!(@user_params)
+        user = User.create!(@user_params)
+        log_in(user)
 
         get "/api/v1/users"
 
@@ -28,19 +36,31 @@ RSpec.describe "User App", type: :request do
         expect(result.first["email"]).to eq("alice@email.com")
       end
 
-      it "returns an empty array when no users exist" do
-        get "/api/v1/users"
+      describe "authentication" do
+        it "returns unauthorized when the user is not logged in" do
+          get "/api/v1/users"
 
-        result = JSON.parse(response.body)
+          result = JSON.parse(response.body)
 
-        expect(response).to have_http_status(:ok)
-        expect(result).to eq([])
+          expect(response).to have_http_status(:unauthorized)
+          expect(result["errors"]).to include("You must be logged in")
+        end
+
+        it "allows a logged-in user to access the endpoint" do
+          user = User.create!(@user_params)
+          log_in(user)
+
+          get "/api/v1/users"
+
+          expect(response).to have_http_status(:ok)
+        end
       end
     end
 
     describe "GET /api/v1/users/:id" do
       it "can get one user" do
         user = User.create!(@user_params)
+        log_in(user)
 
         get "/api/v1/users/#{user.id}"
 
@@ -68,8 +88,6 @@ RSpec.describe "User App", type: :request do
         expect(result["email"]).to eq("alice@email.com")
         expect(result).not_to have_key("password")
         expect(result).not_to have_key("password_confirmation")
-
-        # Add after creating the user serializer:
         expect(result).not_to have_key("password_digest")
       end
     end
@@ -77,6 +95,8 @@ RSpec.describe "User App", type: :request do
     describe "PATCH /api/v1/users/:id" do
       it "can update a user" do
         user = User.create!(@user_params)
+        log_in(user)
+
         updated_params = {
           name: "Alice Smith",
           username: "AliceInWonderLand"
@@ -97,6 +117,7 @@ RSpec.describe "User App", type: :request do
     describe "DELETE /api/v1/users/:id" do
       it "can delete a user" do
         user = User.create!(@user_params)
+        log_in(user)
 
         expect do
           delete "/api/v1/users/#{user.id}"
@@ -111,6 +132,9 @@ RSpec.describe "User App", type: :request do
   describe "sad path" do
     describe "GET /api/v1/users/:id" do
       it "returns an error if the user cannot be found" do
+        user = User.create!(@user_params)
+        log_in(user)
+
         get "/api/v1/users/999"
 
         result = JSON.parse(response.body)
@@ -155,6 +179,9 @@ RSpec.describe "User App", type: :request do
 
     describe "PATCH /api/v1/users/:id" do
       it "returns an error if the user cannot be found" do
+        user = User.create!(@user_params)
+        log_in(user)
+
         patch "/api/v1/users/999", params: { name: "Updated Name" }
 
         result = JSON.parse(response.body)
@@ -167,6 +194,7 @@ RSpec.describe "User App", type: :request do
 
       it "returns an error if the updated user is invalid" do
         user = User.create!(@user_params)
+        log_in(user)
 
         patch "/api/v1/users/#{user.id}", params: { name: nil }
 
@@ -181,9 +209,13 @@ RSpec.describe "User App", type: :request do
 
     describe "DELETE /api/v1/users/:id" do
       it "returns an error if the user cannot be found" do
+        user = User.create!(@user_params)
+        log_in(user)
+
         delete "/api/v1/users/999"
 
         result = JSON.parse(response.body)
+
         expect(response).to have_http_status(:not_found)
         expect(result["errors"]).to include(
           "Couldn't find User with 'id'=\"999\""

@@ -55,5 +55,15 @@ RSpec.describe "Sessions API", type: :request do
         expect(result["errors"]).to include("Invalid email or password")
       end
     end
+    describe "DELETE /api/v1/logout" do
+      it "returns an error when no user is logged in" do
+        delete "/api/v1/logout"
+        
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(result["errors"]).to include("No active session")
+      end
+    end
   end
 end
