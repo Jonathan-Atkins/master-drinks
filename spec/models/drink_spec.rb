@@ -1,16 +1,34 @@
 require "rails_helper"
 
 RSpec.describe Drink, type: :model do
+  before(:each) do
+    @user = User.create!(
+      name: "Alice",
+      username: "AliceInWonderLand",
+      email: "alice@email.com",
+      password: "12345",
+      password_confirmation: "12345"
+    )
+  end
+
   describe "validations" do
     describe "valid attributes" do
       it "is valid with valid attributes" do
-        drink = Drink.new(name: "Mojito", category: "rum", alcoholic: true)
+        drink = @user.drinks.new(
+          name: "Mojito",
+          category: "rum",
+          alcoholic: true
+        )
 
         expect(drink).to be_valid
       end
 
       it "is valid when alcoholic is false" do
-        drink = Drink.new(name: "Virgin Mojito", category: "non_spirit", alcoholic: false)
+        drink = @user.drinks.new(
+          name: "Virgin Mojito",
+          category: "non_spirit",
+          alcoholic: false
+        )
 
         expect(drink).to be_valid
       end
@@ -18,44 +36,85 @@ RSpec.describe Drink, type: :model do
 
     describe "invalid attributes" do
       it "is invalid without a name" do
-        drink = Drink.new(name: nil, category: "rum", alcoholic: true)
+        drink = @user.drinks.new(
+          name: nil,
+          category: "rum",
+          alcoholic: true
+        )
 
         expect(drink).not_to be_valid
       end
 
       it "is invalid with a duplicate name" do
-        Drink.create!(name: "Mojito", category: "rum", alcoholic: true)
+        @user.drinks.create!(
+          name: "Mojito",
+          category: "rum",
+          alcoholic: true
+        )
 
-        drink = Drink.new(name: "Mojito", category: "rum", alcoholic: true)
+        drink = @user.drinks.new(
+          name: "Mojito",
+          category: "rum",
+          alcoholic: true
+        )
 
         expect(drink).not_to be_valid
         expect(drink.errors[:name]).to include("has already been taken")
       end
 
       it "is invalid without a category" do
-        drink = Drink.new(name: "Mojito", category: nil, alcoholic: true)
+        drink = @user.drinks.new(
+          name: "Mojito",
+          category: nil,
+          alcoholic: true
+        )
 
         expect(drink).not_to be_valid
       end
 
       it "is invalid with an unsupported category" do
-        drink = Drink.new(name: "Milkshake", category: "milkshake", alcoholic: true)
+        drink = @user.drinks.new(
+          name: "Milkshake",
+          category: "milkshake",
+          alcoholic: true
+        )
 
         expect(drink).not_to be_valid
-        expect(drink.errors[:category]).to include("is not included in the list")
+        expect(drink.errors[:category]).to include(
+          "is not included in the list"
+        )
       end
 
       it "is invalid without alcoholic status" do
-        drink = Drink.new(name: "Mojito", category: "rum", alcoholic: nil)
+        drink = @user.drinks.new(
+          name: "Mojito",
+          category: "rum",
+          alcoholic: nil
+        )
 
         expect(drink).not_to be_valid
+      end
+
+      it "is invalid without a user" do
+        drink = Drink.new(
+          name: "Mojito",
+          category: "rum",
+          alcoholic: true
+        )
+
+        expect(drink).not_to be_valid
+        expect(drink.errors[:user]).to include("must exist")
       end
     end
   end
 
   describe "category normalization" do
     it "normalizes category before validation" do
-      drink = Drink.new(name: "Mojito", category: "Rum", alcoholic: true)
+      drink = @user.drinks.new(
+        name: "Mojito",
+        category: "Rum",
+        alcoholic: true
+      )
 
       drink.valid?
 
@@ -67,13 +126,38 @@ RSpec.describe Drink, type: :model do
     before(:each) do
       Drink.destroy_all
 
-      @daiquiri = Drink.create!(name: "Daiquiri", category: "rum", alcoholic: true)
-      @margarita = Drink.create!(name: "Margarita", category: "tequila", alcoholic: true)
-      @old_fashioned = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+      @daiquiri = @user.drinks.create!(
+        name: "Daiquiri",
+        category: "rum",
+        alcoholic: true
+      )
 
-      @daiquiri.update_columns(created_at: 3.days.ago, updated_at: 3.days.ago)
-      @margarita.update_columns(created_at: 2.days.ago, updated_at: 2.days.ago)
-      @old_fashioned.update_columns(created_at: 1.day.ago, updated_at: 1.day.ago)
+      @margarita = @user.drinks.create!(
+        name: "Margarita",
+        category: "tequila",
+        alcoholic: true
+      )
+
+      @old_fashioned = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
+
+      @daiquiri.update_columns(
+        created_at: 3.days.ago,
+        updated_at: 3.days.ago
+      )
+
+      @margarita.update_columns(
+        created_at: 2.days.ago,
+        updated_at: 2.days.ago
+      )
+
+      @old_fashioned.update_columns(
+        created_at: 1.day.ago,
+        updated_at: 1.day.ago
+      )
     end
 
     it "sorts by name alphabetically" do
@@ -124,12 +208,22 @@ RSpec.describe Drink, type: :model do
   end
 
   describe "relationships" do
+    it "belongs to a user" do
+      drink = @user.drinks.create!(
+        name: "Mojito",
+        category: "rum",
+        alcoholic: true
+      )
+
+      expect(drink.user).to eq(@user)
+    end
+
     it "has many recipes" do
-      drink = Drink.create!(
+      drink = @user.drinks.create!(
         name: "Old Fashioned",
         category: "whiskey",
         alcoholic: true
-        )
+      )
 
       recipe1 = Recipe.create!(
         drink: drink,
@@ -145,8 +239,9 @@ RSpec.describe Drink, type: :model do
 
       expect(drink.recipes).to contain_exactly(recipe1, recipe2)
     end
+
     it "destroys its recipes when the drink is destroyed" do
-      drink = Drink.create!(
+      drink = @user.drinks.create!(
         name: "Old Fashioned",
         category: "whiskey",
         alcoholic: true

@@ -6,7 +6,7 @@ RSpec.describe User, type: :model do
       name: "John Doe",
       username: "JohnDoe",
       email: "johndoe@example.com",
-      password_digest: "password",
+      password: "password123",
       password_confirmation: "password123"
     }
   end
@@ -21,14 +21,14 @@ RSpec.describe User, type: :model do
     it "requires a name" do
       user = User.new(@valid_attributes.merge(name: nil))
 
-      expect(user).to_not be_valid
+      expect(user).not_to be_valid
       expect(user.errors.full_messages).to include("Name can't be blank")
     end
 
     it "requires a username" do
       user = User.new(@valid_attributes.merge(username: nil))
 
-      expect(user).to_not be_valid
+      expect(user).not_to be_valid
       expect(user.errors.full_messages).to include("Username can't be blank")
     end
 
@@ -42,7 +42,7 @@ RSpec.describe User, type: :model do
         )
       )
 
-      expect(duplicate).to_not be_valid
+      expect(duplicate).not_to be_valid
       expect(duplicate.errors.full_messages).to include(
         "Username has already been taken"
       )
@@ -51,14 +51,14 @@ RSpec.describe User, type: :model do
     it "requires an email" do
       user = User.new(@valid_attributes.merge(email: nil))
 
-      expect(user).to_not be_valid
+      expect(user).not_to be_valid
       expect(user.errors.full_messages).to include("Email can't be blank")
     end
 
     it "requires a valid email format" do
       user = User.new(@valid_attributes.merge(email: "not-an-email"))
 
-      expect(user).to_not be_valid
+      expect(user).not_to be_valid
       expect(user.errors.full_messages).to include("Email is invalid")
     end
 
@@ -72,7 +72,7 @@ RSpec.describe User, type: :model do
         )
       )
 
-      expect(duplicate).to_not be_valid
+      expect(duplicate).not_to be_valid
       expect(duplicate.errors.full_messages).to include(
         "Email has already been taken"
       )
@@ -93,10 +93,22 @@ RSpec.describe User, type: :model do
   end
 
   describe "relationships" do
+    it "can have many drinks" do
+      user = User.create!(@valid_attributes)
+
+      margarita = user.drinks.create!(
+        name: "Margarita",
+        category: "tequila",
+        alcoholic: true
+      )
+
+      expect(user.drinks).to include(margarita)
+    end
+
     it "can have many recipes through user_recipes" do
       user = User.create!(@valid_attributes)
 
-      margarita = Drink.create!(
+      margarita = user.drinks.create!(
         name: "Margarita",
         category: "tequila",
         alcoholic: true
@@ -114,8 +126,15 @@ RSpec.describe User, type: :model do
         instructions: "Shake with jalapeño, ice, and strain."
       )
 
-      UserRecipe.create!(user: user, recipe: classic_recipe)
-      UserRecipe.create!(user: user, recipe: spicy_recipe)
+      UserRecipe.create!(
+        user: user,
+        recipe: classic_recipe
+      )
+
+      UserRecipe.create!(
+        user: user,
+        recipe: spicy_recipe
+      )
 
       expect(user.recipes).to contain_exactly(
         classic_recipe,

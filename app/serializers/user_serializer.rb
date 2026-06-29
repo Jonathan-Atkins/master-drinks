@@ -8,6 +8,13 @@ class UserSerializer
     }
   end
 
+  def self.created(user)
+    {
+      username: user.username,
+      email: user.email
+    }
+  end
+
   def self.all_users(users)
     users.map do |user|
       format(user)

@@ -1,9 +1,23 @@
 require "rails_helper"
 
 RSpec.describe Ingredient, type: :model do
+  before(:each) do
+    @user = User.create!(
+      name: "Alice",
+      username: "AliceInWonderLand",
+      email: "alice@email.com",
+      password: "12345",
+      password_confirmation: "12345"
+    )
+  end
+
   describe "relationships" do
     it "has many recipe_ingredients" do
-      drink = Drink.create!(name: "Whiskey Sour", category: "whiskey", alcoholic: true)
+      drink = @user.drinks.create!(
+        name: "Whiskey Sour",
+        category: "whiskey",
+        alcoholic: true
+      )
 
       recipe = Recipe.create!(
         drink: drink,
@@ -27,12 +41,24 @@ RSpec.describe Ingredient, type: :model do
         measurement_unit: "oz"
       )
 
-      expect(ingredient.recipe_ingredients).to include(recipe_ingredient1, recipe_ingredient2)
+      expect(ingredient.recipe_ingredients).to include(
+        recipe_ingredient1,
+        recipe_ingredient2
+      )
     end
 
     it "has many recipes through recipe_ingredients" do
-      whiskey_sour = Drink.create!(name: "Whiskey Sour", category: "whiskey", alcoholic: true)
-      bee_knees = Drink.create!(name: "Bee's Knees", category: "gin", alcoholic: true)
+      whiskey_sour = @user.drinks.create!(
+        name: "Whiskey Sour",
+        category: "whiskey",
+        alcoholic: true
+      )
+
+      bee_knees = @user.drinks.create!(
+        name: "Bee's Knees",
+        category: "gin",
+        alcoholic: true
+      )
 
       recipe1 = Recipe.create!(
         drink: whiskey_sour,

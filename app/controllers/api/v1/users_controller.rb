@@ -1,9 +1,10 @@
 class Api::V1::UsersController < ApplicationController
+  skip_before_action :require_login, only: [ :create ]
+
   before_action :set_user, only: [ :show, :update, :destroy ]
-  before_action :require_login, except: [:create]
+  before_action :authorize_user, only: [ :update, :destroy ]
 
   def index
-
     users = User.all
     render json: UserSerializer.all_users(users), status: :ok
   end
@@ -34,23 +35,28 @@ class Api::V1::UsersController < ApplicationController
 
   def destroy
     @user.destroy
-
     head :no_content
   end
 
   private
 
-  def user_params
-    params.permit(
-      :name,
-      :username,
-      :email,
-      :password,
-      :password_confirmation
-    )
-  end
+    def user_params
+      params.permit(
+        :name,
+        :username,
+        :email,
+        :password,
+        :password_confirmation
+      )
+    end
 
-  def set_user
-    @user = User.find(params[:id])
-  end
+    def set_user
+      @user = User.find(params[:id])
+    end
+
+    def authorize_user
+      return if current_user == @user
+
+      render json: ErrorSerializer.forbidden_deletion, status: :forbidden
+    end
 end

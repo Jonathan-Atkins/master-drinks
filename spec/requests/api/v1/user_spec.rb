@@ -35,26 +35,6 @@ RSpec.describe "User App", type: :request do
         expect(result.first["username"]).to eq("AliceInWonderLand")
         expect(result.first["email"]).to eq("alice@email.com")
       end
-
-      describe "authentication" do
-        it "returns unauthorized when the user is not logged in" do
-          get "/api/v1/users"
-
-          result = JSON.parse(response.body)
-
-          expect(response).to have_http_status(:unauthorized)
-          expect(result["errors"]).to include("You must be logged in")
-        end
-
-        it "allows a logged-in user to access the endpoint" do
-          user = User.create!(@user_params)
-          log_in(user)
-
-          get "/api/v1/users"
-
-          expect(response).to have_http_status(:ok)
-        end
-      end
     end
 
     describe "GET /api/v1/users/:id" do
@@ -125,6 +105,69 @@ RSpec.describe "User App", type: :request do
 
         expect(response).to have_http_status(:no_content)
         expect(response.body).to be_empty
+      end
+    end
+
+   describe "authentication" do
+    it "returns unauthorized when the user is not logged in" do
+    get "/api/v1/users"
+
+    result = JSON.parse(response.body)
+
+    expect(response).to have_http_status(:unauthorized)
+    expect(result["errors"]).to include("You must be logged in")
+    end
+
+    it "allows a logged-in user to access the endpoint" do
+      user = User.create!(@user_params)
+      log_in(user)
+
+      get "/api/v1/users"
+
+      expect(response).to have_http_status(:ok)
+    end
+end
+
+    describe "authorization" do
+      before(:each) do
+        @logged_in_user = User.create!(@user_params)
+
+        @other_user = User.create!(
+          name: "Bob",
+          username: "BobTheBartender",
+          email: "bob@email.com",
+          password: "12345",
+          password_confirmation: "12345"
+        )
+
+        log_in(@logged_in_user)
+      end
+
+      it "does not allow a user to update another user's account" do
+        patch "/api/v1/users/#{@other_user.id}",
+              params: { name: "Updated Name" }
+
+        result = JSON.parse(response.body)
+        @other_user.reload
+
+        expect(response).to have_http_status(:forbidden)
+        expect(result["errors"]).to include(
+          "You are not authorized to delete this user"
+        )
+        expect(@other_user.name).to eq("Bob")
+      end
+
+      it "does not allow a user to delete another user's account" do
+        expect do
+          delete "/api/v1/users/#{@other_user.id}"
+        end.not_to change(User, :count)
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(result["errors"]).to include(
+          "You are not authorized to delete this user"
+        )
       end
     end
   end

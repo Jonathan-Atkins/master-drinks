@@ -17,20 +17,18 @@ RSpec.describe "Sessions API", type: :request do
   describe "happy path" do
     describe "POST /api/v1/login" do
       it "logs in a user with valid credentials" do
-
         post "/api/v1/login", params: @login_params
 
         result = JSON.parse(response.body)
-        
+
         expect(response).to have_http_status(:ok)
-        expect(result["user"]["id"]).to eq(@user.id)
+        expect(result["user"]["username"]).to eq(@user.username)
         expect(result["user"]["email"]).to eq(@user.email)
         expect(result["user"]).not_to have_key("password_digest")
       end
     end
     describe "DELETE /api/v1/login" do
       it "logs out a user" do
-
         post "/api/v1/login", params: @login_params
         expect(session[:user_id]).to eq(@user.id)
 
@@ -58,7 +56,7 @@ RSpec.describe "Sessions API", type: :request do
     describe "DELETE /api/v1/logout" do
       it "returns an error when no user is logged in" do
         delete "/api/v1/logout"
-        
+
         result = JSON.parse(response.body)
 
         expect(response).to have_http_status(:unauthorized)

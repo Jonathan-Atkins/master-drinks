@@ -1,6 +1,9 @@
 class Api::V1::DrinksController < ApplicationController
-  before_action :set_drink, only: [ :show, :update, :destroy ]
+  skip_before_action :require_login, only: [ :index ]
 
+  before_action :set_drink, only: [ :show, :update, :destroy ]
+  before_action :authorize_user, only: [ :update, :destroy ]
+  
   def index
     drinks = Drink.sorted_by(params[:sort])
     render json: drinks, status: :ok
@@ -11,7 +14,7 @@ class Api::V1::DrinksController < ApplicationController
   end
 
   def create
-    drink = Drink.new(drink_params)
+    drink = current_user.drinks.new(drink_params)
 
     if drink.save
       render json: drink, status: :created
@@ -41,5 +44,11 @@ class Api::V1::DrinksController < ApplicationController
 
   def set_drink
     @drink = Drink.find(params[:id])
+  end
+
+  def authorize_user
+    return if @drink.user_id == current_user.id
+
+    render json: ErrorSerializer.forbidden_drink_modification, status: :forbidden
   end
 end

@@ -1,9 +1,19 @@
 require "rails_helper"
 
 RSpec.describe RecipeIngredient, type: :model do
+  before(:each) do
+    @user = User.create!(
+      name: "Alice",
+      username: "AliceInWonderLand",
+      email: "alice@email.com",
+      password: "12345",
+      password_confirmation: "12345"
+    )
+  end
+
   describe "relationships" do
     it "connects a recipe to an ingredient" do
-      drink = Drink.create!(
+      drink = @user.drinks.create!(
         name: "Old Fashioned",
         category: "whiskey",
         alcoholic: true
@@ -33,7 +43,7 @@ RSpec.describe RecipeIngredient, type: :model do
 
   describe "attributes" do
     it "stores the amount and measurement unit" do
-      drink = Drink.create!(
+      drink = @user.drinks.create!(
         name: "Old Fashioned",
         category: "whiskey",
         alcoholic: true

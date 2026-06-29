@@ -1,4 +1,6 @@
 class Drink < ApplicationRecord
+  belongs_to :user
+
   enum :category, {
     vodka: "vodka",
     gin: "gin",

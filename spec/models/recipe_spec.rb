@@ -1,9 +1,23 @@
 require "rails_helper"
 
 RSpec.describe Recipe, type: :model do
+  before(:each) do
+    @user = User.create!(
+      name: "Alice",
+      username: "AliceInWonderLand",
+      email: "alice@email.com",
+      password: "12345",
+      password_confirmation: "12345"
+    )
+  end
+
   describe "relationships" do
     it "belongs to a drink" do
-      drink = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+      drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
 
       recipe = Recipe.create!(
         drink: drink,
@@ -15,7 +29,11 @@ RSpec.describe Recipe, type: :model do
     end
 
     it "has many ingredients through recipe_ingredients" do
-      drink = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+      drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
 
       recipe = Recipe.create!(
         drink: drink,
@@ -46,7 +64,11 @@ RSpec.describe Recipe, type: :model do
 
   describe "validations" do
     it "is valid with valid attributes" do
-      drink = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+      drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
 
       recipe = Recipe.new(
         drink: drink,
@@ -58,7 +80,11 @@ RSpec.describe Recipe, type: :model do
     end
 
     it "requires a name" do
-      drink = Drink.create!(name: "Old Fashioned", category: "whiskey", alcoholic: true)
+      drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
 
       recipe = Recipe.new(
         drink: drink,
@@ -66,7 +92,7 @@ RSpec.describe Recipe, type: :model do
         instructions: "Stir ingredients with ice and strain over a large cube."
       )
 
-      expect(recipe).to_not be_valid
+      expect(recipe).not_to be_valid
       expect(recipe.errors.full_messages).to include("Name can't be blank")
     end
 
@@ -77,7 +103,7 @@ RSpec.describe Recipe, type: :model do
         instructions: "Stir ingredients with ice and strain over a large cube."
       )
 
-      expect(recipe).to_not be_valid
+      expect(recipe).not_to be_valid
       expect(recipe.errors.full_messages).to include("Drink must exist")
     end
   end

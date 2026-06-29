@@ -1,4 +1,6 @@
 class Api::V1::SessionsController < ApplicationController
+  skip_before_action :require_login, only: [:create, :destroy]
+  
   def create
     user = User.find_by(email: params[:email])
 
@@ -6,11 +8,11 @@ class Api::V1::SessionsController < ApplicationController
       session[:user_id] = user.id
 
       render json: {
-        user: UserSerializer.format(user)
+        user: UserSerializer.created(user)
       }, status: :ok
     else
       render json: {
-        errors: ["Invalid email or password"]
+        errors: [ "Invalid email or password" ]
       }, status: :unauthorized
     end
   end
@@ -24,7 +26,7 @@ class Api::V1::SessionsController < ApplicationController
       }, status: :ok
     else
       render json: {
-        errors: ["No active session"]
+        errors: [ "No active session" ]
       }, status: :unauthorized
     end
   end
