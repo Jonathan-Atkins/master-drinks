@@ -14,7 +14,7 @@ class ErrorSerializer
 
   def self.forbidden_drink_modification
     {
-      errors: ["You are not authorized to modify this drink"]
+      errors: [ "You are not authorized to modify this drink" ]
     }
   end
 end
