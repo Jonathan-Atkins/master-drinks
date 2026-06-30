@@ -1,8 +1,8 @@
 class Api::V1::IngredientsController < ApplicationController
   skip_before_action :require_login, only: [ :index, :show ]
 
-  before_action :set_ingredient, only: [:show]
-  
+  before_action :set_ingredient, only: [ :show ]
+
   def index
     ingredients = Ingredient.all
 
@@ -15,7 +15,7 @@ class Api::V1::IngredientsController < ApplicationController
 
   def create
     ingredient = Ingredient.new(ingredient_params)
-    
+
     if ingredient.save
       render json: ingredient, status: :created
     else
