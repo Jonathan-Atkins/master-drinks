@@ -1,7 +1,7 @@
 class Api::V1::IngredientsController < ApplicationController
-  skip_before_action :require_login, only: [:index, :show]
+  skip_before_action :require_login, only: [ :index, :show ]
 
-  before_action :set_ingredient, only: [:show, :update, :destroy]
+  before_action :set_ingredient, only: [ :show, :update, :destroy ]
 
   def index
     ingredients = Ingredient.all

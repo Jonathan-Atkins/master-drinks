@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :drinks, only: [ :index, :create, :show, :update, :destroy ]
+      resources :drinks, only: [ :index, :create, :show, :update, :destroy ] do
+        resources :recipes, only: [ :index, :create, :update, :destroy ]
+      end
+
+      resources :recipes, only: [ :index, :show, :update, :destroy ]
       resources :users, only: [ :index, :create, :show, :update, :destroy ]
       resources :ingredients, only: [ :index, :create, :show, :update, :destroy ]
 
