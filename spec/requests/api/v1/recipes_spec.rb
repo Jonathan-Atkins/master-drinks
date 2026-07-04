@@ -60,7 +60,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         expect(response).to have_http_status(:ok)
 
         result = JSON.parse(response.body)
-      
+
         expect(result.count).to eq(2)
         # require 'pry-nav'; binding.pry
         expect(result.pluck("name")).to include(

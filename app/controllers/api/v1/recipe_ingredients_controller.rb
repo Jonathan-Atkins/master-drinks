@@ -1,10 +1,10 @@
 class Api::V1::RecipeIngredientsController < ApplicationController
-  before_action :set_recipe, only: [:create]
-  before_action :set_recipe_ingredient, only: [:update, :destroy]
+  before_action :set_recipe, only: [ :create ]
+  before_action :set_recipe_ingredient, only: [ :update, :destroy ]
 
-  before_action :authorize_recipe_owner, only: [:create]
+  before_action :authorize_recipe_owner, only: [ :create ]
   before_action :authorize_recipe_ingredient_owner,
-                only: [:update, :destroy]
+                only: [ :update, :destroy ]
 
   def create
     ingredient = Ingredient.find(recipe_ingredient_params[:ingredient_id])

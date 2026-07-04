@@ -6,6 +6,7 @@ class RecipeSerializer
       instructions: recipe.instructions,
       drink: {
         id: recipe.drink.id,
+        username: recipe.drink.user.username,
         name: recipe.drink.name,
         category: recipe.drink.category,
         alcoholic: recipe.drink.alcoholic

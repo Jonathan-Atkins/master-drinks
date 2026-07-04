@@ -12,7 +12,7 @@ class Api::V1::RecipesController < ApplicationController
         Recipe.all
       end
 
-    render json: RecipeSerializer.format_collection(recipes),status: :ok
+    render json: RecipeSerializer.format_collection(recipes), status: :ok
   end
 
   def show
