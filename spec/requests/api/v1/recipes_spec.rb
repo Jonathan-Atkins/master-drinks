@@ -45,6 +45,86 @@ RSpec.describe "Api::V1::Recipes", type: :request do
   end
 
   describe "happy path" do
+    describe "GET /api/v1/recipes" do
+      it "returns all recipes" do
+        Recipe.create!(
+          drink: @other_drink,
+          name: "Classic Margarita",
+          instructions: "Shake with ice and strain."
+        )
+
+        log_in(@user)
+
+        get "/api/v1/recipes"
+
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+
+        expect(result.count).to eq(2)
+
+        expect(result.pluck("name")).to include(
+          "Classic Old Fashioned",
+          "Classic Margarita"
+        )
+      end
+
+      it "returns recipes filtered by drink name" do
+        Recipe.create!(
+          drink: @drink,
+          name: "Maple Old Fashioned",
+          instructions: "Stir with maple syrup and ice."
+        )
+
+        Recipe.create!(
+          drink: @other_drink,
+          name: "Classic Margarita",
+          instructions: "Shake with ice and strain."
+        )
+
+        bourbon = Ingredient.create!(name: "Bourbon")
+
+        RecipeIngredient.create!(
+          recipe: @recipe,
+          ingredient: bourbon,
+          amount: 2.0,
+          measurement_unit: "oz"
+        )
+
+        log_in(@user)
+
+        get "/api/v1/recipes", params: {
+          drink_name: "old fashioned"
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+
+        expect(result.count).to eq(2)
+
+        expect(result.pluck("name")).to include(
+          "Classic Old Fashioned",
+          "Maple Old Fashioned"
+        )
+
+        expect(result.pluck("name")).not_to include("Classic Margarita")
+
+        classic_recipe = result.find do |recipe|
+          recipe["name"] == "Classic Old Fashioned"
+        end
+
+        expect(classic_recipe["drink"]["id"]).to eq(@drink.id)
+        expect(classic_recipe["drink"]["name"]).to eq("Old Fashioned")
+        expect(classic_recipe["drink"]["username"]).to eq("alice")
+
+        expect(classic_recipe["ingredients"].count).to eq(1)
+        expect(classic_recipe["ingredients"].first["name"]).to eq("Bourbon")
+        expect(classic_recipe["ingredients"].first["amount"]).to eq("2.0")
+        expect(classic_recipe["ingredients"].first["measurement_unit"]).to eq("oz")
+      end
+    end
+
     describe "GET /api/v1/drinks/:drink_id/recipes" do
       it "returns all recipes associated with the drink" do
         Recipe.create!(
@@ -62,7 +142,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         result = JSON.parse(response.body)
 
         expect(result.count).to eq(2)
-        # require 'pry-nav'; binding.pry
+
         expect(result.pluck("name")).to include(
           "Classic Old Fashioned",
           "Maple Old Fashioned"
@@ -70,6 +150,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
         expect(result.first["drink"]["id"]).to eq(@drink.id)
         expect(result.first["drink"]["name"]).to eq("Old Fashioned")
+        expect(result.first["drink"]["username"]).to eq("alice")
       end
     end
 
@@ -91,6 +172,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
         expect(result["drink"]["id"]).to eq(@drink.id)
         expect(result["drink"]["name"]).to eq("Old Fashioned")
+        expect(result["drink"]["username"]).to eq("alice")
       end
     end
 
@@ -114,6 +196,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
         expect(result["drink"]["id"]).to eq(@drink.id)
         expect(result["drink"]["name"]).to eq("Old Fashioned")
+        expect(result["drink"]["username"]).to eq("alice")
 
         expect(Recipe.last.drink).to eq(@drink)
       end
@@ -156,7 +239,21 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
   describe "sad path" do
     describe "authentication" do
-      it "does not allow an unauthenticated user to list recipes" do
+      it "does not allow an unauthenticated user to list all recipes" do
+        get "/api/v1/recipes"
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+
+      it "does not allow an unauthenticated user to search recipes by drink name" do
+        get "/api/v1/recipes", params: {
+          drink_name: "old fashioned"
+        }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+
+      it "does not allow an unauthenticated user to list recipes for a drink" do
         get "/api/v1/drinks/#{@drink.id}/recipes"
 
         expect(response).to have_http_status(:unauthorized)
@@ -175,6 +272,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         }
 
         expect(response).to have_http_status(:unauthorized)
+
         expect(
           Recipe.find_by(name: "Smoked Old Fashioned")
         ).to be_nil
@@ -208,6 +306,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         }
 
         expect(response).to have_http_status(:forbidden)
+
         expect(
           Recipe.find_by(name: "Unauthorized Recipe")
         ).to be_nil
@@ -232,6 +331,22 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         }.not_to change(Recipe, :count)
 
         expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "GET /api/v1/recipes search" do
+      it "returns an empty array when no recipes match the drink name" do
+        log_in(@user)
+
+        get "/api/v1/recipes", params: {
+          drink_name: "negroni"
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+
+        expect(result).to eq([])
       end
     end
 

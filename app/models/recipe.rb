@@ -7,7 +7,7 @@ class Recipe < ApplicationRecord
   validates :name, presence: true
 
   def self.by_drink_id(drink_id)
-    where(drink_id: drink_id)
+    Drink.find(drink_id).recipes
   end
 
   def self.by_drink_name(drink_name)
