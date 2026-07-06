@@ -107,4 +107,98 @@ RSpec.describe Recipe, type: :model do
       expect(recipe.errors.full_messages).to include("Drink must exist")
     end
   end
+
+  describe "class methods" do
+    before(:each) do
+      @whiskey_drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
+
+      @tequila_drink = @user.drinks.create!(
+        name: "Margarita",
+        category: "tequila",
+        alcoholic: true
+      )
+
+      @old_fashioned_recipe = Recipe.create!(
+        drink: @whiskey_drink,
+        name: "Classic Old Fashioned",
+        instructions: "Stir ingredients with ice and strain over a large cube."
+      )
+
+      @maple_old_fashioned_recipe = Recipe.create!(
+        drink: @whiskey_drink,
+        name: "Maple Old Fashioned",
+        instructions: "Stir ingredients with maple syrup and ice."
+      )
+
+      @margarita_recipe = Recipe.create!(
+        drink: @tequila_drink,
+        name: "Classic Margarita",
+        instructions: "Shake with ice and strain into a glass."
+      )
+    end
+
+    describe ".by_drink_id" do
+      it "returns recipes associated with a specific drink id" do
+        result = Recipe.by_drink_id(@whiskey_drink.id)
+
+        expect(result).to contain_exactly(
+          @old_fashioned_recipe,
+          @maple_old_fashioned_recipe
+        )
+
+        expect(result).not_to include(@margarita_recipe)
+      end
+    end
+
+    describe ".by_drink_name" do
+      it "returns recipes associated with drinks matching the searched name" do
+        result = Recipe.by_drink_name("old fashioned")
+
+        expect(result).to contain_exactly(
+          @old_fashioned_recipe,
+          @maple_old_fashioned_recipe
+        )
+
+        expect(result).not_to include(@margarita_recipe)
+      end
+
+      it "searches without being case sensitive" do
+        result = Recipe.by_drink_name("OLD FASHIONED")
+
+        expect(result).to contain_exactly(
+          @old_fashioned_recipe,
+          @maple_old_fashioned_recipe
+        )
+
+        expect(result).not_to include(@margarita_recipe)
+      end
+    end
+
+    describe ".search" do
+      it "searches by drink name when drink_name is provided" do
+        result = Recipe.search({ drink_name: "old fashioned" })
+
+        expect(result).to contain_exactly(
+          @old_fashioned_recipe,
+          @maple_old_fashioned_recipe
+        )
+
+        expect(result).not_to include(@margarita_recipe)
+      end
+
+      it "returns all recipes when no search params are provided" do
+        result = Recipe.search({})
+
+        expect(result).to contain_exactly(
+          @old_fashioned_recipe,
+          @maple_old_fashioned_recipe,
+          @margarita_recipe
+        )
+      end
+    end
+  end
 end

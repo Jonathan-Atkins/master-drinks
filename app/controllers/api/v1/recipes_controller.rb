@@ -7,12 +7,13 @@ class Api::V1::RecipesController < ApplicationController
   def index
     recipes =
       if params[:drink_id]
-        Drink.find(params[:drink_id]).recipes
+        Recipe.by_drink_id(params[:drink_id])
       else
-        Recipe.all
+        Recipe.search(params)
       end
 
-    render json: RecipeSerializer.format_collection(recipes), status: :ok
+    render json: RecipeSerializer.format_collection(recipes),
+          status: :ok
   end
 
   def show
