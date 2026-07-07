@@ -6,7 +6,7 @@ class Api::V1::UsersController < ApplicationController
 
   def index
     users = User.search(params)
-    
+
     render json: UserSerializer.all_users(users), status: :ok
   end
 

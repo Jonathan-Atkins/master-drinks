@@ -38,7 +38,7 @@ RSpec.describe "User App", type: :request do
     describe "GET /api/v1/users" do
       it "can get all users" do
         user = User.create!(@user_params)
-        
+
         log_in(user)
 
         get "/api/v1/users"
@@ -248,7 +248,6 @@ end
         )
       end
       it "does not allow an unauthenticated user to search by username" do
-    
         get "/api/v1/users", params: {
           username: "bob"
         }
