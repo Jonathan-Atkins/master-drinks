@@ -1,20 +1,36 @@
 require "rails_helper"
 
 RSpec.describe "User App", type: :request do
+  before(:each) do
+  @user = User.create!(
+    name: "Alice",
+    username: "alice",
+    email: "alice@example.com",
+    password: "password123",
+    password_confirmation: "password123"
+  )
+
+  @other_user = User.create!(
+    name: "Bob",
+    username: "bob",
+    email: "bob@example.com",
+    password: "password123",
+    password_confirmation: "password123"
+  )
+
+  @user_params = {
+    name: "Charlie",
+    username: "charlie",
+    email: "charlie@example.com",
+    password: "password123",
+    password_confirmation: "password123"
+  }
+  end
+
   def log_in(user)
     post "/api/v1/login", params: {
       email: user.email,
-      password: "12345"
-    }
-  end
-
-  before(:each) do
-    @user_params = {
-      name: "Alice",
-      username: "AliceInWonderLand",
-      email: "alice@email.com",
-      password: "12345",
-      password_confirmation: "12345"
+      password: "password123"
     }
   end
 
@@ -22,6 +38,7 @@ RSpec.describe "User App", type: :request do
     describe "GET /api/v1/users" do
       it "can get all users" do
         user = User.create!(@user_params)
+        
         log_in(user)
 
         get "/api/v1/users"
@@ -30,10 +47,53 @@ RSpec.describe "User App", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(result).to be_an(Array)
-        expect(result.count).to eq(1)
+        expect(result.count).to eq(3)
         expect(result.first["name"]).to eq("Alice")
-        expect(result.first["username"]).to eq("AliceInWonderLand")
-        expect(result.first["email"]).to eq("alice@email.com")
+        expect(result.first["username"]).to eq("alice")
+        expect(result.first["email"]).to eq("alice@example.com")
+      end
+      it "allows a logged-in user to search for users by username" do
+    log_in(@user)
+
+        get "/api/v1/users", params: {
+          username: "bob"
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+
+        expect(result.count).to eq(1)
+        expect(result.first["username"]).to eq("bob")
+        expect(result.first["email"]).to eq("bob@example.com")
+      end
+      it "returns users with partial username matches" do
+        log_in(@user)
+
+        get "/api/v1/users", params: {
+          username: "bo"
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+
+        expect(result.count).to eq(1)
+        expect(result.first["username"]).to eq("bob")
+      end
+      it "searches usernames without being case sensitive" do
+        log_in(@user)
+
+        get "/api/v1/users", params: {
+          username: "BOB"
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+
+        expect(result.count).to eq(1)
+        expect(result.first["username"]).to eq("bob")
       end
     end
 
@@ -48,9 +108,9 @@ RSpec.describe "User App", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(result["id"]).to eq(user.id)
-        expect(result["name"]).to eq("Alice")
-        expect(result["username"]).to eq("AliceInWonderLand")
-        expect(result["email"]).to eq("alice@email.com")
+        expect(result["name"]).to eq("Charlie")
+        expect(result["username"]).to eq("charlie")
+        expect(result["email"]).to eq("charlie@example.com")
       end
     end
 
@@ -63,9 +123,9 @@ RSpec.describe "User App", type: :request do
         result = JSON.parse(response.body)
 
         expect(response).to have_http_status(:created)
-        expect(result["name"]).to eq("Alice")
-        expect(result["username"]).to eq("AliceInWonderLand")
-        expect(result["email"]).to eq("alice@email.com")
+        expect(result["name"]).to eq("Charlie")
+        expect(result["username"]).to eq("charlie")
+        expect(result["email"]).to eq("charlie@example.com")
         expect(result).not_to have_key("password")
         expect(result).not_to have_key("password_confirmation")
         expect(result).not_to have_key("password_digest")
@@ -187,6 +247,27 @@ end
           "Couldn't find User with 'id'=\"999\""
         )
       end
+      it "does not allow an unauthenticated user to search by username" do
+    
+        get "/api/v1/users", params: {
+          username: "bob"
+        }
+
+    expect(response).to have_http_status(:unauthorized)
+      end
+      it "returns an empty array when no username matches" do
+        log_in(@user)
+
+        get "/api/v1/users", params: {
+          username: "missinguser"
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+
+        expect(result).to eq([])
+      end
     end
 
     describe "POST /api/v1/users" do
@@ -246,7 +327,7 @@ end
 
         expect(response).to have_http_status(:unprocessable_content)
         expect(result["errors"]).to include("Name can't be blank")
-        expect(user.name).to eq("Alice")
+        expect(user.name).to eq("Charlie")
       end
     end
 

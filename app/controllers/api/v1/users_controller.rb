@@ -5,7 +5,8 @@ class Api::V1::UsersController < ApplicationController
   before_action :authorize_user, only: [ :update, :destroy ]
 
   def index
-    users = User.all
+    users = User.search(params)
+    
     render json: UserSerializer.all_users(users), status: :ok
   end
 
