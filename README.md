@@ -51,6 +51,102 @@ This app is for:
 Clone the repository:
 
 ```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd drink-lab-api
+```
+
+### Run the App with Docker
+
+Docker runs both the Rails application and PostgreSQL database in separate containers.
+
+Build and start the containers:
+
+```bash
+docker-compose up --build -d
+```
+
+Prepare the Docker database:
+
+```bash
+docker-compose exec app bin/rails db:migrate
+```
+
+Run the test suite inside the Rails container:
+
+```bash
+docker-compose exec app bundle exec rspec
+```
+
+The API will be available at:
+
+```txt
+http://localhost:3000
+```
+
+View the running containers:
+
+```bash
+docker ps
+```
+
+View application logs:
+
+```bash
+docker-compose logs app
+```
+
+Stop and remove the containers:
+
+```bash
+docker-compose down
+```
+
+The PostgreSQL data remains saved in the Docker volume after the containers are stopped.
+
+To delete the containers and local Docker database data:
+
+```bash
+docker-compose down -v
+```
+
+> Warning: The `-v` option deletes the local Docker database volume.
+
+### Run the App Without Docker
+
+Install dependencies:
+
+```bash
+bundle install
+```
+
+Create and prepare the database:
+
+```bash
+bin/rails db:create
+bin/rails db:migrate
+```
+
+Run the test suite:
+
+```bash
+bundle exec rspec
+```
+
+Start the Rails server:
+
+```bash
+bin/rails server
+```
+
+The local server runs at:
+
+```txt
+http://localhost:3000
+```
+
+Clone the repository:
+
+```bash
 git clone <https://master-drinks.onrender.com>
 cd drink-lab-api
 ```
@@ -437,7 +533,7 @@ Production database: Neon PostgreSQL
 Local database and production database are separate.
 
 ```txt
-Local development database: PostgreSQL on local machine
+Local development database: PostgreSQL running in Docker
 Production database: Neon PostgreSQL
 ```
 
