@@ -139,6 +139,21 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
           expect(result["errors"]).to include("Name can't be blank")
         end
+
+        it "returns an error when the ingredient name already exists" do
+          Ingredient.create!(name: "Unique Bourbon")
+          log_in(@user)
+
+          post "/api/v1/ingredients",
+              params: { name: "unique bourbon" },
+              as: :json
+
+          expect(response).to have_http_status(:unprocessable_content)
+
+          body = JSON.parse(response.body)
+
+          expect(body["errors"]).to include("Name has already been taken")
+        end
       end
 
       describe "PATCH /api/v1/ingredients/:id" do
