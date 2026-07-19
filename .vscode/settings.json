@@ -4,5 +4,6 @@
     "editor.formatOnSave": true
   },
   "solargraph.formatting": true,
-  "solargraph.formattingMethod": "standard"
+  "solargraph.formattingMethod": "standard",
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
