@@ -123,6 +123,26 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         expect(classic_recipe["ingredients"].first["amount"]).to eq("2.0")
         expect(classic_recipe["ingredients"].first["measurement_unit"]).to eq("oz")
       end
+
+      it "does not return private recipes" do
+        private_recipe = Recipe.create!(
+          drink: @other_drink,
+          name: "Private Margarita",
+          instructions: "Private instructions.",
+          publicly_visible: false
+        )
+
+        log_in(@user)
+
+        get "/api/v1/recipes"
+
+        result = JSON.parse(response.body)
+        recipe_ids = result.pluck("id")
+
+        expect(response).to have_http_status(:ok)
+        expect(recipe_ids).to include(@recipe.id)
+        expect(recipe_ids).not_to include(private_recipe.id)
+      end
     end
 
     describe "GET /api/v1/drinks/:drink_id/recipes" do

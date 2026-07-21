@@ -8,9 +8,9 @@ class Api::V1::RecipesController < ApplicationController
   def index
     recipes =
       if params[:drink_id]
-        Recipe.by_drink_id(params[:drink_id])
+        Recipe.by_drink_id(params[:drink_id]).publicly_visible
       else
-        Recipe.search(params)
+        Recipe.search(params).publicly_visible
       end
 
     render json: RecipeSerializer.format_collection(recipes),
