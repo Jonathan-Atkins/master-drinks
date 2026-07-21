@@ -201,4 +201,45 @@ RSpec.describe Recipe, type: :model do
       end
     end
   end
+
+  describe "visibility" do
+    before(:each) do
+      @drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
+    end
+
+    it "is publicly visible by default" do
+      recipe = Recipe.create!(
+        drink: @drink,
+        name: "Classic Old Fashioned",
+        instructions: "Stir ingredients with ice."
+      )
+
+      expect(recipe.publicly_visible).to be(true)
+    end
+
+    it "returns only publicly visible recipes" do
+      public_recipe = Recipe.create!(
+        drink: @drink,
+        name: "Public Old Fashioned",
+        instructions: "Stir ingredients with ice.",
+        publicly_visible: true
+      )
+
+      private_recipe = Recipe.create!(
+        drink: @drink,
+        name: "Private Old Fashioned",
+        instructions: "Stir ingredients with ice.",
+        publicly_visible: false
+      )
+
+      result = Recipe.publicly_visible
+
+      expect(result).to include(public_recipe)
+      expect(result).not_to include(private_recipe)
+    end
+  end
 end

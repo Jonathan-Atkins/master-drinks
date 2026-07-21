@@ -6,6 +6,8 @@ class Recipe < ApplicationRecord
 
   validates :name, presence: true
 
+  scope :publicly_visible, -> { where(publicly_visible: true) }
+
   def self.by_drink_id(drink_id)
     Drink.find(drink_id).recipes
   end

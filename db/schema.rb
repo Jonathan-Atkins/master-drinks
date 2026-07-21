@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_19_050120) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_21_173809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_19_050120) do
     t.bigint "drink_id", null: false
     t.text "instructions"
     t.string "name"
+    t.boolean "publicly_visible", default: true, null: false
     t.datetime "updated_at", null: false
     t.index ["drink_id"], name: "index_recipes_on_drink_id"
   end
