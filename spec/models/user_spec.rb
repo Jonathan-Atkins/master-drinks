@@ -9,6 +9,14 @@ RSpec.describe User, type: :model do
       password: "password123",
       password_confirmation: "password123"
     }
+
+    @user = User.create!(
+      name: "Alice",
+      username: "alice",
+      email: "alice@example.com",
+      password: "password123",
+      password_confirmation: "password123"
+    )
   end
 
   describe "validations" do

@@ -2,6 +2,10 @@ class User < ApplicationRecord
   has_many :user_recipes
   has_many :recipes, through: :user_recipes
   has_many :drinks, dependent: :destroy
+  has_many :owned_recipes,
+         through: :drinks,
+         source: :recipes
+         
   has_secure_password
 
   validates :name, presence: true
