@@ -54,7 +54,7 @@ class Api::V1::RecipesController < ApplicationController
   private
 
   def recipe_params
-    params.permit(:name, :instructions)
+    params.permit(:name, :instructions, :publicly_visible)
   end
 
   def set_drink

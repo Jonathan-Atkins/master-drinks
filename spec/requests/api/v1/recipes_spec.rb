@@ -266,6 +266,36 @@ RSpec.describe "Api::V1::Recipes", type: :request do
       end
     end
 
+    describe "PATCH /api/v1/recipes/:id" do
+      it "allows the owner to make their recipe private" do
+        log_in(@user)
+
+        patch "/api/v1/recipes/#{@recipe.id}",
+              params: { publicly_visible: false }
+
+        result = JSON.parse(response.body)
+        @recipe.reload
+
+        expect(response).to have_http_status(:ok)
+        expect(@recipe.publicly_visible).to be(false)
+      end
+
+      it "allows the owner to make their recipe public again" do
+        @recipe.update!(publicly_visible: false)
+
+        log_in(@user)
+
+        patch "/api/v1/recipes/#{@recipe.id}",
+              params: { publicly_visible: true }
+
+        result = JSON.parse(response.body)
+        @recipe.reload
+
+        expect(response).to have_http_status(:ok)
+        expect(@recipe.publicly_visible).to be(true)
+      end
+    end
+
     describe "DELETE /api/v1/recipes/:id" do
       it "allows the drink owner to delete the recipe" do
         log_in(@user)
@@ -462,6 +492,24 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         }
 
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    describe "PATCH /api/v1/recipes/:id" do
+      it "does not allow another user to change recipe visibility" do
+        log_in(@other_user)
+
+        patch "/api/v1/recipes/#{@recipe.id}",
+              params: { publicly_visible: false }
+
+        result = JSON.parse(response.body)
+        @recipe.reload
+
+        expect(response).to have_http_status(:forbidden)
+        expect(@recipe.publicly_visible).to be(true)
+        expect(result["errors"]).to include(
+          "You are not authorized to modify this recipe"
+        )
       end
     end
 

@@ -17,7 +17,8 @@ class RecipeSerializer
           amount: recipe_ingredient.amount,
           measurement_unit: recipe_ingredient.measurement_unit
         }
-      end
+      end,
+      publicly_visible: recipe.publicly_visible
     }
   end
 
