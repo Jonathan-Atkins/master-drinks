@@ -194,6 +194,28 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         expect(result["drink"]["name"]).to eq("Old Fashioned")
         expect(result["drink"]["username"]).to eq("alice")
       end
+      it "allows the owner to view their private recipe" do
+        @recipe.update!(publicly_visible: false)
+
+        log_in(@user)
+
+        get "/api/v1/recipes/#{@recipe.id}"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(result["id"]).to eq(@recipe.id)
+      end
+      it "allows another user to view a public recipe" do
+        log_in(@other_user)
+
+        get "/api/v1/recipes/#{@recipe.id}"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(result["id"]).to eq(@recipe.id)
+      end
     end
 
     describe "POST /api/v1/drinks/:drink_id/recipes" do
@@ -385,6 +407,15 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@user)
 
         get "/api/v1/recipes/999999"
+
+        expect(response).to have_http_status(:not_found)
+      end
+      it "does not allow another user to view a private recipe" do
+        @recipe.update!(publicly_visible: false)
+
+        log_in(@other_user)
+
+        get "/api/v1/recipes/#{@recipe.id}"
 
         expect(response).to have_http_status(:not_found)
       end

@@ -4,6 +4,7 @@ class Api::V1::RecipesController < ApplicationController
 
   before_action :authorize_drink_owner, only: [ :create ]
   before_action :authorize_recipe_owner, only: [ :update, :destroy ]
+  before_action :authorize_recipe_view, only: [ :show ]
 
   def index
     recipes =
@@ -82,5 +83,13 @@ class Api::V1::RecipesController < ApplicationController
 
     render json: ErrorSerializer.forbidden_recipe_modification,
           status: :forbidden
+  end
+
+  def authorize_recipe_view
+    return if @recipe.publicly_visible?
+    return if @recipe.drink.user_id == current_user.id
+
+    raise ActiveRecord::RecordNotFound,
+          "Couldn't find Recipe with 'id'=\"#{@recipe.id}\""
   end
 end
