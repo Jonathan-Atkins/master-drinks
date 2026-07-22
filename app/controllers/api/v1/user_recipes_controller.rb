@@ -4,7 +4,7 @@ class Api::V1::UserRecipesController < ApplicationController
   before_action :set_user_recipe, only: [ :destroy ]
 
   def index
-    recipes = current_user.recipes
+    recipes = current_user.recipes.publicly_visible
 
     render json: RecipeSerializer.format_collection(recipes), status: :ok
   end
@@ -33,7 +33,7 @@ class Api::V1::UserRecipesController < ApplicationController
   end
 
   def set_recipe
-    @recipe = Recipe.find(valid_params[:recipe_id])
+    @recipe = Recipe.publicly_visible.find(valid_params[:recipe_id])
   end
 
   def set_user_recipe

@@ -31,7 +31,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
     )
 
     @ingredient = Ingredient.create!(
-      name: "Burbon"
+      name: "Bourbon"
     )
 
     @recipe_ingredient = RecipeIngredient.create!(
@@ -85,6 +85,23 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
         expect(UserRecipe.last.user).to eq(@user)
         expect(UserRecipe.last.recipe).to eq(@recipe)
       end
+      it "does not return a saved recipe after the owner makes it private" do
+        UserRecipe.create!(
+          user: @user,
+          recipe: @recipe
+        )
+
+        @recipe.update!(publicly_visible: false)
+
+        log_in(@user)
+
+        get "/api/v1/user_recipes"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(result).to eq([])
+      end
     end
 
     describe "DELETE /api/v1/user_recipes/:id" do
@@ -111,6 +128,20 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
         get "/api/v1/user_recipes"
 
         expect(response).to have_http_status(:unauthorized)
+      end
+
+      it "does not allow a user to save a private recipe" do
+        @recipe.update!(publicly_visible: false)
+
+        log_in(@user)
+
+        expect {
+          post "/api/v1/user_recipes", params: {
+            recipe_id: @recipe.id
+          }
+        }.not_to change(UserRecipe, :count)
+
+        expect(response).to have_http_status(:not_found)
       end
     end
 
