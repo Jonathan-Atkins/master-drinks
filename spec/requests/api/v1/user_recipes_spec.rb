@@ -31,7 +31,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
     )
 
     @ingredient = Ingredient.create!(
-      name: "Bourbon"
+       name: "Bourbon"
     )
 
     @recipe_ingredient = RecipeIngredient.create!(

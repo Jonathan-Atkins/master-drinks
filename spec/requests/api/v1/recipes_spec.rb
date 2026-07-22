@@ -264,9 +264,6 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
         expect(@recipe.reload.name).to eq("Updated Old Fashioned")
       end
-    end
-
-    describe "PATCH /api/v1/recipes/:id" do
       it "allows the owner to make their recipe private" do
         log_in(@user)
 
@@ -293,6 +290,18 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(@recipe.publicly_visible).to be(true)
+      end
+      
+      it "allows the owner to update the privacy of their recipe" do
+        log_in(@user)
+
+        patch "/api/v1/recipes/#{@recipe.id}",
+            params: { publicly_visible: false }
+        
+        result = JSON.parse(response.body)
+        @recipe.reload
+
+        expect(result["publicly_visible"]).to eq(false)
       end
     end
 
