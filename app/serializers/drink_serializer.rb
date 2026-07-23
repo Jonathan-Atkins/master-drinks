@@ -1,4 +1,4 @@
-class RecipeSerializer
+class DrinkSerializer
   def self.format(drink)
     {
       id: drink.id,
