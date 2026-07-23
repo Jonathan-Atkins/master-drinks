@@ -6,11 +6,11 @@ class Api::V1::DrinksController < ApplicationController
 
   def index
     drinks = Drink.sorted_by(params[:sort])
-    render json: drinks, status: :ok
+    render json: DrinkSerializer.format_collection(drinks), status: :ok
   end
 
   def show
-    render json: @drink, status: :ok
+    render json: DrinkSerializer.format(@drink), status: :ok
   end
 
   def create
