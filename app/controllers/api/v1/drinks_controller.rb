@@ -3,9 +3,11 @@ class Api::V1::DrinksController < ApplicationController
 
   before_action :set_drink, only: [ :show, :update, :destroy ]
   before_action :authorize_user, only: [ :update, :destroy ]
+  before_action :authorize_drink_view, only: [ :show ]
+
 
   def index
-    drinks = Drink.sorted_by(params[:sort])
+    drinks = Drink.publicly_visible.sorted_by(params[:sort])
     render json: DrinkSerializer.format_collection(drinks), status: :ok
   end
 
@@ -25,7 +27,7 @@ class Api::V1::DrinksController < ApplicationController
 
   def update
     if @drink.update(drink_params)
-      render json: @drink, status: :ok
+      render json: DrinkSerializer.format(@drink), status: :ok
     else
       render json: ErrorSerializer.format(@drink), status: :unprocessable_content
     end
@@ -39,7 +41,7 @@ class Api::V1::DrinksController < ApplicationController
  private
 
   def drink_params
-    params.permit(:name, :category, :alcoholic)
+    params.permit(:name, :category, :alcoholic, :publicly_visible)
   end
 
   def set_drink
@@ -50,5 +52,13 @@ class Api::V1::DrinksController < ApplicationController
     return if @drink.user_id == current_user.id
 
     render json: ErrorSerializer.forbidden_drink_modification, status: :forbidden
+  end
+
+  def authorize_drink_view
+    return if @drink.publicly_visible?
+    return if @drink.user_id == current_user.id
+
+    raise ActiveRecord::RecordNotFound,
+          "Couldn't find Drink with 'id'=\"#{@drink.id}\""
   end
 end

@@ -149,6 +149,31 @@ RSpec.describe "Drinks App", type: :request do
           ])
         end
       end
+
+      it "returns only publicly visible drinks" do
+        public_drink = @user.drinks.create!(
+          name: "Old Fashioned",
+          category: "whiskey",
+          alcoholic: true,
+          publicly_visible: true
+        )
+
+        private_drink = @user.drinks.create!(
+          name: "Private Margarita",
+          category: "tequila",
+          alcoholic: true,
+          publicly_visible: false
+        )
+
+        get "/api/v1/drinks"
+
+        result = JSON.parse(response.body)
+        drink_ids = result.pluck("id")
+
+        expect(response).to have_http_status(:ok)
+        expect(drink_ids).to include(public_drink.id)
+        expect(drink_ids).not_to include(private_drink.id)
+      end
     end
 
     describe "GET /api/v1/drinks/:id" do
@@ -205,6 +230,36 @@ RSpec.describe "Drinks App", type: :request do
         expect(response).to have_http_status(:ok)
         expect(drink["name"]).to eq("Mojito Rio")
         expect(drink["category"]).to eq("white_rum")
+      end
+
+      it "allows the owner to make their drink private" do
+        log_in(@user)
+
+        patch "/api/v1/drinks/#{@drink.id}",
+              params: { publicly_visible: false }
+
+        result = JSON.parse(response.body)
+        @drink.reload
+
+        expect(response).to have_http_status(:ok)
+        expect(@drink.publicly_visible).to be(false)
+        expect(result["publicly_visible"]).to be(false)
+      end
+
+      it "allows the owner to make their drink public again" do
+        @drink.update!(publicly_visible: false)
+
+        log_in(@user)
+
+        patch "/api/v1/drinks/#{@drink.id}",
+              params: { publicly_visible: true }
+
+        result = JSON.parse(response.body)
+        @drink.reload
+
+        expect(response).to have_http_status(:ok)
+        expect(@drink.publicly_visible).to be(true)
+        expect(result["publicly_visible"]).to be(true)
       end
     end
 
@@ -483,6 +538,18 @@ RSpec.describe "Drinks App", type: :request do
         expect(error["errors"]).to include(
           "Category is not included in the list"
         )
+      end
+
+      it "does not allow another user to change drink visibility" do
+        log_in(@other_user)
+
+        patch "/api/v1/drinks/#{@drink.id}",
+              params: { publicly_visible: false }
+
+        @drink.reload
+
+        expect(response).to have_http_status(:forbidden)
+        expect(@drink.publicly_visible).to be(true)
       end
     end
 

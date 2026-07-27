@@ -1,6 +1,8 @@
 class Drink < ApplicationRecord
   belongs_to :user
 
+  scope :publicly_visible, -> { where(publicly_visible: true) }
+
   enum :category, {
     vodka: "vodka",
     gin: "gin",

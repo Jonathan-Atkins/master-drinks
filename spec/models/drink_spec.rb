@@ -258,4 +258,37 @@ RSpec.describe Drink, type: :model do
       expect(Recipe.exists?(recipe.id)).to eq(false)
     end
   end
+
+  describe "visibility" do
+    it "is publicly visible by default" do
+      drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true
+      )
+
+      expect(drink.publicly_visible).to be(true)
+    end
+
+    it "returns only publicly visible drinks" do
+      public_drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "whiskey",
+        alcoholic: true,
+        publicly_visible: true
+      )
+
+      private_drink = @user.drinks.create!(
+        name: "Private Margarita",
+        category: "tequila",
+        alcoholic: true,
+        publicly_visible: false
+      )
+
+      result = Drink.publicly_visible
+
+      expect(result).to include(public_drink)
+      expect(result).not_to include(private_drink)
+    end
+  end
 end
