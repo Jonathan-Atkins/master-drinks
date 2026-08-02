@@ -151,17 +151,19 @@ RSpec.describe "Drinks App", type: :request do
       end
 
       it "returns only publicly visible drinks" do
-        public_drink = @user.drinks.create!(
+        user = create_user
+
+        public_drink = create_drink(
+          user,
           name: "Old Fashioned",
           category: "whiskey",
-          alcoholic: true,
           publicly_visible: true
         )
 
-        private_drink = @user.drinks.create!(
+        private_drink = create_drink(
+          user,
           name: "Private Margarita",
           category: "tequila",
-          alcoholic: true,
           publicly_visible: false
         )
 
@@ -215,11 +217,17 @@ RSpec.describe "Drinks App", type: :request do
     end
 
     describe "PATCH /api/v1/drinks/:id" do
-      it "can update a drink owned by the logged-in user" do
-        user = create_user
-        mojito = create_drink(user)
-        log_in(user)
+      before(:each) do
+        @user = create_user
+        @drink = create_drink(@user)
+      end
 
+      it "can update a drink owned by the logged-in user" do
+        Drink.delete_all
+
+        mojito = create_drink(@user)
+        log_in(@user)
+        
         patch "/api/v1/drinks/#{mojito.id}", params: {
           name: "Mojito Rio",
           category: "White Rum"
@@ -541,15 +549,21 @@ RSpec.describe "Drinks App", type: :request do
       end
 
       it "does not allow another user to change drink visibility" do
-        log_in(@other_user)
+        other_user = create_user(
+          name: "Bob",
+          username: "BobTheBartender",
+          email: "bob@email.com"
+        )
 
-        patch "/api/v1/drinks/#{@drink.id}",
+        log_in(other_user)
+
+        patch "/api/v1/drinks/#{@mojito.id}",
               params: { publicly_visible: false }
 
-        @drink.reload
+        @mojito.reload
 
         expect(response).to have_http_status(:forbidden)
-        expect(@drink.publicly_visible).to be(true)
+        expect(@mojito.publicly_visible).to be(true)
       end
     end
 

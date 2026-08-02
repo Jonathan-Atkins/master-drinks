@@ -5,13 +5,12 @@ class DrinkSerializer
       name: drink.name,
       category: drink.category,
       alcoholic: drink.alcoholic,
+      publicly_visible: drink.publicly_visible,
       recipe_count: drink.recipes.count
     }
   end
-  
+
   def self.format_collection(drinks)
-    drinks.map do |drink|
-      format(drink)
-    end
+    drinks.map { |drink| format(drink) }
   end
 end
