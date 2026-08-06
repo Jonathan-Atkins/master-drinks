@@ -7,7 +7,6 @@ class Api::V1::IngredientsController < ApplicationController
     ingredients = Ingredient.order(:name)
 
     if params[:search].present?
-      require 'pry-nav'; binding.pry
       ingredients = ingredients.where(
         "name ILIKE ?",
         "%#{params[:search]}%"

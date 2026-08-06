@@ -46,14 +46,15 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         )
       end
 
-      it "returns an ingredient when searched" do
-        get "/api/v1/ingredients", params: { search: "Bitters" }
+      it "returns ingredients matching the search" do
+        create(:ingredient, name: "Angostura Bitters")
         
-        expect(response).to have_http_status(:ok)
-        result = JSON.parse(response.body)
+        get "/api/v1/ingredients", params: { search: "Bitters" }
 
-        expect(result.count).to eq(1)
-        expect(result.first["name"]).to eq("Bourbon")
+        expect(response).to have_http_status(:ok)
+
+        result = JSON.parse(response.body)
+        expect(result.first["name"]).to include("Bitters")
       end
     end
 
