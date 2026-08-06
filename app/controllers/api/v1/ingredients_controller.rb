@@ -4,7 +4,15 @@ class Api::V1::IngredientsController < ApplicationController
   before_action :set_ingredient, only: [ :show, :update, :destroy ]
 
   def index
-    ingredients = Ingredient.all
+    ingredients = Ingredient.order(:name)
+
+    if params[:search].present?
+      require 'pry-nav'; binding.pry
+      ingredients = ingredients.where(
+        "name ILIKE ?",
+        "%#{params[:search]}%"
+      )
+    end
 
     render json: ingredients, status: :ok
   end
