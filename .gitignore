@@ -34,3 +34,4 @@
 # Ignore coverage reports and assets
 /coverage
 
+.DS_Store
