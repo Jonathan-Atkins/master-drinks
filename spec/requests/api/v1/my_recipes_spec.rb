@@ -78,6 +78,24 @@ RSpec.describe "My Recipes API", type: :request do
         expect(recipe_ids).to include(@recipe.id)
         expect(recipe_ids).not_to include(@other_recipe.id)
       end
+
+      it "returns recipes saved by the logged-in user" do
+        UserRecipe.create!(
+          user: @user,
+          recipe: @other_recipe
+        )
+
+        log_in(@user)
+
+        get "/api/v1/my_recipes"
+
+        result = JSON.parse(response.body)
+        recipe_ids = result.pluck("id")
+
+        expect(response).to have_http_status(:ok)
+        expect(recipe_ids).to include(@recipe.id)
+        expect(recipe_ids).to include(@other_recipe.id)
+      end
     end
   end
 

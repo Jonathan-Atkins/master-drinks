@@ -1,7 +1,10 @@
 class Api::V1::MyRecipesController < ApplicationController
   def index
     owned_recipes = current_user.owned_recipes
+    saved_recipes = current_user.recipes
 
-    render json: owned_recipes, status: :ok
+    recipes = (owned_recipes + saved_recipes).uniq
+
+    render json: recipes, status: :ok
   end
 end
