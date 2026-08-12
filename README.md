@@ -2,45 +2,46 @@
 
 # Drink Lab API
 
-## Objective
+# Drink Lab API
 
-Drink Lab API will be a Full-Stack REST API for managing a personal drink menu.
+Immediate access to all your favorite cocktail recipes! Create, save, and share recipes with others in the community.
 
-The current version allows users/developers to create, read, update, delete, and sort drinks. The long-term goal is to support bartenders or cocktail learners who want to save drinks, organize recipes, track ingredients, and eventually receive drink recommendations through AI.
+## Features
 
-## Who Is This For?
+- Browse cocktail recipes
+- Save your favorite drinks
+- Create your own cocktail recipes
+- Share recipes with the community
+- Organize drinks and ingredients in one place
 
-This app is for:
+## Tech Stack
 
-* Cocktail enthusiats who want to explore new cocktail ingredients
-* Bartenders building a personal drink menu
-* Developers learning API design, testing, deployment, and DevOps workflows
+### Backend
+- Ruby
+- Ruby on Rails 8.1.3
+- PostgreSQL
+- ActiveRecord
+- bcrypt authentication
+- rack-cors
 
-## Current Features
+### Frontend
+- React
+- Vite
+- React Router
+- JavaScript
 
-* RESTful CRUD endpoints for drinks
-* Drink validation
-* Category validation using Rails enums
-* Sorting drinks by name, category, date added, and date edited
-* JSON error responses
-* RSpec test coverage
-* GitHub Actions CI pipeline
-* Render deployment
-* Neon PostgreSQL production database
+### Testing & Quality
+- RSpec
+- FactoryBot
+- SimpleCov
+- Brakeman
+- Bundler Audit
 
-## Planned Features
 
-* User registration
-* User authentication
-* Users saving drinks to their profile
-* Recipes table
-* Ingredients table
-* Many-to-many relationship between users and drinks
-* Many-to-many relationship between users and recipes
-* Many-to-many relationship between users and ingredients
-* Many-to-many relationship between recipes and ingredients
-* OpenAI-powered drink recommendations
-* Frontend interface
+### DevOps & Deployment
+- Docker
+- GitHub Actions
+- Bundler
 
 ---
 
