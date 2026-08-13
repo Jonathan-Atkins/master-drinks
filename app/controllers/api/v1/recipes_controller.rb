@@ -1,25 +1,24 @@
 class Api::V1::RecipesController < ApplicationController
-  before_action :set_drink, only: [ :create ]
-  before_action :set_recipe, only: [ :show, :update, :destroy ]
+  before_action :set_drink, only: [:create]
+  before_action :set_recipe, only: [:show, :update, :destroy]
 
-  before_action :authorize_drink_owner, only: [ :create ]
-  before_action :authorize_recipe_owner, only: [ :update, :destroy ]
-  before_action :authorize_recipe_view, only: [ :show ]
+  before_action :authorize_drink_owner, only: [:create]
+  before_action :authorize_recipe_owner, only: [:update, :destroy]
+  before_action :authorize_recipe_view, only: [:show]
 
   def index
-    recipes =
-      if params[:drink_id]
+    recipes = if params[:drink_id]
         Recipe.by_drink_id(params[:drink_id]).publicly_visible
       else
         Recipe.search(params).publicly_visible
       end
 
-    render json: RecipeSerializer.format_collection(recipes),
+    render json: RecipeSerializer.format_collection(recipes, current_user),
            status: :ok
   end
 
   def show
-    render json: RecipeSerializer.format(@recipe),
+    render json: RecipeSerializer.format(@recipe, current_user),
            status: :ok
   end
 
@@ -27,7 +26,7 @@ class Api::V1::RecipesController < ApplicationController
     recipe = @drink.recipes.new(recipe_params)
 
     if recipe.save
-      render json: RecipeSerializer.format(recipe),
+      render json: RecipeSerializer.format(recipe, current_user),
              status: :created
     else
       render json: ErrorSerializer.format(recipe),
@@ -37,7 +36,7 @@ class Api::V1::RecipesController < ApplicationController
 
   def update
     if @recipe.update(recipe_params)
-      render json: RecipeSerializer.format(@recipe),
+      render json: RecipeSerializer.format(@recipe, current_user),
              status: :ok
     else
       render json: ErrorSerializer.format(@recipe),
@@ -75,14 +74,14 @@ class Api::V1::RecipesController < ApplicationController
     return if @drink.user_id == current_user.id
 
     render json: ErrorSerializer.forbidden_recipe_modification,
-          status: :forbidden
+           status: :forbidden
   end
 
   def authorize_recipe_owner
     return if @recipe.drink.user_id == current_user.id
 
     render json: ErrorSerializer.forbidden_recipe_modification,
-          status: :forbidden
+           status: :forbidden
   end
 
   def authorize_recipe_view

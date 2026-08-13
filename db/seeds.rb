@@ -21,7 +21,7 @@ ingredient_groups = {
     "Corn Whiskey", "Wheat Whiskey", "Moonshine", "Brandy", "Cognac",
     "Armagnac", "Calvados", "Apple Brandy", "Pear Brandy", "Pisco", "Grappa",
     "Singani", "Aquavit", "Arrack", "Batavia Arrack", "Arak", "Ouzo", "Rakı",
-    "Baijiu", "Shochu", "Soju", "Sake", "Absinthe"
+    "Baijiu", "Shochu", "Soju", "Sake", "Absinthe",
   ],
 
   liqueurs_and_cordials: [
@@ -51,7 +51,7 @@ ingredient_groups = {
     "Cream Liqueur", "Advocaat", "Rock and Rye", "Southern Comfort",
     "Swedish Punsch", "Falernum Liqueur", "Allspice Dram", "Ancho Chile Liqueur",
     "Chile Liqueur", "Jalapeño Liqueur", "Cardamom Liqueur", "Saffron Liqueur",
-    "Tea Liqueur", "Green Tea Liqueur", "Chai Liqueur", "Sake Liqueur"
+    "Tea Liqueur", "Green Tea Liqueur", "Chai Liqueur", "Sake Liqueur",
   ],
 
   amari_aperitifs_and_fortified_wines: [
@@ -67,7 +67,7 @@ ingredient_groups = {
     "Sercial Madeira", "Verdelho Madeira", "Bual Madeira", "Malmsey Madeira",
     "Port", "Ruby Port", "Tawny Port", "White Port", "Late Bottled Vintage Port",
     "Marsala", "Dry Marsala", "Sweet Marsala", "Pineau des Charentes",
-    "Floc de Gascogne", "Mistelle", "Vermouth Amaro"
+    "Floc de Gascogne", "Mistelle", "Vermouth Amaro",
   ],
 
   wines_beers_and_ciders: [
@@ -80,7 +80,7 @@ ingredient_groups = {
     "Lambrusco", "Beer", "Lager", "Pilsner", "Pale Ale", "India Pale Ale",
     "Wheat Beer", "Hefeweizen", "Saison", "Belgian Ale", "Brown Ale", "Porter",
     "Stout", "Imperial Stout", "Sour Beer", "Gose", "Lambic", "Hard Cider",
-    "Dry Cider", "Sweet Cider", "Pear Cider", "Apple Cider", "Mulled Wine"
+    "Dry Cider", "Sweet Cider", "Pear Cider", "Apple Cider", "Mulled Wine",
   ],
 
   juices: [
@@ -96,7 +96,7 @@ ingredient_groups = {
     "Carrot Juice", "Beet Juice", "Celery Juice", "Cucumber Juice",
     "Coconut Water", "Aloe Vera Juice", "Yuzu Juice", "Calamansi Juice",
     "Sudachi Juice", "Kabosu Juice", "Bergamot Juice", "Mandarin Juice",
-    "Tangerine Juice", "Clementine Juice", "Pomelo Juice", "Meyer Lemon Juice"
+    "Tangerine Juice", "Clementine Juice", "Pomelo Juice", "Meyer Lemon Juice",
   ],
 
   purees_pulps_and_preserves: [
@@ -110,7 +110,7 @@ ingredient_groups = {
     "Fig Jam", "Apricot Jam", "Raspberry Jam", "Strawberry Jam", "Blackberry Jam",
     "Orange Marmalade", "Lemon Marmalade", "Grapefruit Marmalade",
     "Cherry Preserves", "Peach Preserves", "Apple Butter", "Pumpkin Butter",
-    "Coconut Cream", "Cream of Coconut"
+    "Coconut Cream", "Cream of Coconut",
   ],
 
   syrups_sweeteners_and_sugars: [
@@ -141,7 +141,7 @@ ingredient_groups = {
     "Blackcurrant Cordial", "Elderflower Cordial", "Passion Fruit Cordial",
     "Pineapple Cordial", "Ginger Cordial", "Shrub", "Apple Shrub", "Pear Shrub",
     "Strawberry Shrub", "Raspberry Shrub", "Pineapple Shrub", "Peach Shrub",
-    "Blackberry Shrub", "Ginger Shrub"
+    "Blackberry Shrub", "Ginger Shrub",
   ],
 
   bitters_tinctures_and_acids: [
@@ -156,7 +156,7 @@ ingredient_groups = {
     "Chili Bitters", "Firewater Tincture", "Salt Tincture", "Saline Solution",
     "Citric Acid Solution", "Malic Acid Solution", "Tartaric Acid Solution",
     "Phosphoric Acid Solution", "Lactic Acid Solution", "Acid-Adjusted Citrus Juice",
-    "Foaming Bitters"
+    "Foaming Bitters",
   ],
 
   sodas_waters_and_non_alcoholic_mixers: [
@@ -173,7 +173,7 @@ ingredient_groups = {
     "Chocolate Milk", "Energy Drink", "Coconut Soda", "Aloe Drink", "Kombucha",
     "Ginger Kombucha", "Berry Kombucha", "Hop Water", "Nonalcoholic Sparkling Wine",
     "Nonalcoholic Beer", "Nonalcoholic Spirit", "Nonalcoholic Aperitif",
-    "Nonalcoholic Vermouth", "Nonalcoholic Bitters"
+    "Nonalcoholic Vermouth", "Nonalcoholic Bitters",
   ],
 
   dairy_eggs_and_foaming_ingredients: [
@@ -183,7 +183,7 @@ ingredient_groups = {
     "Cashew Milk", "Rice Milk", "Cream Cheese", "Mascarpone", "Vanilla Ice Cream",
     "Chocolate Ice Cream", "Coffee Ice Cream", "Coconut Ice Cream", "Sorbet",
     "Lemon Sorbet", "Raspberry Sorbet", "Egg", "Egg White", "Egg Yolk", "Aquafaba",
-    "Greek Yogurt", "Plain Yogurt", "Coconut Yogurt", "Whipped Cream"
+    "Greek Yogurt", "Plain Yogurt", "Coconut Yogurt", "Whipped Cream",
   ],
 
   fresh_fruits_and_vegetables: [
@@ -200,7 +200,7 @@ ingredient_groups = {
     "Green Bell Pepper", "Jalapeño", "Serrano Pepper", "Habanero Pepper",
     "Ancho Chile", "Chipotle Pepper", "Ginger Root", "Turmeric Root", "Horseradish",
     "Rhubarb", "Pumpkin", "Sweet Potato", "Avocado", "Olive", "Pickle",
-    "Cocktail Onion"
+    "Cocktail Onion",
   ],
 
   herbs_flowers_and_botanicals: [
@@ -211,7 +211,7 @@ ingredient_groups = {
     "Celery Leaf", "Rose Petals", "Lavender", "Hibiscus", "Chamomile", "Jasmine",
     "Elderflower", "Violet", "Orange Blossom", "Cherry Blossom",
     "Butterfly Pea Flower", "Osmanthus", "Orchid", "Nasturtium", "Borage",
-    "Marigold", "Edible Flowers", "Juniper Berries"
+    "Marigold", "Edible Flowers", "Juniper Berries",
   ],
 
   spices_seasonings_and_savory_ingredients: [
@@ -227,7 +227,7 @@ ingredient_groups = {
     "White Miso", "Red Miso", "Kimchi Brine", "Pickle Brine", "Olive Brine",
     "Jalapeño Brine", "Balsamic Vinegar", "Apple Cider Vinegar", "White Wine Vinegar",
     "Red Wine Vinegar", "Rice Vinegar", "Champagne Vinegar", "Sherry Vinegar",
-    "Coconut Vinegar", "Verjus", "White Verjus", "Red Verjus"
+    "Coconut Vinegar", "Verjus", "White Verjus", "Red Verjus",
   ],
 
   garnishes_rims_and_ice: [
@@ -242,7 +242,7 @@ ingredient_groups = {
     "Grated Nutmeg", "Coffee Beans", "Chocolate Shavings", "Cocoa Dust", "Salt Rim",
     "Sugar Rim", "Cinnamon Sugar Rim", "Chile Salt Rim", "Smoked Salt Rim",
     "Coconut Flakes", "Toasted Coconut", "Crushed Ice", "Ice Cubes", "Large Ice Cube",
-    "Pebble Ice", "Clear Ice"
+    "Pebble Ice", "Clear Ice",
   ],
 
   specialty_and_culinary_ingredients: [
@@ -261,8 +261,8 @@ ingredient_groups = {
     "Lemon Extract", "Mint Extract", "Ginger Extract", "Coffee Extract",
     "Black Garlic", "Truffle Honey", "Bacon", "Bacon Fat", "Brown Butter",
     "Clarified Butter", "Olive Oil", "Sesame Oil", "Coconut Oil", "Chili Oil",
-    "Truffle Oil", "Balsamic Reduction"
-  ]
+    "Truffle Oil", "Balsamic Reduction",
+  ],
 }
 
 ingredient_names = ingredient_groups

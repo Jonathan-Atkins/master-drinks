@@ -7,7 +7,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @other_user = User.create!(
@@ -15,54 +15,54 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
       username: "bob",
       email: "bob@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @drink = @user.drinks.create!(
       name: "Old Fashioned",
-      category: "whiskey",
-      alcoholic: true
+      category: "Whiskey",
+      alcoholic: true,
     )
 
     @other_drink = @other_user.drinks.create!(
       name: "Margarita",
-      category: "tequila",
-      alcoholic: true
+      category: "Tequila",
+      alcoholic: true,
     )
 
     @recipe = Recipe.create!(
       drink: @drink,
       name: "Classic Old Fashioned",
-      instructions: "Stir with ice and strain over a large cube."
+      instructions: "Stir with ice and strain over a large cube.",
     )
 
     @other_recipe = Recipe.create!(
       drink: @other_drink,
       name: "Classic Margarita",
-      instructions: "Shake with ice and strain."
+      instructions: "Shake with ice and strain.",
     )
 
     @bourbon = Ingredient.create!(
-      name: "Bourbon"
+      name: "Bourbon",
     )
 
     @bitters = Ingredient.create!(
-      name: "Bitters"
+      name: "Bitters",
     )
 
     @recipe_ingredient = RecipeIngredient.create!(
       recipe: @recipe,
       ingredient: @bourbon,
       amount: 2,
-      measurement_unit: "oz"
+      measurement_unit: "oz",
     )
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
-    }
+                            email: user.email,
+                            password: "password123",
+                          }
   end
 
   describe "happy path" do
@@ -75,7 +75,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
                params: {
                  ingredient_id: @bitters.id,
                  amount: 2,
-                 measurement_unit: "dashes"
+                 measurement_unit: "dashes",
                }
         }.to change(RecipeIngredient, :count).by(1)
 
@@ -101,7 +101,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
         patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
               params: {
                 amount: 3,
-                measurement_unit: "oz"
+                measurement_unit: "oz",
               }
 
         expect(response).to have_http_status(:ok)
@@ -140,7 +140,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
                params: {
                  ingredient_id: @bitters.id,
                  amount: 2,
-                 measurement_unit: "dashes"
+                 measurement_unit: "dashes",
                }
         }.not_to change(RecipeIngredient, :count)
 
@@ -155,7 +155,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
                params: {
                  ingredient_id: @bitters.id,
                  amount: 2,
-                 measurement_unit: "dashes"
+                 measurement_unit: "dashes",
                }
         }.not_to change(RecipeIngredient, :count)
 
@@ -169,7 +169,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
              params: {
                ingredient_id: @bitters.id,
                amount: 2,
-               measurement_unit: "dashes"
+               measurement_unit: "dashes",
              }
 
         expect(response).to have_http_status(:not_found)
@@ -182,7 +182,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
              params: {
                ingredient_id: 999999,
                amount: 2,
-               measurement_unit: "dashes"
+               measurement_unit: "dashes",
              }
 
         expect(response).to have_http_status(:not_found)
@@ -193,7 +193,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
       it "does not allow an unauthenticated user to update a recipe ingredient" do
         patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
               params: {
-                amount: 3
+                amount: 3,
               }
 
         expect(response).to have_http_status(:unauthorized)
@@ -205,7 +205,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
 
         patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
               params: {
-                amount: 3
+                amount: 3,
               }
 
         expect(response).to have_http_status(:forbidden)
@@ -217,7 +217,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
 
         patch "/api/v1/recipe_ingredients/999999",
               params: {
-                amount: 3
+                amount: 3,
               }
 
         expect(response).to have_http_status(:not_found)

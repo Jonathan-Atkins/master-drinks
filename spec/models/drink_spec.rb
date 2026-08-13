@@ -7,7 +7,7 @@ RSpec.describe Drink, type: :model do
       username: "AliceInWonderLand",
       email: "alice@email.com",
       password: "12345",
-      password_confirmation: "12345"
+      password_confirmation: "12345",
     )
   end
 
@@ -16,8 +16,8 @@ RSpec.describe Drink, type: :model do
       it "is valid with valid attributes" do
         drink = @user.drinks.new(
           name: "Mojito",
-          category: "rum",
-          alcoholic: true
+          category: "Rum",
+          alcoholic: true,
         )
 
         expect(drink).to be_valid
@@ -26,8 +26,8 @@ RSpec.describe Drink, type: :model do
       it "is valid when alcoholic is false" do
         drink = @user.drinks.new(
           name: "Virgin Mojito",
-          category: "non_alcoholic",
-          alcoholic: false
+          category: "Non_Alcoholic",
+          alcoholic: false,
         )
 
         expect(drink).to be_valid
@@ -38,8 +38,8 @@ RSpec.describe Drink, type: :model do
       it "is invalid without a name" do
         drink = @user.drinks.new(
           name: nil,
-          category: "rum",
-          alcoholic: true
+          category: "Rum",
+          alcoholic: true,
         )
 
         expect(drink).not_to be_valid
@@ -49,14 +49,14 @@ RSpec.describe Drink, type: :model do
       it "is invalid with an exact duplicate name" do
         @user.drinks.create!(
           name: "Mojito",
-          category: "rum",
-          alcoholic: true
+          category: "Rum",
+          alcoholic: true,
         )
 
         drink = @user.drinks.new(
           name: "Mojito",
-          category: "rum",
-          alcoholic: true
+          category: "Rum",
+          alcoholic: true,
         )
 
         expect(drink).not_to be_valid
@@ -66,14 +66,14 @@ RSpec.describe Drink, type: :model do
       it "is invalid with a case-insensitive duplicate name" do
         @user.drinks.create!(
           name: "Old Fashioned",
-          category: "whiskey",
-          alcoholic: true
+          category: "Whiskey",
+          alcoholic: true,
         )
 
         drink = @user.drinks.new(
           name: "old fashioned",
-          category: "bourbon",
-          alcoholic: true
+          category: "Bourbon",
+          alcoholic: true,
         )
 
         expect(drink).not_to be_valid
@@ -86,19 +86,19 @@ RSpec.describe Drink, type: :model do
           username: "BobTheBuilder",
           email: "bob@email.com",
           password: "12345",
-          password_confirmation: "12345"
+          password_confirmation: "12345",
         )
 
         @user.drinks.create!(
           name: "Old Fashioned",
-          category: "whiskey",
-          alcoholic: true
+          category: "Whiskey",
+          alcoholic: true,
         )
 
         duplicate = other_user.drinks.new(
           name: "OLD FASHIONED",
-          category: "bourbon",
-          alcoholic: true
+          category: "Bourbon",
+          alcoholic: true,
         )
 
         expect(duplicate).not_to be_valid
@@ -109,7 +109,7 @@ RSpec.describe Drink, type: :model do
         drink = @user.drinks.new(
           name: "Mojito",
           category: nil,
-          alcoholic: true
+          alcoholic: true,
         )
 
         expect(drink).not_to be_valid
@@ -119,8 +119,8 @@ RSpec.describe Drink, type: :model do
       it "is invalid with an unsupported category" do
         drink = @user.drinks.new(
           name: "Milkshake",
-          category: "milkshake",
-          alcoholic: true
+          category: "Milkshake",
+          alcoholic: true,
         )
 
         expect(drink).not_to be_valid
@@ -132,8 +132,8 @@ RSpec.describe Drink, type: :model do
       it "is invalid without alcoholic status" do
         drink = @user.drinks.new(
           name: "Mojito",
-          category: "rum",
-          alcoholic: nil
+          category: "Rum",
+          alcoholic: nil,
         )
 
         expect(drink).not_to be_valid
@@ -145,8 +145,8 @@ RSpec.describe Drink, type: :model do
       it "is invalid without a user" do
         drink = Drink.new(
           name: "Mojito",
-          category: "rum",
-          alcoholic: true
+          category: "Rum",
+          alcoholic: true,
         )
 
         expect(drink).not_to be_valid
@@ -160,20 +160,20 @@ RSpec.describe Drink, type: :model do
       it "normalizes category before validation" do
         drink = @user.drinks.new(
           name: "Mojito",
-          category: "Rum",
-          alcoholic: true
+          category: "rum",
+          alcoholic: true,
         )
 
         drink.valid?
 
-        expect(drink.category).to eq("rum")
+        expect(drink.category).to eq("Rum")
       end
 
       it "removes surrounding whitespace from the name" do
         drink = @user.drinks.new(
           name: "  Old Fashioned  ",
-          category: "whiskey",
-          alcoholic: true
+          category: "Whiskey",
+          alcoholic: true,
         )
 
         drink.valid?
@@ -184,8 +184,8 @@ RSpec.describe Drink, type: :model do
       it "removes repeated whitespace from the name" do
         drink = @user.drinks.new(
           name: "Old    Fashioned",
-          category: "whiskey",
-          alcoholic: true
+          category: "Whiskey",
+          alcoholic: true,
         )
 
         drink.valid?
@@ -199,35 +199,35 @@ RSpec.describe Drink, type: :model do
     before(:each) do
       @daiquiri = @user.drinks.create!(
         name: "Daiquiri",
-        category: "rum",
-        alcoholic: true
+        category: "Rum",
+        alcoholic: true,
       )
 
       @margarita = @user.drinks.create!(
         name: "Margarita",
-        category: "tequila",
-        alcoholic: true
+        category: "Tequila",
+        alcoholic: true,
       )
 
       @old_fashioned = @user.drinks.create!(
         name: "Old Fashioned",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
       @daiquiri.update_columns(
         created_at: 3.days.ago,
-        updated_at: 3.days.ago
+        updated_at: 3.days.ago,
       )
 
       @margarita.update_columns(
         created_at: 2.days.ago,
-        updated_at: 2.days.ago
+        updated_at: 2.days.ago,
       )
 
       @old_fashioned.update_columns(
         created_at: 1.day.ago,
-        updated_at: 1.day.ago
+        updated_at: 1.day.ago,
       )
     end
 
@@ -238,7 +238,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Daiquiri",
           "Margarita",
-          "Old Fashioned"
+          "Old Fashioned",
         ])
       end
 
@@ -246,9 +246,9 @@ RSpec.describe Drink, type: :model do
         drinks = Drink.sorted_by("category")
 
         expect(drinks.map(&:category)).to eq([
-          "rum",
-          "tequila",
-          "whiskey"
+          "Rum",
+          "Tequila",
+          "Whiskey",
         ])
       end
 
@@ -258,7 +258,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Old Fashioned",
           "Margarita",
-          "Daiquiri"
+          "Daiquiri",
         ])
       end
 
@@ -268,7 +268,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Old Fashioned",
           "Margarita",
-          "Daiquiri"
+          "Daiquiri",
         ])
       end
     end
@@ -291,8 +291,8 @@ RSpec.describe Drink, type: :model do
       it "belongs to a user" do
         drink = @user.drinks.create!(
           name: "Mojito",
-          category: "rum",
-          alcoholic: true
+          category: "Rum",
+          alcoholic: true,
         )
 
         expect(drink.user).to eq(@user)
@@ -301,20 +301,20 @@ RSpec.describe Drink, type: :model do
       it "has many recipes" do
         drink = @user.drinks.create!(
           name: "Old Fashioned",
-          category: "whiskey",
-          alcoholic: true
+          category: "Whiskey",
+          alcoholic: true,
         )
 
         recipe1 = Recipe.create!(
           drink: drink,
           name: "Classic Old Fashioned",
-          instructions: "Stir with ice."
+          instructions: "Stir with ice.",
         )
 
         recipe2 = Recipe.create!(
           drink: drink,
           name: "Maple Old Fashioned",
-          instructions: "Stir with maple syrup and ice."
+          instructions: "Stir with maple syrup and ice.",
         )
 
         expect(drink.recipes).to contain_exactly(recipe1, recipe2)
@@ -323,14 +323,14 @@ RSpec.describe Drink, type: :model do
       it "destroys its recipes when the drink is destroyed" do
         drink = @user.drinks.create!(
           name: "Old Fashioned",
-          category: "whiskey",
-          alcoholic: true
+          category: "Whiskey",
+          alcoholic: true,
         )
 
         recipe = Recipe.create!(
           drink: drink,
           name: "Classic Old Fashioned",
-          instructions: "Stir with ice."
+          instructions: "Stir with ice.",
         )
 
         drink.destroy
@@ -345,8 +345,8 @@ RSpec.describe Drink, type: :model do
       it "is publicly visible by default" do
         drink = @user.drinks.create!(
           name: "Old Fashioned",
-          category: "whiskey",
-          alcoholic: true
+          category: "Whiskey",
+          alcoholic: true,
         )
 
         expect(drink.publicly_visible).to be(true)
@@ -355,16 +355,16 @@ RSpec.describe Drink, type: :model do
       it "returns only publicly visible drinks" do
         public_drink = @user.drinks.create!(
           name: "Old Fashioned",
-          category: "whiskey",
+          category: "Whiskey",
           alcoholic: true,
-          publicly_visible: true
+          publicly_visible: true,
         )
 
         private_drink = @user.drinks.create!(
           name: "Private Margarita",
-          category: "tequila",
+          category: "Tequila",
           alcoholic: true,
-          publicly_visible: false
+          publicly_visible: false,
         )
 
         result = Drink.publicly_visible

@@ -7,7 +7,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @other_user = User.create!(
@@ -15,33 +15,33 @@ RSpec.describe "Api::V1::Recipes", type: :request do
       username: "bob",
       email: "bob@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @drink = @user.drinks.create!(
       name: "Old Fashioned",
-      category: "whiskey",
-      alcoholic: true
+      category: "Whiskey",
+      alcoholic: true,
     )
 
     @other_drink = @other_user.drinks.create!(
       name: "Margarita",
-      category: "tequila",
-      alcoholic: true
+      category: "Tequila",
+      alcoholic: true,
     )
 
     @recipe = Recipe.create!(
       drink: @drink,
       name: "Classic Old Fashioned",
-      instructions: "Stir with ice and strain over a large cube."
+      instructions: "Stir with ice and strain over a large cube.",
     )
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
-    }
+                            email: user.email,
+                            password: "password123",
+                          }
   end
 
   describe "happy path" do
@@ -50,7 +50,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         Recipe.create!(
           drink: @other_drink,
           name: "Classic Margarita",
-          instructions: "Shake with ice and strain."
+          instructions: "Shake with ice and strain.",
         )
 
         log_in(@user)
@@ -73,13 +73,13 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         Recipe.create!(
           drink: @drink,
           name: "Maple Old Fashioned",
-          instructions: "Stir with maple syrup and ice."
+          instructions: "Stir with maple syrup and ice.",
         )
 
         Recipe.create!(
           drink: @other_drink,
           name: "Classic Margarita",
-          instructions: "Shake with ice and strain."
+          instructions: "Shake with ice and strain.",
         )
 
         bourbon = Ingredient.create!(name: "Bourbon")
@@ -88,14 +88,14 @@ RSpec.describe "Api::V1::Recipes", type: :request do
           recipe: @recipe,
           ingredient: bourbon,
           amount: 2.0,
-          measurement_unit: "oz"
+          measurement_unit: "oz",
         )
 
         log_in(@user)
 
         get "/api/v1/recipes", params: {
-          drink_name: "old fashioned"
-        }
+                                 drink_name: "old fashioned",
+                               }
 
         expect(response).to have_http_status(:ok)
 
@@ -129,7 +129,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
           drink: @other_drink,
           name: "Private Margarita",
           instructions: "Private instructions.",
-          publicly_visible: false
+          publicly_visible: false,
         )
 
         log_in(@user)
@@ -150,7 +150,7 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         Recipe.create!(
           drink: @drink,
           name: "Maple Old Fashioned",
-          instructions: "Stir with maple syrup and ice."
+          instructions: "Stir with maple syrup and ice.",
         )
 
         log_in(@user)
@@ -223,9 +223,9 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@user)
 
         post "/api/v1/drinks/#{@drink.id}/recipes", params: {
-          name: "Smoked Old Fashioned",
-          instructions: "Stir with ice and smoke before serving."
-        }
+                                                      name: "Smoked Old Fashioned",
+                                                      instructions: "Stir with ice and smoke before serving.",
+                                                    }
 
         expect(response).to have_http_status(:created)
 
@@ -249,9 +249,9 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@user)
 
         patch "/api/v1/recipes/#{@recipe.id}", params: {
-          name: "Updated Old Fashioned",
-          instructions: "Stir with ice for thirty seconds."
-        }
+                                                 name: "Updated Old Fashioned",
+                                                 instructions: "Stir with ice for thirty seconds.",
+                                               }
 
         expect(response).to have_http_status(:ok)
 
@@ -291,13 +291,13 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         expect(response).to have_http_status(:ok)
         expect(@recipe.publicly_visible).to be(true)
       end
-      
+
       it "allows the owner to update the privacy of their recipe" do
         log_in(@user)
 
         patch "/api/v1/recipes/#{@recipe.id}",
-            params: { publicly_visible: false }
-        
+              params: { publicly_visible: false }
+
         result = JSON.parse(response.body)
         @recipe.reload
 
@@ -328,8 +328,8 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
       it "does not allow an unauthenticated user to search recipes by drink name" do
         get "/api/v1/recipes", params: {
-          drink_name: "old fashioned"
-        }
+                                 drink_name: "old fashioned",
+                               }
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -348,9 +348,9 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
       it "does not allow an unauthenticated user to create a recipe" do
         post "/api/v1/drinks/#{@drink.id}/recipes", params: {
-          name: "Smoked Old Fashioned",
-          instructions: "Stir with ice."
-        }
+                                                      name: "Smoked Old Fashioned",
+                                                      instructions: "Stir with ice.",
+                                                    }
 
         expect(response).to have_http_status(:unauthorized)
 
@@ -361,8 +361,8 @@ RSpec.describe "Api::V1::Recipes", type: :request do
 
       it "does not allow an unauthenticated user to update a recipe" do
         patch "/api/v1/recipes/#{@recipe.id}", params: {
-          name: "Unauthorized Update"
-        }
+                                                 name: "Unauthorized Update",
+                                               }
 
         expect(response).to have_http_status(:unauthorized)
         expect(@recipe.reload.name).to eq("Classic Old Fashioned")
@@ -382,9 +382,9 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@other_user)
 
         post "/api/v1/drinks/#{@drink.id}/recipes", params: {
-          name: "Unauthorized Recipe",
-          instructions: "This should not be created."
-        }
+                                                      name: "Unauthorized Recipe",
+                                                      instructions: "This should not be created.",
+                                                    }
 
         expect(response).to have_http_status(:forbidden)
 
@@ -397,8 +397,8 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@other_user)
 
         patch "/api/v1/recipes/#{@recipe.id}", params: {
-          name: "Unauthorized Update"
-        }
+                                                 name: "Unauthorized Update",
+                                               }
 
         expect(response).to have_http_status(:forbidden)
         expect(@recipe.reload.name).to eq("Classic Old Fashioned")
@@ -420,8 +420,8 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@user)
 
         get "/api/v1/recipes", params: {
-          drink_name: "negroni"
-        }
+                                 drink_name: "negroni",
+                               }
 
         expect(response).to have_http_status(:ok)
 
@@ -465,9 +465,9 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@user)
 
         post "/api/v1/drinks/#{@drink.id}/recipes", params: {
-          name: nil,
-          instructions: "Stir with ice."
-        }
+                                                      name: nil,
+                                                      instructions: "Stir with ice.",
+                                                    }
 
         expect(response).to have_http_status(:unprocessable_content)
 
@@ -482,8 +482,8 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@user)
 
         patch "/api/v1/recipes/#{@recipe.id}", params: {
-          name: nil
-        }
+                                                 name: nil,
+                                               }
 
         expect(response).to have_http_status(:unprocessable_content)
 
@@ -497,8 +497,8 @@ RSpec.describe "Api::V1::Recipes", type: :request do
         log_in(@user)
 
         patch "/api/v1/recipes/999999", params: {
-          name: "Missing Recipe"
-        }
+                                          name: "Missing Recipe",
+                                        }
 
         expect(response).to have_http_status(:not_found)
       end

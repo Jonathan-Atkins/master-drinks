@@ -7,7 +7,7 @@ RSpec.describe User, type: :model do
       username: "JohnDoe",
       email: "johndoe@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     }
 
     @user = User.create!(
@@ -15,7 +15,7 @@ RSpec.describe User, type: :model do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
   end
 
@@ -46,7 +46,7 @@ RSpec.describe User, type: :model do
       duplicate = User.new(
         @valid_attributes.merge(
           name: "Another User",
-          email: "other@example.com"
+          email: "other@example.com",
         )
       )
 
@@ -76,7 +76,7 @@ RSpec.describe User, type: :model do
       duplicate = User.new(
         @valid_attributes.merge(
           name: "Other User",
-          username: "otheruser"
+          username: "otheruser",
         )
       )
 
@@ -92,7 +92,7 @@ RSpec.describe User, type: :model do
         username: "jonathan",
         email: "jonathan@example.com",
         password: "password123",
-        password_confirmation: "password123"
+        password_confirmation: "password123",
       )
 
       expect(user.authenticate("password123")).to eq(user)
@@ -106,8 +106,8 @@ RSpec.describe User, type: :model do
 
       margarita = user.drinks.create!(
         name: "Margarita",
-        category: "tequila",
-        alcoholic: true
+        category: "Tequila",
+        alcoholic: true,
       )
 
       expect(user.drinks).to include(margarita)
@@ -118,30 +118,30 @@ RSpec.describe User, type: :model do
 
       margarita = user.drinks.create!(
         name: "Margarita",
-        category: "tequila",
-        alcoholic: true
+        category: "Tequila",
+        alcoholic: true,
       )
 
       classic_recipe = Recipe.create!(
         drink: margarita,
         name: "Classic Margarita",
-        instructions: "Shake with ice and strain."
+        instructions: "Shake with ice and strain.",
       )
 
       spicy_recipe = Recipe.create!(
         drink: margarita,
         name: "Spicy Margarita",
-        instructions: "Shake with jalapeño, ice, and strain."
+        instructions: "Shake with jalapeño, ice, and strain.",
       )
 
       UserRecipe.create!(
         user: user,
-        recipe: classic_recipe
+        recipe: classic_recipe,
       )
 
       UserRecipe.create!(
         user: user,
-        recipe: spicy_recipe
+        recipe: spicy_recipe,
       )
 
       expect(user.recipes).to contain_exactly(

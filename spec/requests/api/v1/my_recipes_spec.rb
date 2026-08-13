@@ -7,7 +7,7 @@ RSpec.describe "My Recipes API", type: :request do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @other_user = User.create!(
@@ -15,39 +15,39 @@ RSpec.describe "My Recipes API", type: :request do
       username: "bob",
       email: "bob@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @drink = @user.drinks.create!(
       name: "Old Fashioned",
-      category: "whiskey",
-      alcoholic: true
+      category: "Whiskey",
+      alcoholic: true,
     )
 
     @recipe = Recipe.create!(
       drink: @drink,
       name: "Classic Old Fashioned",
-      instructions: "Stir with ice and strain over a large cube."
+      instructions: "Stir with ice and strain over a large cube.",
     )
 
     @other_drink = @other_user.drinks.create!(
       name: "Margarita",
-      category: "tequila",
-      alcoholic: true
+      category: "Tequila",
+      alcoholic: true,
     )
 
     @other_recipe = Recipe.create!(
       drink: @other_drink,
       name: "Classic Margarita",
-      instructions: "Shake with ice and strain."
+      instructions: "Shake with ice and strain.",
     )
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
-    }
+                            email: user.email,
+                            password: "password123",
+                          }
   end
 
   describe "happy path" do
@@ -82,7 +82,7 @@ RSpec.describe "My Recipes API", type: :request do
       it "returns recipes saved by the logged-in user" do
         UserRecipe.create!(
           user: @user,
-          recipe: @other_recipe
+          recipe: @other_recipe,
         )
 
         log_in(@user)
@@ -102,6 +102,28 @@ RSpec.describe "My Recipes API", type: :request do
   describe "sad path" do
     describe "GET /api/v1/my_recipes" do
       it "returns an empty array when the logged-in user owns no recipes" do
+        @recipe.destroy!
+
+        log_in(@user)
+
+        get "/api/v1/my_recipes"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(result).to eq([])
+      end
+
+      it "returns unauthorized when the user is not logged in" do
+        get "/api/v1/my_recipes"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(result["errors"]).to include("You must be logged in")
+      end
+
+      it "returns an empty array when the logged-in user has no owned or saved recipes" do
         @recipe.destroy!
 
         log_in(@user)

@@ -7,7 +7,7 @@ RSpec.describe Ingredient, type: :model do
       username: "AliceInWonderLand",
       email: "alice@email.com",
       password: "12345",
-      password_confirmation: "12345"
+      password_confirmation: "12345",
     )
   end
 
@@ -15,14 +15,14 @@ RSpec.describe Ingredient, type: :model do
     it "has many recipe_ingredients" do
       drink = @user.drinks.create!(
         name: "Whiskey Sour",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
       recipe = Recipe.create!(
         drink: drink,
         name: "Classic Whiskey Sour",
-        instructions: "Shake with ice and strain."
+        instructions: "Shake with ice and strain.",
       )
 
       ingredient = Ingredient.create!(name: "Lemon Juice")
@@ -31,14 +31,14 @@ RSpec.describe Ingredient, type: :model do
         recipe: recipe,
         ingredient: ingredient,
         amount: 1,
-        measurement_unit: "oz"
+        measurement_unit: "oz",
       )
 
       recipe_ingredient2 = RecipeIngredient.create!(
         recipe: recipe,
         ingredient: ingredient,
         amount: 2,
-        measurement_unit: "oz"
+        measurement_unit: "oz",
       )
 
       expect(ingredient.recipe_ingredients).to include(
@@ -48,28 +48,28 @@ RSpec.describe Ingredient, type: :model do
     end
 
     it "has many recipes through recipe_ingredients" do
-      whiskey_sour = @user.drinks.create!(
+      Whiskey_sour = @user.drinks.create!(
         name: "Whiskey Sour",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
       bee_knees = @user.drinks.create!(
         name: "Bee's Knees",
         category: "gin",
-        alcoholic: true
+        alcoholic: true,
       )
 
       recipe1 = Recipe.create!(
-        drink: whiskey_sour,
+        drink: Whiskey_sour,
         name: "Classic Whiskey Sour",
-        instructions: "Shake with ice and strain."
+        instructions: "Shake with ice and strain.",
       )
 
       recipe2 = Recipe.create!(
         drink: bee_knees,
         name: "Classic Bee's Knees",
-        instructions: "Shake with ice and strain."
+        instructions: "Shake with ice and strain.",
       )
 
       ingredient = Ingredient.create!(name: "Lemon Juice")
@@ -78,14 +78,14 @@ RSpec.describe Ingredient, type: :model do
         recipe: recipe1,
         ingredient: ingredient,
         amount: 1,
-        measurement_unit: "oz"
+        measurement_unit: "oz",
       )
 
       RecipeIngredient.create!(
         recipe: recipe2,
         ingredient: ingredient,
         amount: 0.75,
-        measurement_unit: "oz"
+        measurement_unit: "oz",
       )
 
       expect(ingredient.recipes).to contain_exactly(recipe1, recipe2)

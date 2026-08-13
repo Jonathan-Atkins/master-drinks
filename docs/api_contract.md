@@ -48,11 +48,11 @@ Supported values include:
 ```txt
 vodka
 gin
-rum
-white_rum
-tequila
+Rum
+White_Rum
+Tequila
 mezcal
-whiskey
+Whiskey
 bourbon
 rye
 scotch
@@ -86,7 +86,7 @@ May be stored and returned as:
 
 ```json
 {
-  "category": "tequila"
+  "category": "Tequila"
 }
 ```
 
@@ -158,7 +158,7 @@ Body:
   {
     "id": 1,
     "name": "Margarita",
-    "category": "tequila",
+    "category": "Tequila",
     "alcoholic": true,
     "created_at": "2026-06-10T04:57:25.806Z",
     "updated_at": "2026-06-10T04:57:25.806Z"
@@ -214,7 +214,7 @@ Body:
 {
   "id": 1,
   "name": "Margarita",
-  "category": "tequila",
+  "category": "Tequila",
   "alcoholic": true,
   "created_at": "2026-06-10T04:57:25.806Z",
   "updated_at": "2026-06-10T04:57:25.806Z"
@@ -235,9 +235,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Couldn't find Drink with 'id'=\"999\""
-  ]
+  "errors": ["Couldn't find Drink with 'id'=\"999\""]
 }
 ```
 
@@ -264,7 +262,7 @@ Content-Type: application/json
 ```json
 {
   "name": "Margarita",
-  "category": "tequila",
+  "category": "Tequila",
   "alcoholic": true
 }
 ```
@@ -274,7 +272,7 @@ Content-Type: application/json
 ```bash
 curl -X POST http://localhost:3000/api/v1/drinks \
   -H "Content-Type: application/json" \
-  -d '{"name":"Margarita","category":"tequila","alcoholic":true}'
+  -d '{"name":"Margarita","category":"Tequila","alcoholic":true}'
 ```
 
 ### Success Response
@@ -291,7 +289,7 @@ Body:
 {
   "id": 1,
   "name": "Margarita",
-  "category": "tequila",
+  "category": "Tequila",
   "alcoholic": true,
   "created_at": "2026-06-10T04:57:25.806Z",
   "updated_at": "2026-06-10T04:57:25.806Z"
@@ -312,9 +310,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Name can't be blank"
-  ]
+  "errors": ["Name can't be blank"]
 }
 ```
 
@@ -330,9 +326,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Name has already been taken"
-  ]
+  "errors": ["Name has already been taken"]
 }
 ```
 
@@ -348,9 +342,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Category is not included in the list"
-  ]
+  "errors": ["Category is not included in the list"]
 }
 ```
 
@@ -366,9 +358,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Alcoholic is not included in the list"
-  ]
+  "errors": ["Alcoholic is not included in the list"]
 }
 ```
 
@@ -397,7 +387,7 @@ The client may send one or more fields to update.
 ```json
 {
   "name": "Margarita Picante",
-  "category": "tequila",
+  "category": "Tequila",
   "alcoholic": true
 }
 ```
@@ -424,7 +414,7 @@ Body:
 {
   "id": 1,
   "name": "Margarita Picante",
-  "category": "tequila",
+  "category": "Tequila",
   "alcoholic": true,
   "created_at": "2026-06-10T04:57:25.806Z",
   "updated_at": "2026-06-10T05:15:10.123Z"
@@ -445,9 +435,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Couldn't find Drink with 'id'=\"999\""
-  ]
+  "errors": ["Couldn't find Drink with 'id'=\"999\""]
 }
 ```
 
@@ -463,9 +451,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Name can't be blank"
-  ]
+  "errors": ["Name can't be blank"]
 }
 ```
 
@@ -481,9 +467,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Name has already been taken"
-  ]
+  "errors": ["Name has already been taken"]
 }
 ```
 
@@ -533,9 +517,7 @@ Body:
 
 ```json
 {
-  "errors": [
-    "Couldn't find Drink with 'id'=\"999\""
-  ]
+  "errors": ["Couldn't find Drink with 'id'=\"999\""]
 }
 ```
 
@@ -561,9 +543,7 @@ Example:
 
 ```json
 {
-  "errors": [
-    "Name can't be blank"
-  ]
+  "errors": ["Name can't be blank"]
 }
 ```
 

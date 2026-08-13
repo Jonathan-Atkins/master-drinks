@@ -1,19 +1,19 @@
 class Api::V1::UserRecipesController < ApplicationController
-  before_action :require_login, only: [ :index, :create, :destroy ]
-  before_action :set_recipe, only: [ :create ]
-  before_action :set_user_recipe, only: [ :destroy ]
+  before_action :require_login, only: [:index, :create, :destroy]
+  before_action :set_recipe, only: [:create]
+  before_action :set_user_recipe, only: [:destroy]
 
   def index
     recipes = current_user.recipes.publicly_visible
 
-    render json: RecipeSerializer.format_collection(recipes), status: :ok
+    render json: RecipeSerializer.format_collection(recipes, current_user), status: :ok
   end
 
   def create
     user_recipe = current_user.user_recipes.new(recipe: @recipe)
 
     if user_recipe.save
-      render json: RecipeSerializer.format(@recipe), status: :created
+      render json: RecipeSerializer.format(@recipe, current_user), status: :created
     else
       render json: ErrorSerializer.format(user_recipe),
              status: :unprocessable_content

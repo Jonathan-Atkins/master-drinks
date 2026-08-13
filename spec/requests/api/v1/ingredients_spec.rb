@@ -7,25 +7,25 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @drink = @user.drinks.create!(
       name: "Old Fashioned",
-      category: "whiskey",
-      alcoholic: true
+      category: "Whiskey",
+      alcoholic: true,
     )
 
     @ingredient = Ingredient.create!(
-      name: "Bourbon"
+      name: "Bourbon",
     )
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
-    }
+                       email: user.email,
+                       password: "password123",
+                     }
   end
 
   describe "happy path" do
@@ -48,7 +48,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
       it "returns ingredients matching the search" do
         create(:ingredient, name: "Angostura Bitters")
-        
+
         get "/api/v1/ingredients", params: { search: "Bitters" }
 
         expect(response).to have_http_status(:ok)
@@ -75,119 +75,119 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       it "allows an authenticated user to create an ingredient" do
         log_in(@user)
 
-          post "/api/v1/ingredients", params: {
-            name: "Simple Syrup"
-          }
+        post "/api/v1/ingredients", params: {
+                                      name: "Simple Syrup",
+                                    }
 
-          expect(response).to have_http_status(:created)
+        expect(response).to have_http_status(:created)
 
-          result = JSON.parse(response.body)
+        result = JSON.parse(response.body)
 
-          expect(result["name"]).to eq("Simple Syrup")
-          expect(Ingredient.last.name).to eq("Simple Syrup")
-        end
+        expect(result["name"]).to eq("Simple Syrup")
+        expect(Ingredient.last.name).to eq("Simple Syrup")
+      end
     end
 
-        describe "PATCH /api/v1/ingredients/:id" do
-          it "allows an authenticated user to update an ingredient" do
-            log_in(@user)
+    describe "PATCH /api/v1/ingredients/:id" do
+      it "allows an authenticated user to update an ingredient" do
+        log_in(@user)
 
-            patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-              name: "Rye Whiskey"
-            }
+        patch "/api/v1/ingredients/#{@ingredient.id}", params: {
+                                                         name: "Rye Whiskey",
+                                                       }
 
-            expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:ok)
 
-            result = JSON.parse(response.body)
+        result = JSON.parse(response.body)
 
-            expect(result["name"]).to eq("Rye Whiskey")
-            expect(@ingredient.reload.name).to eq("Rye Whiskey")
-          end
-        end
+        expect(result["name"]).to eq("Rye Whiskey")
+        expect(@ingredient.reload.name).to eq("Rye Whiskey")
+      end
+    end
 
-        describe "DELETE /api/v1/ingredients/:id" do
-          it "allows an authenticated user to delete an ingredient" do
-            log_in(@user)
+    describe "DELETE /api/v1/ingredients/:id" do
+      it "allows an authenticated user to delete an ingredient" do
+        log_in(@user)
 
-            expect {
-              delete "/api/v1/ingredients/#{@ingredient.id}"
-            }.to change(Ingredient, :count).by(-1)
+        expect {
+          delete "/api/v1/ingredients/#{@ingredient.id}"
+        }.to change(Ingredient, :count).by(-1)
 
-            expect(response).to have_http_status(:no_content)
-          end
-        end
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+  end
+
+  describe "sad path" do
+    describe "GET /api/v1/ingredients/:id" do
+      it "returns 404 when the ingredient does not exist" do
+        get "/api/v1/ingredients/999999"
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    describe "POST /api/v1/ingredients" do
+      it "does not allow an unauthenticated user to create an ingredient" do
+        post "/api/v1/ingredients", params: {
+                                      name: "Simple Syrup",
+                                    }
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(Ingredient.find_by(name: "Simple Syrup")).to be_nil
       end
 
-      describe "sad path" do
-        describe "GET /api/v1/ingredients/:id" do
-          it "returns 404 when the ingredient does not exist" do
-            get "/api/v1/ingredients/999999"
+      it "does not create an ingredient with invalid attributes" do
+        log_in(@user)
 
-            expect(response).to have_http_status(:not_found)
-          end
-        end
+        post "/api/v1/ingredients", params: {
+                                      name: nil,
+                                    }
 
-      describe "POST /api/v1/ingredients" do
-        it "does not allow an unauthenticated user to create an ingredient" do
-          post "/api/v1/ingredients", params: {
-            name: "Simple Syrup"
-          }
+        expect(response).to have_http_status(:unprocessable_content)
 
-          expect(response).to have_http_status(:unauthorized)
-          expect(Ingredient.find_by(name: "Simple Syrup")).to be_nil
-        end
+        result = JSON.parse(response.body)
 
-        it "does not create an ingredient with invalid attributes" do
-          log_in(@user)
-
-          post "/api/v1/ingredients", params: {
-            name: nil
-          }
-
-          expect(response).to have_http_status(:unprocessable_content)
-
-          result = JSON.parse(response.body)
-
-          expect(result["errors"]).to include("Name can't be blank")
-        end
-
-        it "returns an error when the ingredient name already exists" do
-          Ingredient.create!(name: "Unique Bourbon")
-          log_in(@user)
-
-          post "/api/v1/ingredients",
-              params: { name: "unique bourbon" },
-              as: :json
-
-          expect(response).to have_http_status(:unprocessable_content)
-
-          body = JSON.parse(response.body)
-
-          expect(body["errors"]).to include("Name has already been taken")
-        end
+        expect(result["errors"]).to include("Name can't be blank")
       end
 
-      describe "PATCH /api/v1/ingredients/:id" do
-        it "does not allow an unauthenticated user to update an ingredient" do
-          patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-            name: "Rye Whiskey"
-          }
+      it "returns an error when the ingredient name already exists" do
+        Ingredient.create!(name: "Unique Bourbon")
+        log_in(@user)
 
-          expect(response).to have_http_status(:unauthorized)
-          expect(@ingredient.reload.name).to eq("Bourbon")
-        end
+        post "/api/v1/ingredients",
+             params: { name: "unique bourbon" },
+             as: :json
 
-        it "does not update an ingredient with invalid attributes" do
-          log_in(@user)
+        expect(response).to have_http_status(:unprocessable_content)
 
-          patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-            name: nil
-          }
+        body = JSON.parse(response.body)
 
-          expect(response).to have_http_status(:unprocessable_content)
-          expect(@ingredient.reload.name).to eq("Bourbon")
-        end
+        expect(body["errors"]).to include("Name has already been taken")
       end
+    end
+
+    describe "PATCH /api/v1/ingredients/:id" do
+      it "does not allow an unauthenticated user to update an ingredient" do
+        patch "/api/v1/ingredients/#{@ingredient.id}", params: {
+                                                         name: "Rye Whiskey",
+                                                       }
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(@ingredient.reload.name).to eq("Bourbon")
+      end
+
+      it "does not update an ingredient with invalid attributes" do
+        log_in(@user)
+
+        patch "/api/v1/ingredients/#{@ingredient.id}", params: {
+                                                         name: nil,
+                                                       }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(@ingredient.reload.name).to eq("Bourbon")
+      end
+    end
 
     describe "DELETE /api/v1/ingredients/:id" do
       it "does not allow an unauthenticated user to delete an ingredient" do

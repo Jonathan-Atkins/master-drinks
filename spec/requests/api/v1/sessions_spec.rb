@@ -27,7 +27,7 @@ RSpec.describe "Sessions API", type: :request do
         expect(result["user"]).not_to have_key("password_digest")
       end
     end
-    describe "DELETE /api/v1/login" do
+    describe "DELETE /api/v1/logout" do
       it "logs out a user" do
         post "/api/v1/login", params: @login_params
         expect(session[:user_id]).to eq(@user.id)
@@ -37,7 +37,22 @@ RSpec.describe "Sessions API", type: :request do
         expect(session[:user_id]).to be_nil
       end
     end
+    describe "GET /api/v1/session" do
+      it "returns the current user when logged in" do
+        post "/api/v1/login", params: @login_params
+
+        get "/api/v1/session"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(result["user"]["username"]).to eq(@user.username)
+        expect(result["user"]["email"]).to eq(@user.email)
+        expect(result["user"]).not_to have_key("password_digest")
+      end
+    end
   end
+
   describe "sad path" do
     describe "POST /api/v1/login" do
       it "returns an error when the password does not match" do
@@ -61,6 +76,16 @@ RSpec.describe "Sessions API", type: :request do
 
         expect(response).to have_http_status(:unauthorized)
         expect(result["errors"]).to include("No active session")
+      end
+    end
+    describe "GET /api/v1/session" do
+      it "returns unauthorized when no user is logged in" do
+        get "/api/v1/session"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(result["errors"]).to include("You must be logged in")
       end
     end
   end

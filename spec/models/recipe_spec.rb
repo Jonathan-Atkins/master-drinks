@@ -7,7 +7,7 @@ RSpec.describe Recipe, type: :model do
       username: "AliceInWonderLand",
       email: "alice@email.com",
       password: "12345",
-      password_confirmation: "12345"
+      password_confirmation: "12345",
     )
   end
 
@@ -15,14 +15,14 @@ RSpec.describe Recipe, type: :model do
     it "belongs to a drink" do
       drink = @user.drinks.create!(
         name: "Old Fashioned",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
       recipe = Recipe.create!(
         drink: drink,
         name: "Classic Old Fashioned",
-        instructions: "Stir ingredients with ice and strain over a large cube."
+        instructions: "Stir ingredients with ice and strain over a large cube.",
       )
 
       expect(recipe.drink).to eq(drink)
@@ -31,14 +31,14 @@ RSpec.describe Recipe, type: :model do
     it "has many ingredients through recipe_ingredients" do
       drink = @user.drinks.create!(
         name: "Old Fashioned",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
       recipe = Recipe.create!(
         drink: drink,
         name: "Classic Old Fashioned",
-        instructions: "Stir ingredients with ice and strain over a large cube."
+        instructions: "Stir ingredients with ice and strain over a large cube.",
       )
 
       bourbon = Ingredient.create!(name: "Bourbon")
@@ -48,14 +48,14 @@ RSpec.describe Recipe, type: :model do
         recipe: recipe,
         ingredient: bourbon,
         amount: 2,
-        measurement_unit: "oz"
+        measurement_unit: "oz",
       )
 
       RecipeIngredient.create!(
         recipe: recipe,
         ingredient: bitters,
         amount: 2,
-        measurement_unit: "dashes"
+        measurement_unit: "dashes",
       )
 
       expect(recipe.ingredients).to contain_exactly(bourbon, bitters)
@@ -66,14 +66,14 @@ RSpec.describe Recipe, type: :model do
     it "is valid with valid attributes" do
       drink = @user.drinks.create!(
         name: "Old Fashioned",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
       recipe = Recipe.new(
         drink: drink,
         name: "Classic Old Fashioned",
-        instructions: "Stir ingredients with ice and strain over a large cube."
+        instructions: "Stir ingredients with ice and strain over a large cube.",
       )
 
       expect(recipe).to be_valid
@@ -82,14 +82,14 @@ RSpec.describe Recipe, type: :model do
     it "requires a name" do
       drink = @user.drinks.create!(
         name: "Old Fashioned",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
       recipe = Recipe.new(
         drink: drink,
         name: nil,
-        instructions: "Stir ingredients with ice and strain over a large cube."
+        instructions: "Stir ingredients with ice and strain over a large cube.",
       )
 
       expect(recipe).not_to be_valid
@@ -100,7 +100,7 @@ RSpec.describe Recipe, type: :model do
       recipe = Recipe.new(
         drink: nil,
         name: "Classic Old Fashioned",
-        instructions: "Stir ingredients with ice and strain over a large cube."
+        instructions: "Stir ingredients with ice and strain over a large cube.",
       )
 
       expect(recipe).not_to be_valid
@@ -110,40 +110,40 @@ RSpec.describe Recipe, type: :model do
 
   describe "class methods" do
     before(:each) do
-      @whiskey_drink = @user.drinks.create!(
+      @Whiskey_drink = @user.drinks.create!(
         name: "Old Fashioned",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
 
-      @tequila_drink = @user.drinks.create!(
+      @Tequila_drink = @user.drinks.create!(
         name: "Margarita",
-        category: "tequila",
-        alcoholic: true
+        category: "Tequila",
+        alcoholic: true,
       )
 
       @old_fashioned_recipe = Recipe.create!(
-        drink: @whiskey_drink,
+        drink: @Whiskey_drink,
         name: "Classic Old Fashioned",
-        instructions: "Stir ingredients with ice and strain over a large cube."
+        instructions: "Stir ingredients with ice and strain over a large cube.",
       )
 
       @maple_old_fashioned_recipe = Recipe.create!(
-        drink: @whiskey_drink,
+        drink: @Whiskey_drink,
         name: "Maple Old Fashioned",
-        instructions: "Stir ingredients with maple syrup and ice."
+        instructions: "Stir ingredients with maple syrup and ice.",
       )
 
       @margarita_recipe = Recipe.create!(
-        drink: @tequila_drink,
+        drink: @Tequila_drink,
         name: "Classic Margarita",
-        instructions: "Shake with ice and strain into a glass."
+        instructions: "Shake with ice and strain into a glass.",
       )
     end
 
     describe ".by_drink_id" do
       it "returns recipes associated with a specific drink id" do
-        result = Recipe.by_drink_id(@whiskey_drink.id)
+        result = Recipe.by_drink_id(@Whiskey_drink.id)
 
         expect(result).to contain_exactly(
           @old_fashioned_recipe,
@@ -206,8 +206,8 @@ RSpec.describe Recipe, type: :model do
     before(:each) do
       @drink = @user.drinks.create!(
         name: "Old Fashioned",
-        category: "whiskey",
-        alcoholic: true
+        category: "Whiskey",
+        alcoholic: true,
       )
     end
 
@@ -215,7 +215,7 @@ RSpec.describe Recipe, type: :model do
       recipe = Recipe.create!(
         drink: @drink,
         name: "Classic Old Fashioned",
-        instructions: "Stir ingredients with ice."
+        instructions: "Stir ingredients with ice.",
       )
 
       expect(recipe.publicly_visible).to be(true)
@@ -226,14 +226,14 @@ RSpec.describe Recipe, type: :model do
         drink: @drink,
         name: "Public Old Fashioned",
         instructions: "Stir ingredients with ice.",
-        publicly_visible: true
+        publicly_visible: true,
       )
 
       private_recipe = Recipe.create!(
         drink: @drink,
         name: "Private Old Fashioned",
         instructions: "Stir ingredients with ice.",
-        publicly_visible: false
+        publicly_visible: false,
       )
 
       result = Recipe.publicly_visible

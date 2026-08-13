@@ -7,19 +7,19 @@ RSpec.describe UserRecipe, type: :model do
       username: "jonathan",
       email: "jonathan@example.com",
       password: "password",
-      password_confirmation: "password"
+      password_confirmation: "password",
     )
 
     @drink = @user.drinks.create!(
       name: "Margarita",
-      category: "tequila",
-      alcoholic: true
+      category: "Tequila",
+      alcoholic: true,
     )
 
     @recipe = Recipe.create!(
       drink: @drink,
       name: "Classic Margarita",
-      instructions: "Shake with ice and strain."
+      instructions: "Shake with ice and strain.",
     )
   end
 
@@ -27,7 +27,7 @@ RSpec.describe UserRecipe, type: :model do
     it "connects a user to a recipe" do
       user_recipe = UserRecipe.create!(
         user: @user,
-        recipe: @recipe
+        recipe: @recipe,
       )
 
       expect(user_recipe.user).to eq(@user)
@@ -39,12 +39,12 @@ RSpec.describe UserRecipe, type: :model do
     it "does not allow the same user to save the same recipe twice" do
       UserRecipe.create!(
         user: @user,
-        recipe: @recipe
+        recipe: @recipe,
       )
 
       duplicate = UserRecipe.new(
         user: @user,
-        recipe: @recipe
+        recipe: @recipe,
       )
 
       expect(duplicate).not_to be_valid

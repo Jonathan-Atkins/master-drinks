@@ -17,6 +17,12 @@ class Api::V1::SessionsController < ApplicationController
     end
   end
 
+  def show
+    render json: {
+      user: UserSerializer.created(current_user)
+    }, status: :ok
+  end
+
   def destroy
     if session[:user_id]
       session.delete(:user_id)

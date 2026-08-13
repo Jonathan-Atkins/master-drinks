@@ -7,7 +7,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @other_user = User.create!(
@@ -15,38 +15,38 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
       username: "bob",
       email: "bob@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @drink = @other_user.drinks.create!(
       name: "Old Fashioned",
-      category: "whiskey",
-      alcoholic: true
+      category: "Whiskey",
+      alcoholic: true,
     )
 
     @recipe = Recipe.create!(
       drink: @drink,
       name: "Classic Old Fashioned",
-      instructions: "Stir with ice and strain over a large cube."
+      instructions: "Stir with ice and strain over a large cube.",
     )
 
     @ingredient = Ingredient.create!(
-       name: "Bourbon"
+      name: "Bourbon",
     )
 
     @recipe_ingredient = RecipeIngredient.create!(
       recipe: @recipe,
       ingredient: @ingredient,
       amount: 2.0,
-      measurement_unit: "oz"
+      measurement_unit: "oz",
     )
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
-    }
+                       email: user.email,
+                       password: "password123",
+                     }
   end
 
   describe "happy path" do
@@ -73,8 +73,8 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         expect {
           post "/api/v1/user_recipes", params: {
-            recipe_id: @recipe.id
-          }
+                                    recipe_id: @recipe.id,
+                                  }
         }.to change(UserRecipe, :count).by(1)
 
         expect(response).to have_http_status(:created)
@@ -88,7 +88,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
       it "does not return a saved recipe after the owner makes it private" do
         UserRecipe.create!(
           user: @user,
-          recipe: @recipe
+          recipe: @recipe,
         )
 
         @recipe.update!(publicly_visible: false)
@@ -110,7 +110,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         user_recipe = UserRecipe.create!(
           user: @user,
-          recipe: @recipe
+          recipe: @recipe,
         )
 
         expect {
@@ -137,8 +137,8 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         expect {
           post "/api/v1/user_recipes", params: {
-            recipe_id: @recipe.id
-          }
+                                    recipe_id: @recipe.id,
+                                  }
         }.not_to change(UserRecipe, :count)
 
         expect(response).to have_http_status(:not_found)
@@ -149,8 +149,8 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
       it "does not allow an unauthenticated user to save a recipe" do
         expect {
           post "/api/v1/user_recipes", params: {
-            recipe_id: @recipe.id
-          }
+                                    recipe_id: @recipe.id,
+                                  }
         }.not_to change(UserRecipe, :count)
 
         expect(response).to have_http_status(:unauthorized)
@@ -161,13 +161,13 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         UserRecipe.create!(
           user: @user,
-          recipe: @recipe
+          recipe: @recipe,
         )
 
         expect {
           post "/api/v1/user_recipes", params: {
-            recipe_id: @recipe.id
-          }
+                                    recipe_id: @recipe.id,
+                                  }
         }.not_to change(UserRecipe, :count)
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -181,8 +181,8 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
         log_in(@user)
 
         post "/api/v1/user_recipes", params: {
-          recipe_id: 999999
-        }
+                                  recipe_id: 999999,
+                                }
 
         expect(response).to have_http_status(:not_found)
       end
@@ -192,7 +192,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
       it "does not allow an unauthenticated user to remove a saved recipe" do
         user_recipe = UserRecipe.create!(
           user: @user,
-          recipe: @recipe
+          recipe: @recipe,
         )
 
         expect {
@@ -207,7 +207,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         user_recipe = UserRecipe.create!(
           user: @user,
-          recipe: @recipe
+          recipe: @recipe,
         )
 
         expect {
