@@ -12,7 +12,13 @@ Rails.application.routes.draw do
       end
 
       resources :recipe_ingredients, only: [ :update, :destroy ]
-      resources :users
+      
+      resources :users do
+        member do
+          patch :password
+        end
+      end
+      
       resources :ingredients
       resources :user_recipes, only: [ :index, :create, :destroy ]
 

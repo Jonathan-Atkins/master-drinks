@@ -1,8 +1,8 @@
 class Api::V1::UsersController < ApplicationController
   skip_before_action :require_login, only: [ :create ]
 
-  before_action :set_user, only: [ :show, :update, :destroy ]
-  before_action :authorize_user, only: [ :update, :destroy ]
+  before_action :set_user, only: [ :show, :update, :destroy, :password ]
+  before_action :authorize_user, only: [ :update, :destroy, :password ]
 
   def index
     users = User.search(params)
@@ -37,6 +37,25 @@ class Api::V1::UsersController < ApplicationController
   def destroy
     @user.destroy
     head :no_content
+  end
+
+  def password
+    unless @user.authenticate(params[:current_password])
+      render json: { errors: ["Current password is incorrect"] },
+            status: :unauthorized
+      return
+    end
+
+    if @user.update(
+      password: params[:password],
+      password_confirmation: params[:password_confirmation]
+    )
+      render json: { message: "Password updated successfully" },
+            status: :ok
+    else
+      render json: ErrorSerializer.format(@user),
+            status: :unprocessable_content
+    end
   end
 
   private

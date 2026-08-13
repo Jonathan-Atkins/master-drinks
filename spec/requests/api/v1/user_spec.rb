@@ -154,6 +154,25 @@ RSpec.describe "User App", type: :request do
       end
     end
 
+    describe "PATCH /api/v1/users/:id/password" do
+      it "allows a user to change their password" do
+        log_in(@user)
+
+        patch "/api/v1/users/#{@user.id}/password", params: {
+          current_password: "password123",
+          password: "newpassword123",
+          password_confirmation: "newpassword123"
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        @user.reload
+
+        expect(@user.authenticate("newpassword123")).to eq(@user)
+        expect(@user.authenticate("password123")).to be_falsey
+      end
+    end
+
     describe "DELETE /api/v1/users/:id" do
       it "can delete a user" do
         user = User.create!(@user_params)
@@ -327,6 +346,25 @@ end
         expect(response).to have_http_status(:unprocessable_content)
         expect(result["errors"]).to include("Name can't be blank")
         expect(user.name).to eq("Charlie")
+      end
+    end
+
+    describe "PATCH /api/v1/users/:id/password" do
+      it "does not change the password if the current password is incorrect" do
+        log_in(@user)
+
+        patch "/api/v1/users/#{@user.id}/password", params: {
+          current_password: "wrongpassword",
+          password: "newpassword123",
+          password_confirmation: "newpassword123"
+        }
+
+        expect(response).to have_http_status(:unauthorized)
+
+        @user.reload
+
+        expect(@user.authenticate("password123")).to eq(@user)
+        expect(@user.authenticate("newpassword123")).to be_falsey
       end
     end
 
