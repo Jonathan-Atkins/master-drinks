@@ -5,6 +5,7 @@ class Api::V1::MyRecipesController < ApplicationController
 
     recipes = (owned_recipes + saved_recipes).uniq
 
-    render json: recipes, status: :ok
+    render json: RecipeSerializer.format_collection(recipes, current_user),
+           status: :ok
   end
 end

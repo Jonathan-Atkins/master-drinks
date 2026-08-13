@@ -10,6 +10,7 @@ class UserSerializer
 
   def self.created(user)
     {
+      id: user.id,
       username: user.username,
       email: user.email
     }
