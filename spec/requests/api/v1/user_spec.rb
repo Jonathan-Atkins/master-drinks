@@ -366,6 +366,28 @@ end
         expect(@user.authenticate("password123")).to eq(@user)
         expect(@user.authenticate("newpassword123")).to be_falsey
       end
+      it "does not change the password when the new password confirmation does not match" do
+        log_in(@user)
+
+        patch "/api/v1/users/#{@user.id}/password", params: {
+          current_password: "password123",
+          password: "newpassword123",
+          password_confirmation: "differentpassword",
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+
+        result = JSON.parse(response.body)
+
+        expect(result["errors"]).to include(
+          "Password confirmation doesn't match Password"
+        )
+
+        @user.reload
+
+        expect(@user.authenticate("password123")).to eq(@user)
+        expect(@user.authenticate("newpassword123")).to be_falsey
+      end
     end
 
     describe "DELETE /api/v1/users/:id" do
