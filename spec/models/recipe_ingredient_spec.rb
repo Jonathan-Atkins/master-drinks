@@ -70,4 +70,48 @@ RSpec.describe RecipeIngredient, type: :model do
       expect(recipe_ingredient.measurement_unit).to eq("oz")
     end
   end
+
+  describe "validations" do
+    before(:each) do
+      drink = @user.drinks.create!(
+        name: "Old Fashioned",
+        category: "Whiskey",
+        alcoholic: true,
+      )
+
+      @recipe = Recipe.create!(
+        drink: drink,
+        name: "Classic Old Fashioned",
+        instructions: "Stir with ice and strain over a large cube.",
+      )
+
+      @ingredient = Ingredient.create!(
+        name: "Bourbon",
+      )
+    end
+
+    it "requires an amount" do
+      recipe_ingredient = RecipeIngredient.new(
+        recipe: @recipe,
+        ingredient: @ingredient,
+        amount: nil,
+        measurement_unit: "oz",
+      )
+
+      expect(recipe_ingredient).not_to be_valid
+      expect(recipe_ingredient.errors[:amount]).to include("can't be blank")
+    end
+
+    it "requires a measurement unit" do
+      recipe_ingredient = RecipeIngredient.new(
+        recipe: @recipe,
+        ingredient: @ingredient,
+        amount: 2,
+        measurement_unit: nil,
+      )
+
+      expect(recipe_ingredient).not_to be_valid
+      expect(recipe_ingredient.errors[:measurement_unit]).to include("can't be blank")
+    end
+  end
 end

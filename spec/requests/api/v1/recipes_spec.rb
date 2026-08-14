@@ -460,6 +460,22 @@ RSpec.describe "Api::V1::Recipes", type: :request do
       end
     end
 
+    describe "GET /api/v1/drinks/:drink_id/recipes/:id" do
+      it "returns 404 when the recipe does not belong to the drink" do
+        log_in(@user)
+
+        other_drink = @user.drinks.create!(
+          name: "Salty Dog",
+          category: "Vodka",
+          alcoholic: true,
+        )
+
+        get "/api/v1/drinks/#{other_drink.id}/recipes/#{@recipe.id}"
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
     describe "POST /api/v1/drinks/:drink_id/recipes" do
       it "does not create a recipe with invalid attributes" do
         log_in(@user)

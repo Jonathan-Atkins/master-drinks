@@ -187,6 +187,25 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
 
         expect(response).to have_http_status(:not_found)
       end
+
+      it "does not create a recipe ingredient with invalid attributes" do
+        log_in(@user)
+
+        expect {
+          post "/api/v1/recipes/#{@recipe.id}/recipe_ingredients",
+              params: {
+                ingredient_id: @bitters.id,
+                amount: nil,
+                measurement_unit: nil,
+              }
+        }.not_to change(RecipeIngredient, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+
+        result = JSON.parse(response.body)
+
+        expect(result["errors"]).to be_present
+      end
     end
 
     describe "PATCH /api/v1/recipe_ingredients/:id" do
@@ -221,6 +240,27 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
               }
 
         expect(response).to have_http_status(:not_found)
+      end
+
+      it "does not update a recipe ingredient with invalid attributes" do
+        log_in(@user)
+
+        patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
+              params: {
+                amount: nil,
+                measurement_unit: nil,
+              }
+
+        expect(response).to have_http_status(:unprocessable_content)
+
+        result = JSON.parse(response.body)
+
+        expect(result["errors"]).to be_present
+
+        @recipe_ingredient.reload
+
+        expect(@recipe_ingredient.amount).to eq(2)
+        expect(@recipe_ingredient.measurement_unit).to eq("oz")
       end
     end
 

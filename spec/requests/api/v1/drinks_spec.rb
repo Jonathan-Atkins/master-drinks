@@ -289,112 +289,112 @@ RSpec.describe "Drinks App", type: :request do
         expect(Drink.exists?(drink.id)).to eq(false)
       end
     end
-  end
 
-  describe "authentication" do
-    it "allows anyone to view all drinks" do
-      get "/api/v1/drinks"
+      describe "authentication" do
+        it "allows anyone to view all drinks" do
+          get "/api/v1/drinks"
 
-      expect(response).to have_http_status(:ok)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "returns unauthorized when showing a drink without being logged in" do
+          user = create_user
+          drink = create_drink(user)
+
+          get "/api/v1/drinks/#{drink.id}"
+
+          result = JSON.parse(response.body)
+
+          expect(response).to have_http_status(:unauthorized)
+          expect(result["errors"]).to include("You must be logged in")
+        end
+
+        it "returns unauthorized when creating a drink without being logged in" do
+          post "/api/v1/drinks", params: {
+                                  name: "Margarita",
+                                  category: "Tequila",
+                                  alcoholic: true,
+                                }
+
+          result = JSON.parse(response.body)
+
+          expect(response).to have_http_status(:unauthorized)
+          expect(result["errors"]).to include("You must be logged in")
+        end
+
+        it "returns unauthorized when updating a drink without being logged in" do
+          user = create_user
+          drink = create_drink(user)
+
+          patch "/api/v1/drinks/#{drink.id}", params: {
+                                                name: "Updated Drink",
+                                              }
+
+          result = JSON.parse(response.body)
+
+          expect(response).to have_http_status(:unauthorized)
+          expect(result["errors"]).to include("You must be logged in")
+        end
+
+        it "returns unauthorized when deleting a drink without being logged in" do
+          user = create_user
+          drink = create_drink(user)
+
+          expect do
+            delete "/api/v1/drinks/#{drink.id}"
+          end.not_to change(Drink, :count)
+
+          result = JSON.parse(response.body)
+
+          expect(response).to have_http_status(:unauthorized)
+          expect(result["errors"]).to include("You must be logged in")
+        end
+      end
+
+      describe "authorization" do
+        before(:each) do
+          @owner = create_user
+
+          @other_user = create_user(
+            name: "Bob",
+            username: "BobTheBartender",
+            email: "bob@email.com",
+          )
+
+          @drink = create_drink(@owner)
+
+          log_in(@other_user)
+        end
+
+        it "does not allow a user to update another user's drink" do
+          patch "/api/v1/drinks/#{@drink.id}", params: {
+                                                name: "Changed Drink",
+                                              }
+
+          result = JSON.parse(response.body)
+          @drink.reload
+
+          expect(response).to have_http_status(:forbidden)
+          expect(result["errors"]).to include(
+            "You are not authorized to modify this drink"
+          )
+          expect(@drink.name).to eq("Mojito")
+        end
+
+        it "does not allow a user to delete another user's drink" do
+          expect do
+            delete "/api/v1/drinks/#{@drink.id}"
+          end.not_to change(Drink, :count)
+
+          result = JSON.parse(response.body)
+
+          expect(response).to have_http_status(:forbidden)
+          expect(result["errors"]).to include(
+            "You are not authorized to modify this drink"
+          )
+        end
+      end
     end
-
-    it "returns unauthorized when showing a drink without being logged in" do
-      user = create_user
-      drink = create_drink(user)
-
-      get "/api/v1/drinks/#{drink.id}"
-
-      result = JSON.parse(response.body)
-
-      expect(response).to have_http_status(:unauthorized)
-      expect(result["errors"]).to include("You must be logged in")
-    end
-
-    it "returns unauthorized when creating a drink without being logged in" do
-      post "/api/v1/drinks", params: {
-                               name: "Margarita",
-                               category: "Tequila",
-                               alcoholic: true,
-                             }
-
-      result = JSON.parse(response.body)
-
-      expect(response).to have_http_status(:unauthorized)
-      expect(result["errors"]).to include("You must be logged in")
-    end
-
-    it "returns unauthorized when updating a drink without being logged in" do
-      user = create_user
-      drink = create_drink(user)
-
-      patch "/api/v1/drinks/#{drink.id}", params: {
-                                            name: "Updated Drink",
-                                          }
-
-      result = JSON.parse(response.body)
-
-      expect(response).to have_http_status(:unauthorized)
-      expect(result["errors"]).to include("You must be logged in")
-    end
-
-    it "returns unauthorized when deleting a drink without being logged in" do
-      user = create_user
-      drink = create_drink(user)
-
-      expect do
-        delete "/api/v1/drinks/#{drink.id}"
-      end.not_to change(Drink, :count)
-
-      result = JSON.parse(response.body)
-
-      expect(response).to have_http_status(:unauthorized)
-      expect(result["errors"]).to include("You must be logged in")
-    end
-  end
-
-  describe "authorization" do
-    before(:each) do
-      @owner = create_user
-
-      @other_user = create_user(
-        name: "Bob",
-        username: "BobTheBartender",
-        email: "bob@email.com",
-      )
-
-      @drink = create_drink(@owner)
-
-      log_in(@other_user)
-    end
-
-    it "does not allow a user to update another user's drink" do
-      patch "/api/v1/drinks/#{@drink.id}", params: {
-                                             name: "Changed Drink",
-                                           }
-
-      result = JSON.parse(response.body)
-      @drink.reload
-
-      expect(response).to have_http_status(:forbidden)
-      expect(result["errors"]).to include(
-        "You are not authorized to modify this drink"
-      )
-      expect(@drink.name).to eq("Mojito")
-    end
-
-    it "does not allow a user to delete another user's drink" do
-      expect do
-        delete "/api/v1/drinks/#{@drink.id}"
-      end.not_to change(Drink, :count)
-
-      result = JSON.parse(response.body)
-
-      expect(response).to have_http_status(:forbidden)
-      expect(result["errors"]).to include(
-        "You are not authorized to modify this drink"
-      )
-    end
-  end
 
   describe "sad path" do
     describe "GET /api/v1/drinks" do
@@ -420,6 +420,49 @@ RSpec.describe "Drinks App", type: :request do
         expect(response).to have_http_status(:not_found)
         expect(error["errors"]).to include(
           "Couldn't find Drink with 'id'=\"999\""
+        )
+      end
+
+      it "does not allow a user to view another user's private drink" do
+        user1 = User.create!(
+          {
+            name: "Jon",
+            username: "JonInWonderLand",
+            email: "Jon@email.com",
+            password: "12345",
+            password_confirmation: "12345",
+          }
+        )
+        
+        
+        user2 = User.create!(
+          {
+            name: "Alice",
+            username: "AliceInWonderLand",
+            email: "alice@email.com",
+            password: "12345",
+            password_confirmation: "12345",
+          }
+        )
+                
+        log_in(user2)
+
+        private_drink = user1.drinks.create!(
+                  {
+                    name: "Satly Dog",
+                    category: "Vodka",
+                    alcoholic: true,
+                    publicly_visible: false
+                  }
+                )
+        
+        get "/api/v1/drinks/#{private_drink.id}"
+
+        error = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:not_found)
+        expect(error["errors"]).to include(
+          "Couldn't find Drink with 'id'=\"#{private_drink.id}\""
         )
       end
     end
