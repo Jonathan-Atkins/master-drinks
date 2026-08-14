@@ -21,6 +21,8 @@ class RecipeSerializer
 
       ingredients: recipe.recipe_ingredients.map do |recipe_ingredient|
         {
+          recipe_ingredient_id: recipe_ingredient.id,
+          ingredient_id: recipe_ingredient.ingredient.id,
           name: recipe_ingredient.ingredient.name,
           amount: recipe_ingredient.amount,
           measurement_unit: recipe_ingredient.measurement_unit
