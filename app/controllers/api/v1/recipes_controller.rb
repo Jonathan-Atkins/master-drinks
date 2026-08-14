@@ -1,17 +1,17 @@
 class Api::V1::RecipesController < ApplicationController
-  before_action :set_drink, only: [:create]
-  before_action :set_recipe, only: [:show, :update, :destroy]
+  before_action :set_drink, only: [ :create ]
+  before_action :set_recipe, only: [ :show, :update, :destroy ]
 
-  before_action :authorize_drink_owner, only: [:create]
-  before_action :authorize_recipe_owner, only: [:update, :destroy]
-  before_action :authorize_recipe_view, only: [:show]
+  before_action :authorize_drink_owner, only: [ :create ]
+  before_action :authorize_recipe_owner, only: [ :update, :destroy ]
+  before_action :authorize_recipe_view, only: [ :show ]
 
   def index
     recipes = if params[:drink_id]
         Recipe.by_drink_id(params[:drink_id]).publicly_visible
-      else
+    else
         Recipe.search(params).publicly_visible
-      end
+    end
 
     render json: RecipeSerializer.format_collection(recipes, current_user),
            status: :ok

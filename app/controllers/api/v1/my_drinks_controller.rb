@@ -5,4 +5,3 @@ class Api::V1::MyDrinksController < ApplicationController
     render json: DrinkSerializer.format_collection(drinks), status: :ok
   end
 end
-

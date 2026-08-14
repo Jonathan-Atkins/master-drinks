@@ -34,7 +34,7 @@ RSpec.describe "My Drinks API", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: user.password,
+                            password: user.password
                           }
   end
 

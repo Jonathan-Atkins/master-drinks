@@ -5,7 +5,7 @@ class User < ApplicationRecord
   has_many :owned_recipes,
          through: :drinks,
          source: :recipes
-         
+
   has_secure_password
 
   validates :name, presence: true

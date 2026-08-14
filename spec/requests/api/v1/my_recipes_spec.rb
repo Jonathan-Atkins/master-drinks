@@ -46,7 +46,7 @@ RSpec.describe "My Recipes API", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: "password123",
+                            password: "password123"
                           }
   end
 

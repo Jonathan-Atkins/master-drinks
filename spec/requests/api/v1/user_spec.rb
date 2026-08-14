@@ -372,7 +372,7 @@ end
         patch "/api/v1/users/#{@user.id}/password", params: {
           current_password: "password123",
           password: "newpassword123",
-          password_confirmation: "differentpassword",
+          password_confirmation: "differentpassword"
         }
 
         expect(response).to have_http_status(:unprocessable_content)

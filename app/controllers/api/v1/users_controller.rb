@@ -41,7 +41,7 @@ class Api::V1::UsersController < ApplicationController
 
   def password
     unless @user.authenticate(params[:current_password])
-      render json: { errors: ["Current password is incorrect"] },
+      render json: { errors: [ "Current password is incorrect" ] },
             status: :unauthorized
       return
     end

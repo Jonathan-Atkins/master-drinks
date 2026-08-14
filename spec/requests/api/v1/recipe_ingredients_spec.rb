@@ -61,7 +61,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: "password123",
+                            password: "password123"
                           }
   end
 
@@ -75,7 +75,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
                params: {
                  ingredient_id: @bitters.id,
                  amount: 2,
-                 measurement_unit: "dashes",
+                 measurement_unit: "dashes"
                }
         }.to change(RecipeIngredient, :count).by(1)
 
@@ -101,7 +101,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
         patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
               params: {
                 amount: 3,
-                measurement_unit: "oz",
+                measurement_unit: "oz"
               }
 
         expect(response).to have_http_status(:ok)
@@ -140,7 +140,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
                params: {
                  ingredient_id: @bitters.id,
                  amount: 2,
-                 measurement_unit: "dashes",
+                 measurement_unit: "dashes"
                }
         }.not_to change(RecipeIngredient, :count)
 
@@ -155,7 +155,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
                params: {
                  ingredient_id: @bitters.id,
                  amount: 2,
-                 measurement_unit: "dashes",
+                 measurement_unit: "dashes"
                }
         }.not_to change(RecipeIngredient, :count)
 
@@ -169,7 +169,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
              params: {
                ingredient_id: @bitters.id,
                amount: 2,
-               measurement_unit: "dashes",
+               measurement_unit: "dashes"
              }
 
         expect(response).to have_http_status(:not_found)
@@ -182,7 +182,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
              params: {
                ingredient_id: 999999,
                amount: 2,
-               measurement_unit: "dashes",
+               measurement_unit: "dashes"
              }
 
         expect(response).to have_http_status(:not_found)
@@ -196,7 +196,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
               params: {
                 ingredient_id: @bitters.id,
                 amount: nil,
-                measurement_unit: nil,
+                measurement_unit: nil
               }
         }.not_to change(RecipeIngredient, :count)
 
@@ -212,7 +212,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
       it "does not allow an unauthenticated user to update a recipe ingredient" do
         patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
               params: {
-                amount: 3,
+                amount: 3
               }
 
         expect(response).to have_http_status(:unauthorized)
@@ -224,7 +224,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
 
         patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
               params: {
-                amount: 3,
+                amount: 3
               }
 
         expect(response).to have_http_status(:forbidden)
@@ -236,7 +236,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
 
         patch "/api/v1/recipe_ingredients/999999",
               params: {
-                amount: 3,
+                amount: 3
               }
 
         expect(response).to have_http_status(:not_found)
@@ -248,7 +248,7 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
         patch "/api/v1/recipe_ingredients/#{@recipe_ingredient.id}",
               params: {
                 amount: nil,
-                measurement_unit: nil,
+                measurement_unit: nil
               }
 
         expect(response).to have_http_status(:unprocessable_content)

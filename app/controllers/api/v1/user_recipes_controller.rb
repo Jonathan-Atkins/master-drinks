@@ -1,7 +1,7 @@
 class Api::V1::UserRecipesController < ApplicationController
-  before_action :require_login, only: [:index, :create, :destroy]
-  before_action :set_recipe, only: [:create]
-  before_action :set_user_recipe, only: [:destroy]
+  before_action :require_login, only: [ :index, :create, :destroy ]
+  before_action :set_recipe, only: [ :create ]
+  before_action :set_user_recipe, only: [ :destroy ]
 
   def index
     recipes = current_user.recipes.publicly_visible

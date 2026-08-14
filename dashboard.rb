@@ -1,5 +1,5 @@
 class API::V1:: Dashboard < ApplicationController
   def index
-     return
+     nil
   end
 end

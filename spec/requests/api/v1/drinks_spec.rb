@@ -8,7 +8,7 @@ RSpec.describe "Drinks App", type: :request do
         username: "AliceInWonderLand",
         email: "alice@email.com",
         password: "12345",
-        password_confirmation: "12345",
+        password_confirmation: "12345"
       }.merge(attributes)
     )
   end
@@ -16,7 +16,7 @@ RSpec.describe "Drinks App", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: "12345",
+                            password: "12345"
                           }
   end
 
@@ -25,7 +25,7 @@ RSpec.describe "Drinks App", type: :request do
       {
         name: "Mojito",
         category: "Rum",
-        alcoholic: true,
+        alcoholic: true
       }.merge(attributes)
     )
   end
@@ -98,7 +98,7 @@ RSpec.describe "Drinks App", type: :request do
           expect(drinks.map { |drink| drink["name"] }).to eq([
             "Daiquiri",
             "Margarita",
-            "Old Fashioned",
+            "Old Fashioned"
           ])
         end
 
@@ -111,7 +111,7 @@ RSpec.describe "Drinks App", type: :request do
           expect(drinks.map { |drink| drink["category"] }).to eq([
             "Rum",
             "Tequila",
-            "Whiskey",
+            "Whiskey"
           ])
         end
 
@@ -128,7 +128,7 @@ RSpec.describe "Drinks App", type: :request do
           expect(drinks.map { |drink| drink["name"] }).to eq([
             "Old Fashioned",
             "Margarita",
-            "Daiquiri",
+            "Daiquiri"
           ])
         end
 
@@ -145,7 +145,7 @@ RSpec.describe "Drinks App", type: :request do
           expect(drinks.map { |drink| drink["name"] }).to eq([
             "Old Fashioned",
             "Margarita",
-            "Daiquiri",
+            "Daiquiri"
           ])
         end
       end
@@ -202,7 +202,7 @@ RSpec.describe "Drinks App", type: :request do
         post "/api/v1/drinks", params: {
                                  name: "Margarita",
                                  category: "Tequila",
-                                 alcoholic: true,
+                                 alcoholic: true
                                }
 
         drink = JSON.parse(response.body)
@@ -230,7 +230,7 @@ RSpec.describe "Drinks App", type: :request do
 
         patch "/api/v1/drinks/#{mojito.id}", params: {
                                                name: "Mojito Rio",
-                                               category: "White_Rum",
+                                               category: "White_Rum"
                                              }
 
         drink = JSON.parse(response.body)
@@ -313,7 +313,7 @@ RSpec.describe "Drinks App", type: :request do
           post "/api/v1/drinks", params: {
                                   name: "Margarita",
                                   category: "Tequila",
-                                  alcoholic: true,
+                                  alcoholic: true
                                 }
 
           result = JSON.parse(response.body)
@@ -327,7 +327,7 @@ RSpec.describe "Drinks App", type: :request do
           drink = create_drink(user)
 
           patch "/api/v1/drinks/#{drink.id}", params: {
-                                                name: "Updated Drink",
+                                                name: "Updated Drink"
                                               }
 
           result = JSON.parse(response.body)
@@ -368,7 +368,7 @@ RSpec.describe "Drinks App", type: :request do
 
         it "does not allow a user to update another user's drink" do
           patch "/api/v1/drinks/#{@drink.id}", params: {
-                                                name: "Changed Drink",
+                                                name: "Changed Drink"
                                               }
 
           result = JSON.parse(response.body)
@@ -430,21 +430,21 @@ RSpec.describe "Drinks App", type: :request do
             username: "JonInWonderLand",
             email: "Jon@email.com",
             password: "12345",
-            password_confirmation: "12345",
+            password_confirmation: "12345"
           }
         )
-        
-        
+
+
         user2 = User.create!(
           {
             name: "Alice",
             username: "AliceInWonderLand",
             email: "alice@email.com",
             password: "12345",
-            password_confirmation: "12345",
+            password_confirmation: "12345"
           }
         )
-                
+
         log_in(user2)
 
         private_drink = user1.drinks.create!(
@@ -455,7 +455,7 @@ RSpec.describe "Drinks App", type: :request do
                     publicly_visible: false
                   }
                 )
-        
+
         get "/api/v1/drinks/#{private_drink.id}"
 
         error = JSON.parse(response.body)
@@ -478,7 +478,7 @@ RSpec.describe "Drinks App", type: :request do
         post "/api/v1/drinks", params: {
                                  name: nil,
                                  category: "Tequila",
-                                 alcoholic: true,
+                                 alcoholic: true
                                }
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -488,7 +488,7 @@ RSpec.describe "Drinks App", type: :request do
         post "/api/v1/drinks", params: {
                                  name: nil,
                                  category: "Tequila",
-                                 alcoholic: true,
+                                 alcoholic: true
                                }
 
         error = JSON.parse(response.body)
@@ -501,7 +501,7 @@ RSpec.describe "Drinks App", type: :request do
         post "/api/v1/drinks", params: {
                                  name: "Mojito",
                                  category: "Tequila",
-                                 alcoholic: true,
+                                 alcoholic: true
                                }
 
         error = JSON.parse(response.body)
@@ -514,7 +514,7 @@ RSpec.describe "Drinks App", type: :request do
         post "/api/v1/drinks", params: {
                                  name: "Milkshake",
                                  category: "Milkshake",
-                                 alcoholic: true,
+                                 alcoholic: true
                                }
 
         error = JSON.parse(response.body)
@@ -543,7 +543,7 @@ RSpec.describe "Drinks App", type: :request do
       it "returns a 404 if the drink does not exist" do
         patch "/api/v1/drinks/999", params: {
                                       name: "Mojito Rio",
-                                      category: "White_Rum",
+                                      category: "White_Rum"
                                     }
 
         error = JSON.parse(response.body)
@@ -557,7 +557,7 @@ RSpec.describe "Drinks App", type: :request do
       it "returns a 422 if the update has invalid attributes" do
         patch "/api/v1/drinks/#{@mojito.id}", params: {
                                                 name: nil,
-                                                category: "White_Rum",
+                                                category: "White_Rum"
                                               }
 
         error = JSON.parse(response.body)
@@ -569,7 +569,7 @@ RSpec.describe "Drinks App", type: :request do
       it "returns an error if the updated name is already taken" do
         patch "/api/v1/drinks/#{@mojito.id}", params: {
                                                 name: "Old Fashioned",
-                                                category: "Rum",
+                                                category: "Rum"
                                               }
 
         error = JSON.parse(response.body)
@@ -581,7 +581,7 @@ RSpec.describe "Drinks App", type: :request do
       it "returns an error if the updated category is invalid" do
         patch "/api/v1/drinks/#{@mojito.id}", params: {
                                                 name: "Mojito Rio",
-                                                category: "milkshake",
+                                                category: "milkshake"
                                               }
 
         error = JSON.parse(response.body)

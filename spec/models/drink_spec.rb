@@ -238,7 +238,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Daiquiri",
           "Margarita",
-          "Old Fashioned",
+          "Old Fashioned"
         ])
       end
 
@@ -248,7 +248,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:category)).to eq([
           "Rum",
           "Tequila",
-          "Whiskey",
+          "Whiskey"
         ])
       end
 
@@ -258,7 +258,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Old Fashioned",
           "Margarita",
-          "Daiquiri",
+          "Daiquiri"
         ])
       end
 
@@ -268,7 +268,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Old Fashioned",
           "Margarita",
-          "Daiquiri",
+          "Daiquiri"
         ])
       end
     end

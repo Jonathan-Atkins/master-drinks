@@ -42,7 +42,7 @@ class Drink < ApplicationRecord
     Raki: "Raki",
     Arak: "Arak",
     Absinthe: "Absinthe",
-    Non_Alcoholic: "Non_Alcoholic",
+    Non_Alcoholic: "Non_Alcoholic"
   }, validate: true
 
   before_validation :normalize_name
@@ -53,7 +53,7 @@ class Drink < ApplicationRecord
             uniqueness: { case_sensitive: false }
 
   validates :category, presence: true
-  validates :alcoholic, inclusion: { in: [true, false] }
+  validates :alcoholic, inclusion: { in: [ true, false ] }
 
   def self.sorted_by(sort_param)
     case sort_param
