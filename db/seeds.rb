@@ -273,10 +273,14 @@ ingredient_names = ingredient_groups
   .uniq
   .sort
 
-Ingredient.transaction do
-  ingredient_names.each do |ingredient_name|
-    Ingredient.find_or_create_by!(name: ingredient_name)
-  end
-end
+  Ingredient.transaction do
+    if Rails.env.development?
+      Ingredient.transaction do
+        ingredient_names.each do |ingredient_name|
+          Ingredient.find_or_create_by!(name: ingredient_name)
+        end
+      end
 
-puts "Seeded #{ingredient_names.length} cocktail ingredients."
+      puts "Seeded #{ingredient_names.length} cocktail ingredients."
+    end
+  end
