@@ -13,7 +13,8 @@ class Api::V1::IngredientsController < ApplicationController
       )
     end
 
-    render json: ingredients, status: :ok
+    render json: IngredientSerializer.format_collection(ingredients),
+    status: :ok
   end
 
   def show

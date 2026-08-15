@@ -12,6 +12,14 @@ class ApplicationController < ActionController::API
 
     render json: { errors: [ "You must be logged in" ] }, status: :unauthorized
   end
+
+  def require_admin
+    return if current_user&.admin?
+
+    render json: { errors: [ "Admin access required" ] },
+          status: :forbidden
+  end
+
   private
 
   def record_not_found(error)

@@ -27,6 +27,12 @@ Rails.application.routes.draw do
       get "/session", to: "sessions#show"
       get "/my_recipes", to: "my_recipes#index"
       get "/my_drinks", to: "my_drinks#index"
+
+      namespace :admin do
+        resources :drinks
+        resources :recipes
+        resources :ingredients
+      end
     end
   end
 end

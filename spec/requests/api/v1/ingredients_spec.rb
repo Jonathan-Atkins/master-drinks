@@ -56,6 +56,37 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         result = JSON.parse(response.body)
         expect(result.first["name"]).to include("Bitters")
       end
+
+      it "returns each ingredient with its recipe count" do
+        test_ingredient = Ingredient.create!(name: "FlipFlop")
+        log_in(@user)
+
+        recipe = Recipe.create!(
+          name: "Classic Old Fashioned",
+          instructions: "Stir ingredients",
+          drink: @drink
+        )
+
+        RecipeIngredient.create!(
+          recipe: recipe,
+          ingredient: test_ingredient,
+          amount: 2,
+          measurement_unit: "oz"
+        )
+
+        get "/api/v1/ingredients"
+
+        expect(response).to have_http_status(:ok)
+
+        parsed_response = JSON.parse(response.body)
+
+        ingredient_response = parsed_response.find do |item|
+          item["id"] == test_ingredient.id
+        end
+
+        expect(ingredient_response["name"]).to eq("FlipFlop")
+        expect(ingredient_response["recipe_count"]).to eq(1)
+      end
     end
 
     describe "GET /api/v1/ingredients/:id" do

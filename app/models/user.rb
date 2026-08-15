@@ -1,4 +1,9 @@
 class User < ApplicationRecord
+  enum :role, {
+    user: "user",
+    admin: "admin"
+  }
+
   has_many :user_recipes
   has_many :recipes, through: :user_recipes
   has_many :drinks, dependent: :destroy
