@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      # root "dashboard#index"
+      resources :categories, only: [ :index ]
 
       resources :drinks do
         resources :recipes
