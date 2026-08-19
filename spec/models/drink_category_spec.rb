@@ -19,7 +19,7 @@ RSpec.describe DrinkCategory, type: :model do
       alcoholic: true
     )
 
-    @drink.categories = [@category]
+    @drink.categories = [ @category ]
     @drink.save!
   end
 

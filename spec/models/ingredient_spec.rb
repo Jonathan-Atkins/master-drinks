@@ -13,7 +13,7 @@ RSpec.describe Ingredient, type: :model do
 
   describe "relationships" do
     it "has many recipe_ingredients" do
-      drink = create_drink(@user, { name: "Whiskey Sour", alcoholic: true }, category_names: ["Whiskey"])
+      drink = create_drink(@user, { name: "Whiskey Sour", alcoholic: true }, category_names: [ "Whiskey" ])
 
       recipe = Recipe.create!(
         drink: drink,
@@ -44,9 +44,9 @@ RSpec.describe Ingredient, type: :model do
     end
 
     it "has many recipes through recipe_ingredients" do
-      whiskey_sour = create_drink(@user, { name: "Whiskey Sour", alcoholic: true }, category_names: ["Whiskey"])
+      whiskey_sour = create_drink(@user, { name: "Whiskey Sour", alcoholic: true }, category_names: [ "Whiskey" ])
 
-      bee_knees = create_drink(@user, { name: "Bee's Knees", alcoholic: true }, category_names: ["Gin"])
+      bee_knees = create_drink(@user, { name: "Bee's Knees", alcoholic: true }, category_names: [ "Gin" ])
 
       recipe1 = Recipe.create!(
         drink: whiskey_sour,

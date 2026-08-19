@@ -285,7 +285,7 @@ ingredient_names = ingredient_groups
     end
   end
 
-  # =========================
+# =========================
 # Categories
 # =========================
 

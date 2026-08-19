@@ -3,13 +3,13 @@ module DrinkHelpers
     Category.find_or_create_by!(name: name)
   end
 
-  def create_drink(user, attributes = {}, category_names: ["Rum"])
+  def create_drink(user, attributes = {}, category_names: [ "Rum" ])
     categories = category_names.map { |name| create_category(name) }
 
     drink = user.drinks.new(
       {
         name: "Mojito",
-        alcoholic: true,
+        alcoholic: true
       }.merge(attributes)
     )
 

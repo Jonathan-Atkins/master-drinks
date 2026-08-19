@@ -18,7 +18,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
       password_confirmation: "password123",
     )
 
-    @drink = create_drink(@other_user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
+    @drink = create_drink(@other_user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
 
     @recipe = Recipe.create!(
       drink: @drink,
@@ -41,7 +41,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: "password123",
+                            password: "password123"
                           }
   end
 
@@ -69,7 +69,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         expect {
           post "/api/v1/user_recipes", params: {
-                                         recipe_id: @recipe.id,
+                                         recipe_id: @recipe.id
                                        }
         }.to change(UserRecipe, :count).by(1)
 
@@ -133,7 +133,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         expect {
           post "/api/v1/user_recipes", params: {
-                                         recipe_id: @recipe.id,
+                                         recipe_id: @recipe.id
                                        }
         }.not_to change(UserRecipe, :count)
 
@@ -145,7 +145,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
       it "does not allow an unauthenticated user to save a recipe" do
         expect {
           post "/api/v1/user_recipes", params: {
-                                         recipe_id: @recipe.id,
+                                         recipe_id: @recipe.id
                                        }
         }.not_to change(UserRecipe, :count)
 
@@ -162,7 +162,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
         expect {
           post "/api/v1/user_recipes", params: {
-                                         recipe_id: @recipe.id,
+                                         recipe_id: @recipe.id
                                        }
         }.not_to change(UserRecipe, :count)
 
@@ -177,7 +177,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
         log_in(@user)
 
         post "/api/v1/user_recipes", params: {
-                                       recipe_id: 999999,
+                                       recipe_id: 999999
                                      }
 
         expect(response).to have_http_status(:not_found)

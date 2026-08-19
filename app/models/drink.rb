@@ -13,7 +13,7 @@ class Drink < ApplicationRecord
             presence: true,
             uniqueness: { case_sensitive: false }
 
-  validates :alcoholic, inclusion: { in: [true, false] }
+  validates :alcoholic, inclusion: { in: [ true, false ] }
 
   validate :must_have_at_least_one_category
 

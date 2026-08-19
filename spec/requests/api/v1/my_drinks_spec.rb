@@ -18,15 +18,15 @@ RSpec.describe "My Drinks API", type: :request do
       password_confirmation: "password123",
     )
 
-    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
+    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
 
-    @other_drink = create_drink(@other_user, { name: "Margarita", alcoholic: true }, category_names: ["Tequila"])
+    @other_drink = create_drink(@other_user, { name: "Margarita", alcoholic: true }, category_names: [ "Tequila" ])
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: user.password,
+                            password: user.password
                           }
   end
 

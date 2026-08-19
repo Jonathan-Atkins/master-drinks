@@ -16,7 +16,7 @@ class RecipeSerializer
         username: recipe.drink.user.username,
         name: recipe.drink.name,
         categories: recipe.drink.categories.pluck(:slug),
-        alcoholic: recipe.drink.alcoholic,
+        alcoholic: recipe.drink.alcoholic
       },
 
       ingredients: recipe.recipe_ingredients.map do |recipe_ingredient|
@@ -25,11 +25,11 @@ class RecipeSerializer
           ingredient_id: recipe_ingredient.ingredient.id,
           name: recipe_ingredient.ingredient.name,
           amount: recipe_ingredient.amount,
-          measurement_unit: recipe_ingredient.measurement_unit,
+          measurement_unit: recipe_ingredient.measurement_unit
         }
       end,
 
-      publicly_visible: recipe.publicly_visible,
+      publicly_visible: recipe.publicly_visible
     }
   end
 

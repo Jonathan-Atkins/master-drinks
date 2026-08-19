@@ -10,7 +10,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       password_confirmation: "password123",
     )
 
-    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
+    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
 
     @ingredient = Ingredient.create!(
       name: "Bourbon",
@@ -20,7 +20,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: "password123",
+                            password: "password123"
                           }
   end
 
@@ -103,7 +103,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         log_in(@user)
 
         post "/api/v1/ingredients", params: {
-                                      name: "Simple Syrup",
+                                      name: "Simple Syrup"
                                     }
 
         expect(response).to have_http_status(:created)
@@ -120,7 +120,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         log_in(@user)
 
         patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-                                                         name: "Rye Whiskey",
+                                                         name: "Rye Whiskey"
                                                        }
 
         expect(response).to have_http_status(:ok)
@@ -157,7 +157,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
     describe "POST /api/v1/ingredients" do
       it "does not allow an unauthenticated user to create an ingredient" do
         post "/api/v1/ingredients", params: {
-                                      name: "Simple Syrup",
+                                      name: "Simple Syrup"
                                     }
 
         expect(response).to have_http_status(:unauthorized)
@@ -168,7 +168,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         log_in(@user)
 
         post "/api/v1/ingredients", params: {
-                                      name: nil,
+                                      name: nil
                                     }
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -197,7 +197,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
     describe "PATCH /api/v1/ingredients/:id" do
       it "does not allow an unauthenticated user to update an ingredient" do
         patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-                                                         name: "Rye Whiskey",
+                                                         name: "Rye Whiskey"
                                                        }
 
         expect(response).to have_http_status(:unauthorized)
@@ -208,7 +208,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         log_in(@user)
 
         patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-                                                         name: nil,
+                                                         name: nil
                                                        }
 
         expect(response).to have_http_status(:unprocessable_content)

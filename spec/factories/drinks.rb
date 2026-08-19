@@ -4,7 +4,7 @@ FactoryBot.define do
     alcoholic { false }
 
     transient do
-      category_names { ["Rum"] }
+      category_names { [ "Rum" ] }
     end
 
     after(:build) do |drink, evaluator|

@@ -8,7 +8,7 @@ class CreateDrinkCategories < ActiveRecord::Migration[8.1]
     end
 
     add_index :drink_categories,
-              [:drink_id, :category_id],
+              [ :drink_id, :category_id ],
               unique: true
   end
 end
