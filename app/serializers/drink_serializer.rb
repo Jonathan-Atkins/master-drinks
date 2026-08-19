@@ -3,10 +3,15 @@ class DrinkSerializer
     {
       id: drink.id,
       name: drink.name,
-      category: drink.category,
+      categories: drink.categories.map do |category|
+        {
+          name: category.name,
+          slug: category.slug
+        }
+      end,
       alcoholic: drink.alcoholic,
       publicly_visible: drink.publicly_visible,
-      recipe_count: drink.recipes.count
+      recipe_count: drink.recipes.size
     }
   end
 

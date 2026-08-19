@@ -18,23 +18,15 @@ RSpec.describe "My Drinks API", type: :request do
       password_confirmation: "password123",
     )
 
-    @drink = @user.drinks.create!(
-      name: "Old Fashioned",
-      category: "Whiskey",
-      alcoholic: true,
-    )
+    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
-    @other_drink = @other_user.drinks.create!(
-      name: "Margarita",
-      category: "Tequila",
-      alcoholic: true,
-    )
+    @other_drink = create_drink(@other_user, { name: "Margarita", alcoholic: true }, category_names: ["Tequila"])
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: user.password
+                            password: user.password,
                           }
   end
 
@@ -52,7 +44,12 @@ RSpec.describe "My Drinks API", type: :request do
         expect(result.count).to eq(1)
         expect(result.first["id"]).to eq(@drink.id)
         expect(result.first["name"]).to eq("Old Fashioned")
-        expect(result.first["category"]).to eq("Whiskey")
+        expect(result.first["categories"]).to eq([
+          {
+            "name" => "Whiskey",
+            "slug" => "whiskey"
+          }
+        ])
         expect(result.first["alcoholic"]).to be(true)
       end
 

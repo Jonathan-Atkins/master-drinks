@@ -18,11 +18,7 @@ RSpec.describe "My Recipes API", type: :request do
       password_confirmation: "password123",
     )
 
-    @drink = @user.drinks.create!(
-      name: "Old Fashioned",
-      category: "Whiskey",
-      alcoholic: true,
-    )
+    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
     @recipe = Recipe.create!(
       drink: @drink,
@@ -30,11 +26,7 @@ RSpec.describe "My Recipes API", type: :request do
       instructions: "Stir with ice and strain over a large cube.",
     )
 
-    @other_drink = @other_user.drinks.create!(
-      name: "Margarita",
-      category: "Tequila",
-      alcoholic: true,
-    )
+    @other_drink = create_drink(@other_user, { name: "Margarita", alcoholic: true }, category_names: ["Tequila"])
 
     @other_recipe = Recipe.create!(
       drink: @other_drink,
@@ -46,7 +38,7 @@ RSpec.describe "My Recipes API", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                             email: user.email,
-                            password: "password123"
+                            password: "password123",
                           }
   end
 

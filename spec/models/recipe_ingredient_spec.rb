@@ -13,11 +13,7 @@ RSpec.describe RecipeIngredient, type: :model do
 
   describe "relationships" do
     it "connects a recipe to an ingredient" do
-      drink = @user.drinks.create!(
-        name: "Old Fashioned",
-        category: "Whiskey",
-        alcoholic: true,
-      )
+      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
       recipe = Recipe.create!(
         drink: drink,
@@ -43,11 +39,7 @@ RSpec.describe RecipeIngredient, type: :model do
 
   describe "attributes" do
     it "stores the amount and measurement unit" do
-      drink = @user.drinks.create!(
-        name: "Old Fashioned",
-        category: "Whiskey",
-        alcoholic: true,
-      )
+      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
       recipe = Recipe.create!(
         drink: drink,
@@ -73,11 +65,7 @@ RSpec.describe RecipeIngredient, type: :model do
 
   describe "validations" do
     before(:each) do
-      drink = @user.drinks.create!(
-        name: "Old Fashioned",
-        category: "Whiskey",
-        alcoholic: true,
-      )
+      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
       @recipe = Recipe.create!(
         drink: drink,

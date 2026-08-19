@@ -14,21 +14,13 @@ RSpec.describe Drink, type: :model do
   describe "validations" do
     describe "happy path" do
       it "is valid with valid attributes" do
-        drink = @user.drinks.new(
-          name: "Mojito",
-          category: "Rum",
-          alcoholic: true,
-        )
+        drink = create_drink(@user, { name: "Mojito", alcoholic: true }, category_names: ["Rum"])
 
         expect(drink).to be_valid
       end
 
       it "is valid when alcoholic is false" do
-        drink = @user.drinks.new(
-          name: "Virgin Mojito",
-          category: "Non_Alcoholic",
-          alcoholic: false,
-        )
+        drink = create_drink(@user, { name: "Virgin Mojito", alcoholic: false }, category_names: ["Non Alcoholic"])
 
         expect(drink).to be_valid
       end
@@ -38,43 +30,35 @@ RSpec.describe Drink, type: :model do
       it "is invalid without a name" do
         drink = @user.drinks.new(
           name: nil,
-          category: "Rum",
           alcoholic: true,
         )
+        drink.categories = [create_category("Rum")]
 
         expect(drink).not_to be_valid
         expect(drink.errors[:name]).to include("can't be blank")
       end
 
       it "is invalid with an exact duplicate name" do
-        @user.drinks.create!(
-          name: "Mojito",
-          category: "Rum",
-          alcoholic: true,
-        )
+        create_drink(@user, { name: "Mojito", alcoholic: true }, category_names: ["Rum"])
 
         drink = @user.drinks.new(
           name: "Mojito",
-          category: "Rum",
           alcoholic: true,
         )
+        drink.categories = [create_category("Rum")]
 
         expect(drink).not_to be_valid
         expect(drink.errors[:name]).to include("has already been taken")
       end
 
       it "is invalid with a case-insensitive duplicate name" do
-        @user.drinks.create!(
-          name: "Old Fashioned",
-          category: "Whiskey",
-          alcoholic: true,
-        )
+        create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
         drink = @user.drinks.new(
           name: "old fashioned",
-          category: "Bourbon",
           alcoholic: true,
         )
+        drink.categories = [create_category("Bourbon")]
 
         expect(drink).not_to be_valid
         expect(drink.errors[:name]).to include("has already been taken")
@@ -89,52 +73,34 @@ RSpec.describe Drink, type: :model do
           password_confirmation: "12345",
         )
 
-        @user.drinks.create!(
-          name: "Old Fashioned",
-          category: "Whiskey",
-          alcoholic: true,
-        )
+        create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
         duplicate = other_user.drinks.new(
           name: "OLD FASHIONED",
-          category: "Bourbon",
           alcoholic: true,
         )
+        duplicate.categories = [create_category("Bourbon")]
 
         expect(duplicate).not_to be_valid
         expect(duplicate.errors[:name]).to include("has already been taken")
       end
 
-      it "is invalid without a category" do
+      it "is invalid without categories" do
         drink = @user.drinks.new(
           name: "Mojito",
-          category: nil,
           alcoholic: true,
         )
 
         expect(drink).not_to be_valid
-        expect(drink.errors[:category]).to include("can't be blank")
-      end
-
-      it "is invalid with an unsupported category" do
-        drink = @user.drinks.new(
-          name: "Milkshake",
-          category: "Milkshake",
-          alcoholic: true,
-        )
-
-        expect(drink).not_to be_valid
-        expect(drink.errors[:category]).to include(
-          "is not included in the list"
-        )
+        expect(drink.errors[:categories]).to include("must include at least one category")
       end
 
       it "is invalid without alcoholic status" do
         drink = @user.drinks.new(
           name: "Mojito",
-          category: "Rum",
           alcoholic: nil,
         )
+        drink.categories = [create_category("Rum")]
 
         expect(drink).not_to be_valid
         expect(drink.errors[:alcoholic]).to include(
@@ -145,9 +111,9 @@ RSpec.describe Drink, type: :model do
       it "is invalid without a user" do
         drink = Drink.new(
           name: "Mojito",
-          category: "Rum",
           alcoholic: true,
         )
+        drink.categories = [create_category("Rum")]
 
         expect(drink).not_to be_valid
         expect(drink.errors[:user]).to include("must exist")
@@ -155,65 +121,13 @@ RSpec.describe Drink, type: :model do
     end
   end
 
-  describe "normalization" do
-    describe "happy path" do
-      it "normalizes category before validation" do
-        drink = @user.drinks.new(
-          name: "Mojito",
-          category: "rum",
-          alcoholic: true,
-        )
-
-        drink.valid?
-
-        expect(drink.category).to eq("Rum")
-      end
-
-      it "removes surrounding whitespace from the name" do
-        drink = @user.drinks.new(
-          name: "  Old Fashioned  ",
-          category: "Whiskey",
-          alcoholic: true,
-        )
-
-        drink.valid?
-
-        expect(drink.name).to eq("Old Fashioned")
-      end
-
-      it "removes repeated whitespace from the name" do
-        drink = @user.drinks.new(
-          name: "Old    Fashioned",
-          category: "Whiskey",
-          alcoholic: true,
-        )
-
-        drink.valid?
-
-        expect(drink.name).to eq("Old Fashioned")
-      end
-    end
-  end
-
   describe ".sorted_by" do
     before(:each) do
-      @daiquiri = @user.drinks.create!(
-        name: "Daiquiri",
-        category: "Rum",
-        alcoholic: true,
-      )
+      @daiquiri = create_drink(@user, { name: "Daiquiri", alcoholic: true }, category_names: ["Rum"])
 
-      @margarita = @user.drinks.create!(
-        name: "Margarita",
-        category: "Tequila",
-        alcoholic: true,
-      )
+      @margarita = create_drink(@user, { name: "Margarita", alcoholic: true }, category_names: ["Tequila"])
 
-      @old_fashioned = @user.drinks.create!(
-        name: "Old Fashioned",
-        category: "Whiskey",
-        alcoholic: true,
-      )
+      @old_fashioned = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
       @daiquiri.update_columns(
         created_at: 3.days.ago,
@@ -238,17 +152,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Daiquiri",
           "Margarita",
-          "Old Fashioned"
-        ])
-      end
-
-      it "sorts by category alphabetically" do
-        drinks = Drink.sorted_by("category")
-
-        expect(drinks.map(&:category)).to eq([
-          "Rum",
-          "Tequila",
-          "Whiskey"
+          "Old Fashioned",
         ])
       end
 
@@ -258,7 +162,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Old Fashioned",
           "Margarita",
-          "Daiquiri"
+          "Daiquiri",
         ])
       end
 
@@ -268,7 +172,7 @@ RSpec.describe Drink, type: :model do
         expect(drinks.map(&:name)).to eq([
           "Old Fashioned",
           "Margarita",
-          "Daiquiri"
+          "Daiquiri",
         ])
       end
     end
@@ -289,21 +193,13 @@ RSpec.describe Drink, type: :model do
   describe "relationships" do
     describe "happy path" do
       it "belongs to a user" do
-        drink = @user.drinks.create!(
-          name: "Mojito",
-          category: "Rum",
-          alcoholic: true,
-        )
+        drink = create_drink(@user, { name: "Mojito", alcoholic: true }, category_names: ["Rum"])
 
         expect(drink.user).to eq(@user)
       end
 
       it "has many recipes" do
-        drink = @user.drinks.create!(
-          name: "Old Fashioned",
-          category: "Whiskey",
-          alcoholic: true,
-        )
+        drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
         recipe1 = Recipe.create!(
           drink: drink,
@@ -321,11 +217,7 @@ RSpec.describe Drink, type: :model do
       end
 
       it "destroys its recipes when the drink is destroyed" do
-        drink = @user.drinks.create!(
-          name: "Old Fashioned",
-          category: "Whiskey",
-          alcoholic: true,
-        )
+        drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
         recipe = Recipe.create!(
           drink: drink,
@@ -343,29 +235,15 @@ RSpec.describe Drink, type: :model do
   describe "visibility" do
     describe "happy path" do
       it "is publicly visible by default" do
-        drink = @user.drinks.create!(
-          name: "Old Fashioned",
-          category: "Whiskey",
-          alcoholic: true,
-        )
+        drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: ["Whiskey"])
 
         expect(drink.publicly_visible).to be(true)
       end
 
       it "returns only publicly visible drinks" do
-        public_drink = @user.drinks.create!(
-          name: "Old Fashioned",
-          category: "Whiskey",
-          alcoholic: true,
-          publicly_visible: true,
-        )
+        public_drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true, publicly_visible: true }, category_names: ["Whiskey"])
 
-        private_drink = @user.drinks.create!(
-          name: "Private Margarita",
-          category: "Tequila",
-          alcoholic: true,
-          publicly_visible: false,
-        )
+        private_drink = create_drink(@user, { name: "Private Margarita", alcoholic: true, publicly_visible: false }, category_names: ["Tequila"])
 
         result = Drink.publicly_visible
 
@@ -373,5 +251,22 @@ RSpec.describe Drink, type: :model do
         expect(result).not_to include(private_drink)
       end
     end
+  end
+
+  it "has many drink_categories" do
+    association = described_class.reflect_on_association(:drink_categories)
+    expect(association.macro).to eq(:has_many)
+  end
+
+  it "has many categories through drink_categories" do
+    association = described_class.reflect_on_association(:categories)
+    expect(association.macro).to eq(:has_many)
+    expect(association.options[:through]).to eq(:drink_categories)
+  end
+
+  it "supports multiple categories" do
+    drink = create_drink(@user, {}, category_names: ["Rum", "Gin"])
+
+    expect(drink.categories.pluck(:name)).to contain_exactly("Rum", "Gin")
   end
 end

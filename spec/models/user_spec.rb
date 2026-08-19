@@ -7,7 +7,7 @@ RSpec.describe User, type: :model do
       username: "JohnDoe",
       email: "johndoe@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     }
 
     @user = User.create!(
@@ -104,11 +104,7 @@ RSpec.describe User, type: :model do
     it "can have many drinks" do
       user = User.create!(@valid_attributes)
 
-      margarita = user.drinks.create!(
-        name: "Margarita",
-        category: "Tequila",
-        alcoholic: true,
-      )
+      margarita = create_drink(user, { name: "Margarita", alcoholic: true }, category_names: ["Tequila"])
 
       expect(user.drinks).to include(margarita)
     end
@@ -116,11 +112,7 @@ RSpec.describe User, type: :model do
     it "can have many recipes through user_recipes" do
       user = User.create!(@valid_attributes)
 
-      margarita = user.drinks.create!(
-        name: "Margarita",
-        category: "Tequila",
-        alcoholic: true,
-      )
+      margarita = create_drink(user, { name: "Margarita", alcoholic: true }, category_names: ["Tequila"])
 
       classic_recipe = Recipe.create!(
         drink: margarita,

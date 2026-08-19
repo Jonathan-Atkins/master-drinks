@@ -284,3 +284,94 @@ ingredient_names = ingredient_groups
       puts "Seeded #{ingredient_names.length} cocktail ingredients."
     end
   end
+
+  # =========================
+# Categories
+# =========================
+
+categories = [
+  # Vodka
+  "Vodka",
+
+  # Gin
+  "Gin",
+  "Genever",
+
+  # Rum
+  "Rum",
+  "White Rum",
+  "Dark Rum",
+  "Aged Rum",
+  "Spiced Rum",
+  "Overproof Rum",
+  "Rhum Agricole",
+  "Cachaca",
+
+  # Agave
+  "Tequila",
+  "Mezcal",
+
+  # Whiskey / Whisky
+  "Whiskey",
+  "Bourbon",
+  "Rye",
+  "Scotch",
+  "Irish Whiskey",
+  "Japanese Whisky",
+  "Canadian Whisky",
+  "Tennessee Whiskey",
+
+  # Brandy
+  "Brandy",
+  "Cognac",
+  "Armagnac",
+  "Calvados",
+  "Pisco",
+  "Grappa",
+
+  # Asian Spirits
+  "Soju",
+  "Shochu",
+  "Sake",
+  "Baijiu",
+
+  # Liqueurs / Aperitifs
+  "Liqueur",
+  "Amaro",
+  "Aperitif",
+  "Vermouth",
+  "Absinthe",
+
+  # Wine
+  "Wine",
+  "Red Wine",
+  "White Wine",
+  "Rose Wine",
+  "Fortified Wine",
+  "Port",
+  "Sherry",
+  "Madeira",
+  "Marsala",
+
+  # Sparkling Wine
+  "Champagne",
+  "Sparkling Wine",
+  "Prosecco",
+
+  # Beer / Cider
+  "Beer",
+  "Cider",
+
+  # Regional Spirits
+  "Aquavit",
+  "Ouzo",
+  "Raki",
+  "Arak",
+
+  # Non-Alcoholic
+  "Non Alcoholic"
+]
+
+categories.each do |name|
+  Category.find_or_create_by!(name: name)
+end

@@ -10,19 +10,14 @@ class ApplicationController < ActionController::API
   def require_login
     return if current_user
 
-    render json: { errors: [ "You must be logged in" ] }, status: :unauthorized
-  end
-
-  def require_admin
-    return if current_user&.admin?
-
-    render json: { errors: [ "Admin access required" ] },
-          status: :forbidden
+    render json: { errors: [ "You must be logged in" ] },
+           status: :unauthorized
   end
 
   private
 
   def record_not_found(error)
-    render json: { errors: [ error.message ] }, status: :not_found
+    render json: { errors: [ error.message ] },
+           status: :not_found
   end
 end

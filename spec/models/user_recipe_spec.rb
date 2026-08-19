@@ -10,11 +10,7 @@ RSpec.describe UserRecipe, type: :model do
       password_confirmation: "password",
     )
 
-    @drink = @user.drinks.create!(
-      name: "Margarita",
-      category: "Tequila",
-      alcoholic: true,
-    )
+    @drink = create_drink(@user, { name: "Margarita", alcoholic: true }, category_names: ["Tequila"])
 
     @recipe = Recipe.create!(
       drink: @drink,

@@ -10,9 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_15_001509) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_174929) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "categories", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name", unique: true
+    t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "drink_categories", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "drink_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_drink_categories_on_category_id"
+    t.index ["drink_id", "category_id"], name: "index_drink_categories_on_drink_id_and_category_id", unique: true
+    t.index ["drink_id"], name: "index_drink_categories_on_drink_id"
+  end
 
   create_table "drinks", force: :cascade do |t|
     t.boolean "alcoholic", default: true, null: false
@@ -86,6 +105,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_15_001509) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "drink_categories", "categories"
+  add_foreign_key "drink_categories", "drinks"
   add_foreign_key "drinks", "users"
   add_foreign_key "recipe_ingredients", "ingredients"
   add_foreign_key "recipe_ingredients", "recipes"
