@@ -10,9 +10,7 @@ RSpec.describe DrinkCategory, type: :model do
       password_confirmation: "12345"
     )
 
-    @category = Category.create!(
-      name: "Rum"
-    )
+    @category = create_category("Rum")
 
     @drink = @user.drinks.new(
       name: "Mojito",

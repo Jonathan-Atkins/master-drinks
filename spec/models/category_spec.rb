@@ -4,15 +4,15 @@ RSpec.describe Category, type: :model do
   describe "validations" do
     describe "happy path" do
       it "is valid with a name" do
-        category = Category.new(name: "Whiskey")
+        category = Category.new(name: "Spec Spirit")
 
         expect(category).to be_valid
       end
 
       it "automatically generates a slug from the name" do
-        category = Category.create!(name: "Irish Whiskey")
+        category = Category.create!(name: "Spec Irish Spirit")
 
-        expect(category.slug).to eq("irish-whiskey")
+        expect(category.slug).to eq("spec-irish-spirit")
       end
     end
 
@@ -25,18 +25,18 @@ RSpec.describe Category, type: :model do
       end
 
       it "does not allow duplicate names" do
-        Category.create!(name: "Vodka")
+        Category.create!(name: "Spec Duplicate Spirit")
 
-        duplicate = Category.new(name: "Vodka")
+        duplicate = Category.new(name: "Spec Duplicate Spirit")
 
         expect(duplicate).not_to be_valid
         expect(duplicate.errors[:name]).to include("has already been taken")
       end
 
       it "does not allow duplicate slugs" do
-        Category.create!(name: "Irish Whiskey")
+        Category.create!(name: "Spec Test Spirit")
 
-        duplicate = Category.new(name: "Irish-Whiskey")
+        duplicate = Category.new(name: "Spec-Test-Spirit")
 
         expect(duplicate).not_to be_valid
         expect(duplicate.errors[:slug]).to include("has already been taken")
@@ -47,15 +47,15 @@ RSpec.describe Category, type: :model do
   describe "slug generation" do
     describe "happy path" do
       it "converts spaces to hyphens" do
-        category = Category.create!(name: "White Rum")
+        category = Category.create!(name: "Spec White Spirit")
 
-        expect(category.slug).to eq("white-rum")
+        expect(category.slug).to eq("spec-white-spirit")
       end
 
       it "converts the slug to lowercase" do
-        category = Category.create!(name: "Japanese Whisky")
+        category = Category.create!(name: "Spec Japanese Spirit")
 
-        expect(category.slug).to eq("japanese-whisky")
+        expect(category.slug).to eq("spec-japanese-spirit")
       end
     end
   end
@@ -71,10 +71,10 @@ RSpec.describe Category, type: :model do
           password_confirmation: "12345"
         )
 
-        category = Category.create!(name: "Rum")
+        category = Category.create!(name: "Spec Rum")
 
         drink = user.drinks.new(
-          name: "Mojito",
+          name: "Spec Mojito",
           alcoholic: true
         )
 
@@ -93,10 +93,10 @@ RSpec.describe Category, type: :model do
           password_confirmation: "12345"
         )
 
-        category = Category.create!(name: "Tequila")
+        category = Category.create!(name: "Spec Tequila")
 
         drink = user.drinks.new(
-          name: "Margarita",
+          name: "Spec Margarita",
           alcoholic: true
         )
 
@@ -116,10 +116,10 @@ RSpec.describe Category, type: :model do
           password_confirmation: "12345"
         )
 
-        category = Category.create!(name: "Gin")
+        category = Category.create!(name: "Spec Gin")
 
         drink = user.drinks.new(
-          name: "Martini",
+          name: "Spec Martini",
           alcoholic: true
         )
 
