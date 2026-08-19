@@ -29,10 +29,17 @@ module DrinkLabApi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    config.session_store :cookie_store,
-                     key: "_drink_lab_api_session",
-                     same_site: :none,
-                     secure: Rails.env.production?
+    if Rails.env.production?
+      config.session_store :cookie_store,
+                          key: "_drink_lab_api_session",
+                          same_site: :none,
+                          secure: true
+    else
+      config.session_store :cookie_store,
+                          key: "_drink_lab_api_session",
+                          same_site: :lax,
+                          secure: false
+    end
 
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use config.session_store, config.session_options
