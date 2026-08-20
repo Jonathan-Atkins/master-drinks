@@ -2,6 +2,7 @@ class Api::V1::IngredientsController < ApplicationController
   skip_before_action :require_login, only: [ :index, :show ]
 
   before_action :set_ingredient, only: [ :show, :update, :destroy ]
+  before_action :authorize_owner!, only: [ :update, :destroy ]
 
   def index
     ingredients = Ingredient.order(:name)
@@ -22,7 +23,7 @@ class Api::V1::IngredientsController < ApplicationController
   end
 
   def create
-    ingredient = Ingredient.new(ingredient_params)
+    ingredient = current_user.ingredients.new(ingredient_params)
 
     if ingredient.save
       render json: ingredient, status: :created
@@ -55,5 +56,11 @@ class Api::V1::IngredientsController < ApplicationController
 
   def set_ingredient
     @ingredient = Ingredient.find(params[:id])
+  end
+
+  def authorize_owner!
+    return if @ingredient.user_id == current_user.id
+
+    render json: { error: "Not authorized" }, status: :forbidden
   end
 end
