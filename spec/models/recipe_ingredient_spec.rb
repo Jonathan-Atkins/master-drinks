@@ -13,7 +13,14 @@ RSpec.describe RecipeIngredient, type: :model do
 
   describe "relationships" do
     it "connects a recipe to an ingredient" do
-      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      drink = create_drink(
+        @user,
+        {
+          name: "Old Fashioned",
+          alcoholic: true
+        },
+        category_names: [ "Whiskey" ]
+      )
 
       recipe = Recipe.create!(
         drink: drink,
@@ -23,6 +30,7 @@ RSpec.describe RecipeIngredient, type: :model do
 
       ingredient = Ingredient.create!(
         name: "Bourbon",
+        user: @user,
       )
 
       recipe_ingredient = RecipeIngredient.create!(
@@ -39,7 +47,14 @@ RSpec.describe RecipeIngredient, type: :model do
 
   describe "attributes" do
     it "stores the amount and measurement unit" do
-      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      drink = create_drink(
+        @user,
+        {
+          name: "Old Fashioned",
+          alcoholic: true
+        },
+        category_names: [ "Whiskey" ]
+      )
 
       recipe = Recipe.create!(
         drink: drink,
@@ -49,6 +64,7 @@ RSpec.describe RecipeIngredient, type: :model do
 
       ingredient = Ingredient.create!(
         name: "Bourbon",
+        user: @user,
       )
 
       recipe_ingredient = RecipeIngredient.create!(
@@ -65,7 +81,14 @@ RSpec.describe RecipeIngredient, type: :model do
 
   describe "validations" do
     before(:each) do
-      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      drink = create_drink(
+        @user,
+        {
+          name: "Old Fashioned",
+          alcoholic: true
+        },
+        category_names: [ "Whiskey" ]
+      )
 
       @recipe = Recipe.create!(
         drink: drink,
@@ -75,6 +98,7 @@ RSpec.describe RecipeIngredient, type: :model do
 
       @ingredient = Ingredient.create!(
         name: "Bourbon",
+        user: @user,
       )
     end
 
@@ -87,7 +111,9 @@ RSpec.describe RecipeIngredient, type: :model do
       )
 
       expect(recipe_ingredient).not_to be_valid
-      expect(recipe_ingredient.errors[:amount]).to include("can't be blank")
+      expect(
+        recipe_ingredient.errors[:amount]
+      ).to include("can't be blank")
     end
 
     it "requires a measurement unit" do
@@ -99,7 +125,9 @@ RSpec.describe RecipeIngredient, type: :model do
       )
 
       expect(recipe_ingredient).not_to be_valid
-      expect(recipe_ingredient.errors[:measurement_unit]).to include("can't be blank")
+      expect(
+        recipe_ingredient.errors[:measurement_unit]
+      ).to include("can't be blank")
     end
   end
 end

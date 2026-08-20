@@ -13,7 +13,11 @@ RSpec.describe Recipe, type: :model do
 
   describe "relationships" do
     it "belongs to a drink" do
-      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      drink = create_drink(
+        @user,
+        { name: "Old Fashioned", alcoholic: true },
+        category_names: [ "Whiskey" ]
+      )
 
       recipe = Recipe.create!(
         drink: drink,
@@ -25,7 +29,11 @@ RSpec.describe Recipe, type: :model do
     end
 
     it "has many ingredients through recipe_ingredients" do
-      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      drink = create_drink(
+        @user,
+        { name: "Old Fashioned", alcoholic: true },
+        category_names: [ "Whiskey" ]
+      )
 
       recipe = Recipe.create!(
         drink: drink,
@@ -33,8 +41,15 @@ RSpec.describe Recipe, type: :model do
         instructions: "Stir ingredients with ice and strain over a large cube.",
       )
 
-      bourbon = Ingredient.create!(name: "Bourbon")
-      bitters = Ingredient.create!(name: "Bitters")
+      bourbon = Ingredient.create!(
+        name: "Bourbon",
+        user: @user,
+      )
+
+      bitters = Ingredient.create!(
+        name: "Bitters",
+        user: @user,
+      )
 
       RecipeIngredient.create!(
         recipe: recipe,
@@ -50,13 +65,20 @@ RSpec.describe Recipe, type: :model do
         measurement_unit: "dashes",
       )
 
-      expect(recipe.ingredients).to contain_exactly(bourbon, bitters)
+      expect(recipe.ingredients).to contain_exactly(
+        bourbon,
+        bitters
+      )
     end
   end
 
   describe "validations" do
     it "is valid with valid attributes" do
-      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      drink = create_drink(
+        @user,
+        { name: "Old Fashioned", alcoholic: true },
+        category_names: [ "Whiskey" ]
+      )
 
       recipe = Recipe.new(
         drink: drink,
@@ -68,7 +90,11 @@ RSpec.describe Recipe, type: :model do
     end
 
     it "requires a name" do
-      drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      drink = create_drink(
+        @user,
+        { name: "Old Fashioned", alcoholic: true },
+        category_names: [ "Whiskey" ]
+      )
 
       recipe = Recipe.new(
         drink: drink,
@@ -94,9 +120,17 @@ RSpec.describe Recipe, type: :model do
 
   describe "class methods" do
     before(:each) do
-      @Whiskey_drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      @Whiskey_drink = create_drink(
+        @user,
+        { name: "Old Fashioned", alcoholic: true },
+        category_names: [ "Whiskey" ]
+      )
 
-      @Tequila_drink = create_drink(@user, { name: "Margarita", alcoholic: true }, category_names: [ "Tequila" ])
+      @Tequila_drink = create_drink(
+        @user,
+        { name: "Margarita", alcoholic: true },
+        category_names: [ "Tequila" ]
+      )
 
       @old_fashioned_recipe = Recipe.create!(
         drink: @Whiskey_drink,
@@ -180,7 +214,11 @@ RSpec.describe Recipe, type: :model do
 
   describe "visibility" do
     before(:each) do
-      @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+      @drink = create_drink(
+        @user,
+        { name: "Old Fashioned", alcoholic: true },
+        category_names: [ "Whiskey" ]
+      )
     end
 
     it "is publicly visible by default" do

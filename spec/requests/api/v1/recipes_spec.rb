@@ -74,7 +74,10 @@ RSpec.describe "Api::V1::Recipes", type: :request do
           instructions: "Shake with ice and strain.",
         )
 
-        bourbon = Ingredient.create!(name: "Bourbon")
+        bourbon = Ingredient.create!(
+          name: "Bourbon",
+          user: @user,
+        )
 
         RecipeIngredient.create!(
           recipe: @recipe,

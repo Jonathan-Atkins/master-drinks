@@ -18,9 +18,17 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
       password_confirmation: "password123",
     )
 
-    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+    @drink = create_drink(
+      @user,
+      { name: "Old Fashioned", alcoholic: true },
+      category_names: [ "Whiskey" ]
+    )
 
-    @other_drink = create_drink(@other_user, { name: "Margarita", alcoholic: true }, category_names: [ "Tequila" ])
+    @other_drink = create_drink(
+      @other_user,
+      { name: "Margarita", alcoholic: true },
+      category_names: [ "Tequila" ]
+    )
 
     @recipe = Recipe.create!(
       drink: @drink,
@@ -36,10 +44,12 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
 
     @bourbon = Ingredient.create!(
       name: "Bourbon",
+      user: @user,
     )
 
     @bitters = Ingredient.create!(
       name: "Bitters",
+      user: @user,
     )
 
     @recipe_ingredient = RecipeIngredient.create!(
@@ -52,9 +62,9 @@ RSpec.describe "Api::V1::RecipeIngredients", type: :request do
 
   def log_in(user)
     post "/api/v1/login", params: {
-                            email: user.email,
-                            password: "password123"
-                          }
+      email: user.email,
+      password: "password123"
+    }
   end
 
   describe "happy path" do

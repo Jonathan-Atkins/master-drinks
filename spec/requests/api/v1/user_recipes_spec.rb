@@ -28,6 +28,7 @@ RSpec.describe "Api::V1::UserRecipes", type: :request do
 
     @ingredient = Ingredient.create!(
       name: "Bourbon",
+      user: @user,
     )
 
     @recipe_ingredient = RecipeIngredient.create!(

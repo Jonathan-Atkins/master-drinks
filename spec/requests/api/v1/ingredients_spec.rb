@@ -10,24 +10,35 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       password_confirmation: "password123",
     )
 
-    @drink = create_drink(@user, { name: "Old Fashioned", alcoholic: true }, category_names: [ "Whiskey" ])
+    @drink = create_drink(
+      @user,
+      {
+        name: "Old Fashioned",
+        alcoholic: true
+      },
+      category_names: [ "Whiskey" ]
+    )
 
     @ingredient = Ingredient.create!(
       name: "Bourbon",
+      user: @user,
     )
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
-                            email: user.email,
-                            password: "password123"
-                          }
+      email: user.email,
+      password: "password123"
+    }
   end
 
   describe "happy path" do
     describe "GET /api/v1/ingredients" do
       it "returns all ingredients without requiring authentication" do
-        Ingredient.create!(name: "Bitters")
+        Ingredient.create!(
+          name: "Bitters",
+          user: @user,
+        )
 
         get "/api/v1/ingredients"
 
@@ -36,6 +47,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         result = JSON.parse(response.body)
 
         expect(result.count).to eq(2)
+
         expect(result.pluck("name")).to contain_exactly(
           "Bourbon",
           "Bitters"
@@ -43,18 +55,27 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       end
 
       it "returns ingredients matching the search" do
-        create(:ingredient, name: "Angostura Bitters")
+        Ingredient.create!(
+          name: "Angostura Bitters",
+          user: @user,
+        )
 
-        get "/api/v1/ingredients", params: { search: "Bitters" }
+        get "/api/v1/ingredients",
+            params: { search: "Bitters" }
 
         expect(response).to have_http_status(:ok)
 
         result = JSON.parse(response.body)
+
         expect(result.first["name"]).to include("Bitters")
       end
 
       it "returns each ingredient with its recipe count" do
-        test_ingredient = Ingredient.create!(name: "FlipFlop")
+        test_ingredient = Ingredient.create!(
+          name: "FlipFlop",
+          user: @user,
+        )
+
         log_in(@user)
 
         recipe = Recipe.create!(
@@ -80,8 +101,13 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
           item["id"] == test_ingredient.id
         end
 
-        expect(ingredient_response["name"]).to eq("FlipFlop")
-        expect(ingredient_response["recipe_count"]).to eq(1)
+        expect(
+          ingredient_response["name"]
+        ).to eq("FlipFlop")
+
+        expect(
+          ingredient_response["recipe_count"]
+        ).to eq(1)
       end
     end
 
@@ -93,7 +119,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
         result = JSON.parse(response.body)
 
-        expect(result["id"]).to eq(@ingredient[:id])
+        expect(result["id"]).to eq(@ingredient.id)
         expect(result["name"]).to eq("Bourbon")
       end
     end
@@ -103,8 +129,8 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         log_in(@user)
 
         post "/api/v1/ingredients", params: {
-                                      name: "Simple Syrup"
-                                    }
+          name: "Simple Syrup"
+        }
 
         expect(response).to have_http_status(:created)
 
@@ -112,6 +138,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
         expect(result["name"]).to eq("Simple Syrup")
         expect(Ingredient.last.name).to eq("Simple Syrup")
+        expect(Ingredient.last.user).to eq(@user)
       end
     end
 
@@ -119,9 +146,10 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       it "allows an authenticated user to update an ingredient" do
         log_in(@user)
 
-        patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-                                                         name: "Rye Whiskey"
-                                                       }
+        patch "/api/v1/ingredients/#{@ingredient.id}",
+              params: {
+                name: "Rye Whiskey"
+              }
 
         expect(response).to have_http_status(:ok)
 
@@ -157,48 +185,66 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
     describe "POST /api/v1/ingredients" do
       it "does not allow an unauthenticated user to create an ingredient" do
         post "/api/v1/ingredients", params: {
-                                      name: "Simple Syrup"
-                                    }
+          name: "Simple Syrup"
+        }
 
         expect(response).to have_http_status(:unauthorized)
-        expect(Ingredient.find_by(name: "Simple Syrup")).to be_nil
+
+        expect(
+          Ingredient.find_by(name: "Simple Syrup")
+        ).to be_nil
       end
 
       it "does not create an ingredient with invalid attributes" do
         log_in(@user)
 
         post "/api/v1/ingredients", params: {
-                                      name: nil
-                                    }
+          name: nil
+        }
 
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(
+          response
+        ).to have_http_status(:unprocessable_content)
 
         result = JSON.parse(response.body)
 
-        expect(result["errors"]).to include("Name can't be blank")
+        expect(result["errors"]).to include(
+          "Name can't be blank"
+        )
       end
 
       it "returns an error when the ingredient name already exists" do
-        Ingredient.create!(name: "Unique Bourbon")
+        Ingredient.create!(
+          name: "Unique Bourbon",
+          user: @user,
+        )
+
         log_in(@user)
 
         post "/api/v1/ingredients",
-             params: { name: "unique bourbon" },
+             params: {
+               name: "unique bourbon"
+             },
              as: :json
 
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(
+          response
+        ).to have_http_status(:unprocessable_content)
 
         body = JSON.parse(response.body)
 
-        expect(body["errors"]).to include("Name has already been taken")
+        expect(body["errors"]).to include(
+          "Name has already been taken"
+        )
       end
     end
 
     describe "PATCH /api/v1/ingredients/:id" do
       it "does not allow an unauthenticated user to update an ingredient" do
-        patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-                                                         name: "Rye Whiskey"
-                                                       }
+        patch "/api/v1/ingredients/#{@ingredient.id}",
+              params: {
+                name: "Rye Whiskey"
+              }
 
         expect(response).to have_http_status(:unauthorized)
         expect(@ingredient.reload.name).to eq("Bourbon")
@@ -207,11 +253,15 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       it "does not update an ingredient with invalid attributes" do
         log_in(@user)
 
-        patch "/api/v1/ingredients/#{@ingredient.id}", params: {
-                                                         name: nil
-                                                       }
+        patch "/api/v1/ingredients/#{@ingredient.id}",
+              params: {
+                name: nil
+              }
 
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(
+          response
+        ).to have_http_status(:unprocessable_content)
+
         expect(@ingredient.reload.name).to eq("Bourbon")
       end
     end
