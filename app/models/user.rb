@@ -4,11 +4,10 @@ class User < ApplicationRecord
     admin: "admin"
   }
 
-  has_many :user_recipes
+  has_many :user_recipes, dependent: :destroy
   has_many :recipes, through: :user_recipes
 
   has_many :drinks, dependent: :destroy
-
   has_many :ingredients, dependent: :destroy
 
   has_many :owned_recipes,

@@ -4,6 +4,8 @@ class Recipe < ApplicationRecord
   has_many :recipe_ingredients, dependent: :destroy
   has_many :ingredients, through: :recipe_ingredients
 
+  has_many :user_recipes, dependent: :destroy
+
   validates :name, presence: true
 
   scope :publicly_visible, -> { where(publicly_visible: true) }

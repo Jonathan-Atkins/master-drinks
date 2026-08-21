@@ -25,6 +25,9 @@ Rails.application.routes.draw do
       post "/login", to: "sessions#create"
       delete "/logout", to: "sessions#destroy"
       get "/session", to: "sessions#show"
+
+      delete "/account", to: "account#destroy"
+
       get "/my_recipes", to: "my_recipes#index"
       get "/my_drinks", to: "my_drinks#index"
 

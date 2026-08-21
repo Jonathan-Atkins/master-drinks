@@ -33,21 +33,25 @@ RSpec.describe Ingredient, type: :model do
         user: @user,
       )
 
-      recipe_ingredient1 = RecipeIngredient.create!(
-        recipe: recipe,
-        ingredient: ingredient,
-        amount: 1,
-        measurement_unit: "oz",
-      )
+      recipe_ingredient1 =
+        RecipeIngredient.create!(
+          recipe: recipe,
+          ingredient: ingredient,
+          amount: 1,
+          measurement_unit: "oz",
+        )
 
-      recipe_ingredient2 = RecipeIngredient.create!(
-        recipe: recipe,
-        ingredient: ingredient,
-        amount: 2,
-        measurement_unit: "oz",
-      )
+      recipe_ingredient2 =
+        RecipeIngredient.create!(
+          recipe: recipe,
+          ingredient: ingredient,
+          amount: 2,
+          measurement_unit: "oz",
+        )
 
-      expect(ingredient.recipe_ingredients).to include(
+      expect(
+        ingredient.recipe_ingredients
+      ).to include(
         recipe_ingredient1,
         recipe_ingredient2
       )
@@ -107,6 +111,46 @@ RSpec.describe Ingredient, type: :model do
         recipe1,
         recipe2
       )
+    end
+
+    it "destroys its recipe_ingredients when destroyed" do
+      drink = create_drink(
+        @user,
+        {
+          name: "Whiskey Sour",
+          alcoholic: true
+        },
+        category_names: [ "Whiskey" ]
+      )
+
+      recipe = Recipe.create!(
+        drink: drink,
+        name: "Classic Whiskey Sour",
+        instructions: "Shake with ice."
+      )
+
+      ingredient = Ingredient.create!(
+        name: "Lemon Juice",
+        user: @user
+      )
+
+      recipe_ingredient =
+        RecipeIngredient.create!(
+          recipe: recipe,
+          ingredient: ingredient,
+          amount: 1,
+          measurement_unit: "oz"
+        )
+
+      ingredient.destroy
+
+      expect(
+        RecipeIngredient.exists?(
+          recipe_ingredient.id
+        )
+      ).to be(false)
+
+      expect(Recipe.exists?(recipe.id)).to be(true)
     end
   end
 

@@ -30,14 +30,20 @@ RSpec.describe User, type: :model do
       user = User.new(@valid_attributes.merge(name: nil))
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include("Name can't be blank")
+      expect(user.errors.full_messages).to include(
+        "Name can't be blank"
+      )
     end
 
     it "requires a username" do
-      user = User.new(@valid_attributes.merge(username: nil))
+      user = User.new(
+        @valid_attributes.merge(username: nil)
+      )
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include("Username can't be blank")
+      expect(user.errors.full_messages).to include(
+        "Username can't be blank"
+      )
     end
 
     it "requires a unique username" do
@@ -57,17 +63,27 @@ RSpec.describe User, type: :model do
     end
 
     it "requires an email" do
-      user = User.new(@valid_attributes.merge(email: nil))
+      user = User.new(
+        @valid_attributes.merge(email: nil)
+      )
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include("Email can't be blank")
+      expect(user.errors.full_messages).to include(
+        "Email can't be blank"
+      )
     end
 
     it "requires a valid email format" do
-      user = User.new(@valid_attributes.merge(email: "not-an-email"))
+      user = User.new(
+        @valid_attributes.merge(
+          email: "not-an-email"
+        )
+      )
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include("Email is invalid")
+      expect(user.errors.full_messages).to include(
+        "Email is invalid"
+      )
     end
 
     it "requires a unique email" do
@@ -95,8 +111,13 @@ RSpec.describe User, type: :model do
         password_confirmation: "password123",
       )
 
-      expect(user.authenticate("password123")).to eq(user)
-      expect(user.authenticate("wrong-password")).to eq(false)
+      expect(
+        user.authenticate("password123")
+      ).to eq(user)
+
+      expect(
+        user.authenticate("wrong-password")
+      ).to eq(false)
     end
   end
 
@@ -104,7 +125,14 @@ RSpec.describe User, type: :model do
     it "can have many drinks" do
       user = User.create!(@valid_attributes)
 
-      margarita = create_drink(user, { name: "Margarita", alcoholic: true }, category_names: [ "Tequila" ])
+      margarita = create_drink(
+        user,
+        {
+          name: "Margarita",
+          alcoholic: true
+        },
+        category_names: [ "Tequila" ]
+      )
 
       expect(user.drinks).to include(margarita)
     end
@@ -112,7 +140,14 @@ RSpec.describe User, type: :model do
     it "can have many recipes through user_recipes" do
       user = User.create!(@valid_attributes)
 
-      margarita = create_drink(user, { name: "Margarita", alcoholic: true }, category_names: [ "Tequila" ])
+      margarita = create_drink(
+        user,
+        {
+          name: "Margarita",
+          alcoholic: true
+        },
+        category_names: [ "Tequila" ]
+      )
 
       classic_recipe = Recipe.create!(
         drink: margarita,
@@ -140,6 +175,62 @@ RSpec.describe User, type: :model do
         classic_recipe,
         spicy_recipe
       )
+    end
+
+    it "destroys its user_recipes when destroyed" do
+      drink = create_drink(
+        @user,
+        {
+          name: "Margarita",
+          alcoholic: true
+        },
+        category_names: [ "Tequila" ]
+      )
+
+      recipe = Recipe.create!(
+        drink: drink,
+        name: "Classic Margarita",
+        instructions: "Shake with ice."
+      )
+
+      user_recipe = UserRecipe.create!(
+        user: @user,
+        recipe: recipe
+      )
+
+      @user.destroy
+
+      expect(
+        UserRecipe.exists?(user_recipe.id)
+      ).to be(false)
+    end
+
+    it "destroys its drinks when destroyed" do
+      drink = create_drink(
+        @user,
+        {
+          name: "Mojito",
+          alcoholic: true
+        },
+        category_names: [ "Rum" ]
+      )
+
+      @user.destroy
+
+      expect(Drink.exists?(drink.id)).to be(false)
+    end
+
+    it "destroys its ingredients when destroyed" do
+      ingredient = Ingredient.create!(
+        user: @user,
+        name: "Mint"
+      )
+
+      @user.destroy
+
+      expect(
+        Ingredient.exists?(ingredient.id)
+      ).to be(false)
     end
   end
 end

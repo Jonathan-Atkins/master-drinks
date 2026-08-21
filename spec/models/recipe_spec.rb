@@ -70,6 +70,44 @@ RSpec.describe Recipe, type: :model do
         bitters
       )
     end
+
+    it "destroys user_recipes when the recipe is destroyed" do
+      other_user = User.create!(
+        name: "Bob",
+        username: "bob",
+        email: "bob@example.com",
+        password: "password123",
+        password_confirmation: "password123"
+      )
+
+      drink = create_drink(
+        @user,
+        {
+          name: "Margarita",
+          alcoholic: true
+        },
+        category_names: [ "Tequila" ]
+      )
+
+      recipe = Recipe.create!(
+        drink: drink,
+        name: "Classic Margarita",
+        instructions: "Shake with ice."
+      )
+
+      user_recipe = UserRecipe.create!(
+        user: other_user,
+        recipe: recipe
+      )
+
+      recipe.destroy
+
+      expect(
+        UserRecipe.exists?(user_recipe.id)
+      ).to be(false)
+
+      expect(User.exists?(other_user.id)).to be(true)
+    end
   end
 
   describe "validations" do
