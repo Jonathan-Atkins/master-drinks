@@ -3,10 +3,11 @@ class IngredientSerializer
     {
       id: ingredient.id,
       name: ingredient.name,
+      ingredient_type: ingredient.ingredient_type,
+      flavor_profiles: ingredient.flavor_profiles,
       recipe_count: ingredient.recipe_ingredients.count,
-      owned_by_current_user:
-        current_user.present? &&
-        ingredient.user_id == current_user.id
+      owned_by_current_user: current_user.present? &&
+                             ingredient.user_id == current_user.id,
     }
   end
 

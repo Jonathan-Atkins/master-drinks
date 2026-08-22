@@ -14,30 +14,47 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       @user,
       {
         name: "Old Fashioned",
-        alcoholic: true
+        alcoholic: true,
       },
-      category_names: [ "Whiskey" ]
+      category_names: ["Whiskey"],
     )
 
-    @ingredient = Ingredient.create!(
-      name: "Bourbon",
-      user: @user,
+    @ingredient = create_ingredient(
+      @user,
+      {
+        name: "Bourbon",
+        ingredient_type: "Spirit",
+        flavor_profiles: ["Rich", "Dry"],
+      }
+    )
+  end
+
+  def create_request_ingredient(user, attributes = {})
+    create_ingredient(
+      user,
+      {
+        name: "Bourbon",
+        ingredient_type: "Spirit",
+        flavor_profiles: ["Rich"],
+      }.merge(attributes)
     )
   end
 
   def log_in(user)
     post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
-    }
+                       email: user.email,
+                       password: "password123",
+                     }
   end
 
   describe "happy path" do
     describe "GET /api/v1/ingredients" do
       it "returns all ingredients without requiring authentication" do
-        Ingredient.create!(
+        create_request_ingredient(
+          @user,
           name: "Bitters",
-          user: @user,
+          ingredient_type: "Bitters",
+          flavor_profiles: ["Bitter"],
         )
 
         get "/api/v1/ingredients"
@@ -52,12 +69,20 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
           "Bourbon",
           "Bitters"
         )
+
+        bourbon = result.find { |ingredient| ingredient["name"] == "Bourbon" }
+
+        expect(bourbon["ingredient_type"]).to eq("Spirit")
+        expect(bourbon["flavor_profiles"]).to contain_exactly("Rich", "Dry")
+        expect(bourbon["owned_by_current_user"]).to be(false)
       end
 
       it "returns ingredients matching the search" do
-        Ingredient.create!(
+        create_request_ingredient(
+          @user,
           name: "Angostura Bitters",
-          user: @user,
+          ingredient_type: "Bitters",
+          flavor_profiles: ["Bitter"],
         )
 
         get "/api/v1/ingredients",
@@ -71,9 +96,11 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       end
 
       it "returns each ingredient with its recipe count" do
-        test_ingredient = Ingredient.create!(
+        test_ingredient = create_request_ingredient(
+          @user,
           name: "FlipFlop",
-          user: @user,
+          ingredient_type: "Mixer",
+          flavor_profiles: ["Savory"],
         )
 
         log_in(@user)
@@ -105,6 +132,9 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
           ingredient_response["name"]
         ).to eq("FlipFlop")
 
+        expect(ingredient_response["ingredient_type"]).to eq("Mixer")
+        expect(ingredient_response["flavor_profiles"]).to eq(["Savory"])
+
         expect(
           ingredient_response["recipe_count"]
         ).to eq(1)
@@ -121,6 +151,20 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
         expect(result["id"]).to eq(@ingredient.id)
         expect(result["name"]).to eq("Bourbon")
+        expect(result["ingredient_type"]).to eq("Spirit")
+        expect(result["flavor_profiles"]).to contain_exactly("Rich", "Dry")
+        expect(result["owned_by_current_user"]).to be(false)
+      end
+
+      it "marks the ingredient as owned by the logged-in creator" do
+        log_in(@user)
+
+        get "/api/v1/ingredients/#{@ingredient.id}"
+
+        result = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(result["owned_by_current_user"]).to be(true)
       end
     end
 
@@ -129,14 +173,19 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         log_in(@user)
 
         post "/api/v1/ingredients", params: {
-          name: "Simple Syrup"
-        }
+                                 name: "Simple Syrup",
+                                 ingredient_type: "Syrup",
+                                 flavor_profiles: ["Sweet"],
+                               }
 
         expect(response).to have_http_status(:created)
 
         result = JSON.parse(response.body)
 
         expect(result["name"]).to eq("Simple Syrup")
+        expect(result["ingredient_type"]).to eq("Syrup")
+        expect(result["flavor_profiles"]).to eq(["Sweet"])
+        expect(result["owned_by_current_user"]).to be(true)
         expect(Ingredient.last.name).to eq("Simple Syrup")
         expect(Ingredient.last.user).to eq(@user)
       end
@@ -148,7 +197,9 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
         patch "/api/v1/ingredients/#{@ingredient.id}",
               params: {
-                name: "Rye Whiskey"
+                name: "Rye Whiskey",
+                ingredient_type: "Spirit",
+                flavor_profiles: ["Dry", "Smoky"],
               }
 
         expect(response).to have_http_status(:ok)
@@ -156,7 +207,30 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         result = JSON.parse(response.body)
 
         expect(result["name"]).to eq("Rye Whiskey")
+        expect(result["ingredient_type"]).to eq("Spirit")
+        expect(result["flavor_profiles"]).to contain_exactly("Dry", "Smoky")
         expect(@ingredient.reload.name).to eq("Rye Whiskey")
+      end
+
+      it "does not allow another user to update the ingredient" do
+        other_user = User.create!(
+          name: "Bob",
+          username: "bob",
+          email: "bob@email.com",
+          password: "password123",
+          password_confirmation: "password123",
+        )
+
+        log_in(other_user)
+
+        patch "/api/v1/ingredients/#{@ingredient.id}",
+              params: {
+                name: "Changed Name",
+                ingredient_type: "Spirit",
+                flavor_profiles: ["Sweet"],
+              }
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
@@ -169,6 +243,24 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         }.to change(Ingredient, :count).by(-1)
 
         expect(response).to have_http_status(:no_content)
+      end
+
+      it "does not allow another user to delete the ingredient" do
+        other_user = User.create!(
+          name: "Bob",
+          username: "bob",
+          email: "bob@email.com",
+          password: "password123",
+          password_confirmation: "password123",
+        )
+
+        log_in(other_user)
+
+        expect {
+          delete "/api/v1/ingredients/#{@ingredient.id}"
+        }.not_to change(Ingredient, :count)
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end
@@ -185,8 +277,10 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
     describe "POST /api/v1/ingredients" do
       it "does not allow an unauthenticated user to create an ingredient" do
         post "/api/v1/ingredients", params: {
-          name: "Simple Syrup"
-        }
+                                 name: "Simple Syrup",
+                                 ingredient_type: "Syrup",
+                                 flavor_profiles: ["Sweet"],
+                               }
 
         expect(response).to have_http_status(:unauthorized)
 
@@ -199,8 +293,10 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         log_in(@user)
 
         post "/api/v1/ingredients", params: {
-          name: nil
-        }
+                                 name: nil,
+                                 ingredient_type: "Syrup",
+                                 flavor_profiles: ["Sweet"],
+                               }
 
         expect(
           response
@@ -213,17 +309,57 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         )
       end
 
+      it "returns an error for an invalid ingredient type" do
+        log_in(@user)
+
+        post "/api/v1/ingredients", params: {
+                                 name: "Mystery Syrup",
+                                 ingredient_type: "Potion",
+                                 flavor_profiles: ["Sweet"],
+                               }
+
+        expect(response).to have_http_status(:unprocessable_content)
+
+        body = JSON.parse(response.body)
+
+        expect(body["errors"]).to include(
+          "Ingredient type is not included in the list"
+        )
+      end
+
+      it "returns an error for an invalid flavor profile" do
+        log_in(@user)
+
+        post "/api/v1/ingredients", params: {
+                                 name: "Odd Syrup",
+                                 ingredient_type: "Syrup",
+                                 flavor_profiles: ["Sweet", "Alien"],
+                               }
+
+        expect(response).to have_http_status(:unprocessable_content)
+
+        body = JSON.parse(response.body)
+
+        expect(body["errors"]).to include(
+          "Flavor profiles contains invalid values: Alien"
+        )
+      end
+
       it "returns an error when the ingredient name already exists" do
-        Ingredient.create!(
+        create_request_ingredient(
+          @user,
           name: "Unique Bourbon",
-          user: @user,
+          ingredient_type: "Spirit",
+          flavor_profiles: ["Rich"],
         )
 
         log_in(@user)
 
         post "/api/v1/ingredients",
              params: {
-               name: "unique bourbon"
+               name: "unique bourbon",
+               ingredient_type: "Spirit",
+               flavor_profiles: ["Rich"],
              },
              as: :json
 
@@ -243,7 +379,9 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       it "does not allow an unauthenticated user to update an ingredient" do
         patch "/api/v1/ingredients/#{@ingredient.id}",
               params: {
-                name: "Rye Whiskey"
+                name: "Rye Whiskey",
+                ingredient_type: "Spirit",
+                flavor_profiles: ["Dry"],
               }
 
         expect(response).to have_http_status(:unauthorized)
@@ -255,14 +393,72 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
         patch "/api/v1/ingredients/#{@ingredient.id}",
               params: {
-                name: nil
+                name: nil,
+                ingredient_type: "Spirit",
+                flavor_profiles: ["Dry"],
               }
 
-        expect(
-          response
-        ).to have_http_status(:unprocessable_content)
-
+        expect(response).to have_http_status(:unprocessable_content)
         expect(@ingredient.reload.name).to eq("Bourbon")
+      end
+
+      it "returns an error for an invalid ingredient type on update" do
+        log_in(@user)
+
+        patch "/api/v1/ingredients/#{@ingredient.id}",
+              params: {
+                name: "Bourbon",
+                ingredient_type: "Potion",
+                flavor_profiles: ["Rich"],
+              }
+
+        expect(response).to have_http_status(:unprocessable_content)
+
+        body = JSON.parse(response.body)
+
+        expect(body["errors"]).to include(
+          "Ingredient type is not included in the list"
+        )
+      end
+
+      it "returns an error for an invalid flavor profile on update" do
+        log_in(@user)
+
+        patch "/api/v1/ingredients/#{@ingredient.id}",
+              params: {
+                name: "Bourbon",
+                ingredient_type: "Spirit",
+                flavor_profiles: ["Rich", "Alien"],
+              }
+
+        expect(response).to have_http_status(:unprocessable_content)
+
+        body = JSON.parse(response.body)
+
+        expect(body["errors"]).to include(
+          "Flavor profiles contains invalid values: Alien"
+        )
+      end
+
+      it "does not allow another user to update the ingredient" do
+        other_user = User.create!(
+          name: "Bob",
+          username: "bob",
+          email: "bob@email.com",
+          password: "password123",
+          password_confirmation: "password123",
+        )
+
+        log_in(other_user)
+
+        patch "/api/v1/ingredients/#{@ingredient.id}",
+              params: {
+                name: "Changed Name",
+                ingredient_type: "Spirit",
+                flavor_profiles: ["Sweet"],
+              }
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
@@ -273,6 +469,24 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         }.not_to change(Ingredient, :count)
 
         expect(response).to have_http_status(:unauthorized)
+      end
+
+      it "does not allow another user to delete the ingredient" do
+        other_user = User.create!(
+          name: "Bob",
+          username: "bob",
+          email: "bob@email.com",
+          password: "password123",
+          password_confirmation: "password123",
+        )
+
+        log_in(other_user)
+
+        expect {
+          delete "/api/v1/ingredients/#{@ingredient.id}"
+        }.not_to change(Ingredient, :count)
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end
