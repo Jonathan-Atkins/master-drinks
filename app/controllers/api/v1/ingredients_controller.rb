@@ -1,8 +1,12 @@
 class Api::V1::IngredientsController < ApplicationController
-  skip_before_action :require_login, only: [ :index, :show ]
+  skip_before_action :require_login,
+                     only: [ :index, :show ]
 
-  before_action :set_ingredient, only: [ :show, :update, :destroy ]
-  before_action :authorize_owner!, only: [ :update, :destroy ]
+  before_action :set_ingredient,
+                only: [ :show, :update, :destroy ]
+
+  before_action :authorize_owner!,
+                only: [ :update, :destroy ]
 
   def index
     ingredients = Ingredient.order(:name)
@@ -14,31 +18,61 @@ class Api::V1::IngredientsController < ApplicationController
       )
     end
 
-    render json: IngredientSerializer.format_collection(ingredients),
-    status: :ok
+    render json:
+      IngredientSerializer.format_collection(
+        ingredients,
+        current_user
+      ),
+      status: :ok
   end
 
   def show
-    render json: @ingredient, status: :ok
+    render json:
+      IngredientSerializer.format(
+        @ingredient,
+        current_user
+      ),
+      status: :ok
   end
 
   def create
-    ingredient = current_user.ingredients.new(ingredient_params)
+    ingredient =
+      current_user.ingredients.new(
+        ingredient_params
+      )
 
     if ingredient.save
-      render json: ingredient, status: :created
+      render json:
+        IngredientSerializer.format(
+          ingredient,
+          current_user
+        ),
+        status: :created
     else
-      render json: ErrorSerializer.format(ingredient),
-             status: :unprocessable_content
+      render json:
+        ErrorSerializer.format(
+          ingredient
+        ),
+        status: :unprocessable_content
     end
   end
 
   def update
-    if @ingredient.update(ingredient_params)
-      render json: @ingredient, status: :ok
+    if @ingredient.update(
+      ingredient_params
+    )
+      render json:
+        IngredientSerializer.format(
+          @ingredient,
+          current_user
+        ),
+        status: :ok
     else
-      render json: ErrorSerializer.format(@ingredient),
-             status: :unprocessable_content
+      render json:
+        ErrorSerializer.format(
+          @ingredient
+        ),
+        status: :unprocessable_content
     end
   end
 
@@ -55,12 +89,19 @@ class Api::V1::IngredientsController < ApplicationController
   end
 
   def set_ingredient
-    @ingredient = Ingredient.find(params[:id])
+    @ingredient =
+      Ingredient.find(
+        params[:id]
+      )
   end
 
   def authorize_owner!
-    return if @ingredient.user_id == current_user.id
+    return if @ingredient.user_id ==
+              current_user.id
 
-    render json: { error: "Not authorized" }, status: :forbidden
+    render json: {
+      error: "Not authorized"
+    },
+           status: :forbidden
   end
 end

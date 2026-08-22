@@ -1,15 +1,18 @@
 class IngredientSerializer
-  def self.format(ingredient)
+  def self.format(ingredient, current_user = nil)
     {
       id: ingredient.id,
       name: ingredient.name,
-      recipe_count: ingredient.recipe_ingredients.count
+      recipe_count: ingredient.recipe_ingredients.count,
+      owned_by_current_user:
+        current_user.present? &&
+        ingredient.user_id == current_user.id
     }
   end
 
-  def self.format_collection(ingredients)
+  def self.format_collection(ingredients, current_user = nil)
     ingredients.map do |ingredient|
-      format(ingredient)
+      format(ingredient, current_user)
     end
   end
 end
