@@ -11,11 +11,14 @@ class RecipeSerializer
       saved_by_current_user: user_recipe.present?,
       user_recipe_id: user_recipe&.id,
 
+      save_count: recipe.user_recipes.count,
+      created_at: recipe.created_at,
+
       drink: {
         id: recipe.drink.id,
         username: recipe.drink.user.username,
         name: recipe.drink.name,
-        categories: recipe.drink.categories.pluck(:slug),
+        categories: recipe.drink.categories.map(&:slug),
         alcoholic: recipe.drink.alcoholic
       },
 

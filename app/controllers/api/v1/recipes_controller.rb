@@ -7,18 +7,27 @@ class Api::V1::RecipesController < ApplicationController
   before_action :authorize_recipe_view, only: [ :show ]
 
   def index
-    recipes = if params[:drink_id]
-        Recipe.by_drink_id(params[:drink_id]).publicly_visible
-    else
-        Recipe.search(params).publicly_visible
-    end
+    recipes = Recipe
+      .search_and_filter(params)
+      .sorted_by(params[:sort])
+      .includes(
+        :user_recipes,
+        recipe_ingredients: :ingredient,
+        drink: [ :user, :categories ]
+      )
 
-    render json: RecipeSerializer.format_collection(recipes, current_user),
-           status: :ok
+    render json: RecipeSerializer.format_collection(
+      recipes,
+      current_user
+    ),
+          status: :ok
   end
 
   def show
-    render json: RecipeSerializer.format(@recipe, current_user),
+    render json: RecipeSerializer.format(
+      @recipe,
+      current_user
+    ),
            status: :ok
   end
 
@@ -26,7 +35,10 @@ class Api::V1::RecipesController < ApplicationController
     recipe = @drink.recipes.new(recipe_params)
 
     if recipe.save
-      render json: RecipeSerializer.format(recipe, current_user),
+      render json: RecipeSerializer.format(
+        recipe,
+        current_user
+      ),
              status: :created
     else
       render json: ErrorSerializer.format(recipe),
@@ -36,7 +48,10 @@ class Api::V1::RecipesController < ApplicationController
 
   def update
     if @recipe.update(recipe_params)
-      render json: RecipeSerializer.format(@recipe, current_user),
+      render json: RecipeSerializer.format(
+        @recipe,
+        current_user
+      ),
              status: :ok
     else
       render json: ErrorSerializer.format(@recipe),
@@ -53,7 +68,11 @@ class Api::V1::RecipesController < ApplicationController
   private
 
   def recipe_params
-    params.permit(:name, :instructions, :publicly_visible)
+    params.permit(
+      :name,
+      :instructions,
+      :publicly_visible
+    )
   end
 
   def set_drink
