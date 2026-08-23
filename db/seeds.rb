@@ -265,6 +265,238 @@ ingredient_groups = {
   ]
 }
 
+# =========================
+# Ingredient Metadata
+# =========================
+
+GROUP_METADATA = {
+  base_spirits: {
+    ingredient_type: "Spirit",
+    flavor_profiles: [ "Dry" ]
+  },
+  liqueurs_and_cordials: {
+    ingredient_type: "Liqueur",
+    flavor_profiles: [ "Sweet", "Rich" ]
+  },
+  amari_aperitifs_and_fortified_wines: {
+    ingredient_type: "Liqueur",
+    flavor_profiles: [ "Bitter", "Herbal" ]
+  },
+  wines_beers_and_ciders: {
+    ingredient_type: "Wine",
+    flavor_profiles: [ "Dry", "Fruity" ]
+  },
+  juices: {
+    ingredient_type: "Juice",
+    flavor_profiles: [ "Fruity" ]
+  },
+  purees_pulps_and_preserves: {
+    ingredient_type: "Other",
+    flavor_profiles: [ "Fruity", "Sweet" ]
+  },
+  syrups_sweeteners_and_sugars: {
+    ingredient_type: "Syrup",
+    flavor_profiles: [ "Sweet" ]
+  },
+  bitters_tinctures_and_acids: {
+    ingredient_type: "Bitters",
+    flavor_profiles: [ "Bitter" ]
+  },
+  sodas_waters_and_non_alcoholic_mixers: {
+    ingredient_type: "Mixer",
+    flavor_profiles: [ "Dry" ]
+  },
+  dairy_eggs_and_foaming_ingredients: {
+    ingredient_type: "Dairy",
+    flavor_profiles: [ "Creamy", "Rich" ]
+  },
+  fresh_fruits_and_vegetables: {
+    ingredient_type: "Other",
+    flavor_profiles: [ "Fruity" ]
+  },
+  herbs_flowers_and_botanicals: {
+    ingredient_type: "Herb",
+    flavor_profiles: [ "Herbal" ]
+  },
+  spices_seasonings_and_savory_ingredients: {
+    ingredient_type: "Spice",
+    flavor_profiles: [ "Savory" ]
+  },
+  garnishes_rims_and_ice: {
+    ingredient_type: "Garnish",
+    flavor_profiles: []
+  },
+  specialty_and_culinary_ingredients: {
+    ingredient_type: "Other",
+    flavor_profiles: [ "Rich" ]
+  }
+}.freeze
+
+CITRUS_TERMS = [
+  "lemon", "lime", "orange", "grapefruit", "yuzu", "calamansi",
+  "sudachi", "kabosu", "bergamot", "mandarin", "tangerine",
+  "clementine", "pomelo"
+].freeze
+
+TROPICAL_TERMS = [
+  "pineapple", "mango", "passion fruit", "guava", "lychee",
+  "coconut", "banana", "papaya", "dragon fruit"
+].freeze
+
+FRUIT_TERMS = [
+  "apple", "pear", "peach", "apricot", "plum", "cherry",
+  "strawberry", "raspberry", "blackberry", "blueberry", "cranberry",
+  "pomegranate", "grape", "fig", "melon", "kiwi", "persimmon"
+].freeze
+
+FLORAL_TERMS = [
+  "rose", "lavender", "violet", "hibiscus", "elderflower", "jasmine",
+  "chamomile", "orange blossom", "cherry blossom", "osmanthus",
+  "butterfly pea", "flower"
+].freeze
+
+HERBAL_TERMS = [
+  "mint", "basil", "rosemary", "thyme", "sage", "tarragon", "shiso",
+  "lemongrass", "absinthe", "aquavit", "amaro", "fernet", "herbal",
+  "pandan", "tea", "juniper"
+].freeze
+
+SPICY_TERMS = [
+  "ginger", "cinnamon", "cardamom", "clove", "allspice", "pepper",
+  "jalapeño", "habanero", "chile", "chili", "ancho", "cayenne",
+  "horseradish", "wasabi"
+].freeze
+
+SMOKY_TERMS = [
+  "mezcal", "peated", "smoked", "smoke", "lapsang", "chipotle"
+].freeze
+
+CREAMY_TERMS = [
+  "cream", "milk", "yogurt", "egg", "aquafaba", "mascarpone",
+  "butter", "tahini"
+].freeze
+
+SAVORY_TERMS = [
+  "tomato", "celery", "cucumber", "olive", "pickle", "brine", "miso",
+  "soy sauce", "fish sauce", "oyster sauce", "worcestershire", "bacon",
+  "garlic", "salt", "avocado"
+].freeze
+
+RICH_TERMS = [
+  "coffee", "espresso", "chocolate", "cacao", "cocoa", "caramel",
+  "molasses", "butter", "maple", "vanilla", "nut", "sesame"
+].freeze
+
+SOUR_TERMS = [
+  "vinegar", "acid", "verjus", "shrub", "sour", "lemonade", "limeade"
+].freeze
+
+BEER_TERMS = [
+  "beer", "lager", "pilsner", "ale", "porter", "stout", "gose",
+  "lambic", "hefeweizen", "saison"
+].freeze
+
+WINE_TERMS = [
+  "vermouth", "wine", "champagne", "prosecco", "cava", "sherry",
+  "port", "madeira", "marsala", "lillet", "cocchi", "dubonnet"
+].freeze
+
+HERB_TERMS = [
+  "mint", "basil", "rosemary", "thyme", "sage", "tarragon", "cilantro",
+  "parsley", "dill", "shiso", "lemongrass", "pandan", "bay leaf"
+].freeze
+
+SPICE_TERMS = [
+  "cinnamon", "nutmeg", "clove", "cardamom", "peppercorn", "paprika",
+  "cayenne", "allspice", "star anise", "saffron"
+].freeze
+
+SWEETENER_TERMS = [
+  "sugar", "honey", "agave nectar", "molasses", "jaggery"
+].freeze
+
+# Returns the Type and Flavor Profiles for one seeded ingredient.
+def ingredient_metadata_for(name, group_name)
+  group_metadata = GROUP_METADATA.fetch(group_name)
+  normalized_name = name.downcase
+
+  ingredient_type = group_metadata[:ingredient_type]
+  flavor_profiles = group_metadata[:flavor_profiles].dup
+
+  if BEER_TERMS.any? { |term| normalized_name.include?(term) }
+    ingredient_type = "Beer"
+  elsif WINE_TERMS.any? { |term| normalized_name.include?(term) }
+    ingredient_type = "Wine"
+  elsif normalized_name.include?("syrup") || normalized_name.include?("cordial")
+    ingredient_type = "Syrup"
+  elsif SWEETENER_TERMS.any? { |term| normalized_name.include?(term) }
+    ingredient_type = "Sweetener"
+  elsif normalized_name.include?("juice")
+    ingredient_type = "Juice"
+  elsif normalized_name.include?("bitters")
+    ingredient_type = "Bitters"
+  elsif normalized_name.include?("liqueur") || normalized_name.include?("crème de") ||
+        normalized_name.include?("advocaat") || normalized_name.include?("allspice dram") ||
+        normalized_name.include?("amaretto") || normalized_name.include?("drambuie") ||
+        normalized_name.include?("frangelico")
+    ingredient_type = "Liqueur"
+  elsif normalized_name.include?("cream") || normalized_name.include?("milk") ||
+        normalized_name.include?("yogurt") || normalized_name.include?("ice cream")
+    ingredient_type = "Dairy"
+  elsif HERB_TERMS.any? { |term| normalized_name.include?(term) }
+    ingredient_type = "Herb"
+  elsif SPICE_TERMS.any? { |term| normalized_name.include?(term) }
+    ingredient_type = "Spice"
+  elsif group_name == :fresh_fruits_and_vegetables &&
+        CITRUS_TERMS.any? { |term| normalized_name.include?(term) }
+    ingredient_type = "Citrus"
+  end
+
+  if CITRUS_TERMS.any? { |term| normalized_name.include?(term) }
+    flavor_profiles << "Citrusy"
+    flavor_profiles << "Sour" if normalized_name.include?("juice")
+  end
+
+  if TROPICAL_TERMS.any? { |term| normalized_name.include?(term) }
+    flavor_profiles << "Tropical"
+    flavor_profiles << "Fruity"
+  end
+
+  flavor_profiles << "Fruity" if FRUIT_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Floral" if FLORAL_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Herbal" if HERBAL_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Spicy" if SPICY_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Smoky" if SMOKY_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Creamy" if CREAMY_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Savory" if SAVORY_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Rich" if RICH_TERMS.any? { |term| normalized_name.include?(term) }
+  flavor_profiles << "Sour" if SOUR_TERMS.any? { |term| normalized_name.include?(term) }
+
+  if normalized_name.include?("syrup") || normalized_name.include?("sugar") ||
+     normalized_name.include?("honey") || normalized_name.include?("liqueur") ||
+     normalized_name.include?("crème de") || normalized_name.include?("cordial") ||
+     normalized_name.include?("grenadine")
+    flavor_profiles << "Sweet"
+  end
+
+  if normalized_name.include?("bitters") || normalized_name.include?("amaro") ||
+     normalized_name.include?("fernet") || normalized_name.include?("campari") ||
+     normalized_name.include?("aperol")
+    flavor_profiles << "Bitter"
+  end
+
+  flavor_profiles << "Dry" if normalized_name.include?("dry")
+
+  flavor_profiles = flavor_profiles
+    .uniq
+    .select { |profile| Ingredient::FLAVOR_PROFILES.include?(profile) }
+
+  {
+    ingredient_type: ingredient_type,
+    flavor_profiles: flavor_profiles
+  }
+end
+
 ingredient_names = ingredient_groups
   .values
   .flatten
@@ -273,17 +505,45 @@ ingredient_names = ingredient_groups
   .uniq
   .sort
 
-  Ingredient.transaction do
-    if Rails.env.development?
-      Ingredient.transaction do
-        ingredient_names.each do |ingredient_name|
-          Ingredient.find_or_create_by!(name: ingredient_name)
-        end
-      end
+if Rails.env.development?
+  seeded_count = 0
+  updated_count = 0
+  missing_count = 0
 
-      puts "Seeded #{ingredient_names.length} cocktail ingredients."
+  Ingredient.transaction do
+    ingredient_groups.each do |group_name, names|
+      names.each do |ingredient_name|
+        metadata = ingredient_metadata_for(ingredient_name, group_name)
+
+        ingredient = Ingredient.find_by(
+          "LOWER(name) = ?",
+          ingredient_name.downcase
+        )
+
+        if ingredient.nil?
+          missing_count += 1
+          next
+        end
+
+        ingredient.update_columns(
+          ingredient_type: metadata[:ingredient_type],
+          flavor_profiles: metadata[:flavor_profiles],
+          updated_at: Time.current
+        )
+
+        updated_count += 1
+      end
+    end
+
+    ingredient_names.each do |ingredient_name|
+      seeded_count += 1 if Ingredient.exists?(name: ingredient_name)
     end
   end
+
+  puts "Seeded #{seeded_count} cocktail ingredients."
+  puts "Backfilled metadata for #{updated_count} cocktail ingredients."
+  puts "#{missing_count} seed ingredients were not found." if missing_count.positive?
+end
 
 # =========================
 # Categories
