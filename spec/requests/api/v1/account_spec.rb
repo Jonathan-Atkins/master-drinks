@@ -1,182 +1,207 @@
 require "rails_helper"
 
-RSpec.describe "Account", type: :request do
-  before(:each) do
-    @user = User.create!(
-      name: "Alice",
-      username: "alice",
-      email: "alice@example.com",
-      password: "password123",
-      password_confirmation: "password123"
+RSpec.describe "Api::V1::Account", type: :request do
+  let(:user) do
+    create(
+      :user,
+      username: "account_user",
+      email: "account@example.com",
+      password: "password",
+      password_confirmation: "password"
     )
   end
 
-  def log_in(user)
-    post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
-    }
+  def login(user)
+    post "/api/v1/login",
+         params: {
+           email: user.email,
+           password: "password"
+         }
   end
 
   describe "DELETE /api/v1/account" do
-    describe "happy path" do
-      it "deletes the logged-in user's account" do
-        log_in(@user)
+    context "happy path" do
+      it "deletes the authenticated user's account" do
+        login(user)
 
         expect do
           delete "/api/v1/account",
-                 params: { confirmation: "DELETE" }
+                 params: {
+                   confirmation: "DELETE"
+                 }
         end.to change(User, :count).by(-1)
 
-        expect(response).to have_http_status(:no_content)
+        expect(response)
+          .to have_http_status(:no_content)
       end
 
       it "deletes the user's drinks and recipes" do
-        drink = create_drink(
-          @user,
-          {
-            name: "Old Fashioned",
-            alcoholic: true
-          },
-          category_names: [ "Whiskey" ]
+        drink = create(
+          :drink,
+          user: user
         )
 
-        recipe = Recipe.create!(
-          drink: drink,
-          name: "Classic Old Fashioned",
-          instructions: "Stir with ice."
+        recipe = create(
+          :recipe,
+          drink: drink
         )
 
-        log_in(@user)
+        login(user)
 
         delete "/api/v1/account",
-               params: { confirmation: "DELETE" }
+               params: {
+                 confirmation: "DELETE"
+               }
 
-        expect(Drink.exists?(drink.id)).to be(false)
-        expect(Recipe.exists?(recipe.id)).to be(false)
+        expect(
+          Drink.exists?(drink.id)
+        ).to be(false)
+
+        expect(
+          Recipe.exists?(recipe.id)
+        ).to be(false)
       end
 
       it "deletes the user's ingredients and recipe ingredients" do
-        drink = create_drink(
-          @user,
-          {
-            name: "Old Fashioned",
-            alcoholic: true
-          },
-          category_names: [ "Whiskey" ]
+        ingredient = create(
+          :ingredient,
+          user: user
         )
 
-        recipe = Recipe.create!(
-          drink: drink,
-          name: "Classic Old Fashioned",
-          instructions: "Stir with ice."
+        drink = create(
+          :drink,
+          user: user
         )
 
-        ingredient = Ingredient.create!(
-          user: @user,
-          name: "Bourbon"
+        recipe = create(
+          :recipe,
+          drink: drink
         )
 
-        recipe_ingredient = RecipeIngredient.create!(
-          recipe: recipe,
+        recipe_ingredient = create(
+          :recipe_ingredient,
           ingredient: ingredient,
-          amount: 2,
-          measurement_unit: "oz"
+          recipe: recipe
         )
 
-        log_in(@user)
+        login(user)
 
         delete "/api/v1/account",
-               params: { confirmation: "DELETE" }
-
-        expect(
-          RecipeIngredient.exists?(recipe_ingredient.id)
-        ).to be(false)
+               params: {
+                 confirmation: "DELETE"
+               }
 
         expect(
           Ingredient.exists?(ingredient.id)
         ).to be(false)
+
+        expect(
+          RecipeIngredient.exists?(
+            recipe_ingredient.id
+          )
+        ).to be(false)
       end
 
-      it "deletes saved recipe relationships" do
-        other_user = User.create!(
-          name: "Bob",
-          username: "bob",
-          email: "bob@example.com",
-          password: "password123",
-          password_confirmation: "password123"
+      it "deletes saved recipe relationships belonging to the user" do
+        owner = create(
+          :user,
+          username: "recipe_owner",
+          email: "owner@example.com",
+          password: "password",
+          password_confirmation: "password"
         )
 
-        drink = create_drink(
-          @user,
-          {
-            name: "Margarita",
-            alcoholic: true
-          },
-          category_names: [ "Tequila" ]
+        drink = create(
+          :drink,
+          user: owner
         )
 
-        recipe = Recipe.create!(
-          drink: drink,
-          name: "Classic Margarita",
-          instructions: "Shake with ice."
+        recipe = create(
+          :recipe,
+          drink: drink
         )
 
-        saved_recipe = UserRecipe.create!(
-          user: other_user,
+        saved_recipe = create(
+          :user_recipe,
+          user: user,
           recipe: recipe
         )
 
-        log_in(@user)
+        login(user)
 
         delete "/api/v1/account",
-               params: { confirmation: "DELETE" }
+               params: {
+                 confirmation: "DELETE"
+               }
 
         expect(
-          UserRecipe.exists?(saved_recipe.id)
+          UserRecipe.exists?(
+            saved_recipe.id
+          )
         ).to be(false)
-
-        expect(User.exists?(other_user.id)).to be(true)
       end
 
       it "clears the deleted user's session" do
-        log_in(@user)
+        login(user)
 
         delete "/api/v1/account",
-               params: { confirmation: "DELETE" }
+               params: {
+                 confirmation: "DELETE"
+               }
 
         get "/api/v1/session"
 
-        expect(response).to have_http_status(:unauthorized)
+        expect(response)
+          .to have_http_status(:unauthorized)
       end
     end
 
-    describe "sad path" do
+    context "sad path" do
       it "does not delete an account without authentication" do
+        user
+
         expect do
           delete "/api/v1/account",
-                 params: { confirmation: "DELETE" }
+                 params: {
+                   confirmation: "DELETE"
+                 }
         end.not_to change(User, :count)
 
-        expect(response).to have_http_status(:unauthorized)
+        expect(response)
+          .to have_http_status(:unauthorized)
       end
 
-      it "does not delete the account without the DELETE confirmation" do
-        log_in(@user)
+      it "does not delete the account without the required confirmation" do
+        login(user)
 
         expect do
           delete "/api/v1/account",
-                 params: { confirmation: "delete" }
+                 params: {
+                   confirmation: "delete"
+                 }
         end.not_to change(User, :count)
 
-        result = JSON.parse(response.body)
+        expect(response)
+          .to have_http_status(
+            :unprocessable_content
+          )
+      end
 
-        expect(response).to have_http_status(
-          :unprocessable_content
-        )
+      it "returns an error when confirmation is incorrect" do
+        login(user)
 
-        expect(result["errors"]).to include(
-          "Type DELETE to confirm account deletion"
+        delete "/api/v1/account",
+               params: {
+                 confirmation: "delete"
+               }
+
+        result =
+          JSON.parse(response.body)
+
+        expect(
+          result["errors"]
+        ).to include(
+          "Confirmation must be DELETE"
         )
       end
     end

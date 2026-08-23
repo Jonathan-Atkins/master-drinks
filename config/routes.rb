@@ -1,41 +1,62 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :categories, only: [ :index ]
+      root "drinks#index"
 
       resources :drinks do
         resources :recipes
       end
 
-      resources :recipes, except: [ :create ] do
-        resources :recipe_ingredients, only: [ :create ]
+      resources :recipes,
+                except: [ :create ] do
+        resources :recipe_ingredients,
+                  only: [ :create ]
       end
 
-      resources :recipe_ingredients, only: [ :update, :destroy ]
+      resources :recipe_ingredients,
+                only: [
+                  :update,
+                  :destroy
+                ]
 
       resources :users do
-        member do
-          patch :password
-        end
+        resource :password,
+                 only: [ :update ],
+                 controller: :passwords
       end
 
+      resources :categories,
+                only: [ :index ]
+
       resources :ingredients
-      resources :user_recipes, only: [ :index, :create, :destroy ]
 
-      post "/login", to: "sessions#create"
-      delete "/logout", to: "sessions#destroy"
-      get "/session", to: "sessions#show"
+      resources :ingredient_options,
+                only: [ :index ]
 
-      delete "/account", to: "account#destroy"
+      resources :user_recipes,
+                only: [
+                  :index,
+                  :create,
+                  :destroy
+                ]
 
-      get "/my_recipes", to: "my_recipes#index"
-      get "/my_drinks", to: "my_drinks#index"
+      resource :account,
+               only: [ :destroy ]
 
-      # namespace :admin do
-      #   resources :drinks
-      #   resources :recipes
-      #   resources :ingredients
-      # end
+      post "/login",
+           to: "sessions#create"
+
+      delete "/logout",
+             to: "sessions#destroy"
+
+      get "/session",
+          to: "sessions#show"
+
+      get "/my_recipes",
+          to: "my_recipes#index"
+
+      get "/my_drinks",
+          to: "my_drinks#index"
     end
   end
 end
