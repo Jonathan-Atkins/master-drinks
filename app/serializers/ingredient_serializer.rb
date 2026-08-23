@@ -7,7 +7,7 @@ class IngredientSerializer
       flavor_profiles: ingredient.flavor_profiles,
       recipe_count: ingredient.recipe_ingredients.count,
       owned_by_current_user: current_user.present? &&
-                             ingredient.user_id == current_user.id,
+                             ingredient.user_id == current_user.id
     }
   end
 

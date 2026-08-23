@@ -14,7 +14,7 @@ class Ingredient < ApplicationRecord
     "Herb",
     "Spice",
     "Garnish",
-    "Other",
+    "Other"
   ].freeze
 
   FLAVOR_PROFILES = [
@@ -31,7 +31,7 @@ class Ingredient < ApplicationRecord
     "Savory",
     "Citrusy",
     "Dry",
-    "Rich",
+    "Rich"
   ].freeze
 
   belongs_to :user
@@ -45,12 +45,12 @@ class Ingredient < ApplicationRecord
   validates :name,
             presence: true,
             uniqueness: {
-              case_sensitive: false,
+              case_sensitive: false
             }
 
   validates :ingredient_type,
             inclusion: {
-              in: INGREDIENT_TYPES,
+              in: INGREDIENT_TYPES
             }
 
   validate :flavor_profiles_must_be_valid

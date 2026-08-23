@@ -6,13 +6,13 @@ class Api::V1::UsersController < ApplicationController
                 only: [
                   :show,
                   :update,
-                  :destroy,
+                  :destroy
                 ]
 
   before_action :authorize_user,
                 only: [
                   :update,
-                  :destroy,
+                  :destroy
                 ]
 
   def index

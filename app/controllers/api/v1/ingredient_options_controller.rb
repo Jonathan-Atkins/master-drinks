@@ -7,7 +7,7 @@ class Api::V1::IngredientOptionsController < ApplicationController
       ingredient_types:
         Ingredient::INGREDIENT_TYPES,
       flavor_profiles:
-        Ingredient::FLAVOR_PROFILES,
+        Ingredient::FLAVOR_PROFILES
     },
            status: :ok
   end

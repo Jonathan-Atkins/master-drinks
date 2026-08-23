@@ -14,9 +14,9 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       @user,
       {
         name: "Old Fashioned",
-        alcoholic: true,
+        alcoholic: true
       },
-      category_names: ["Whiskey"],
+      category_names: [ "Whiskey" ],
     )
 
     @ingredient = create_ingredient(
@@ -24,7 +24,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       {
         name: "Bourbon",
         ingredient_type: "Spirit",
-        flavor_profiles: ["Rich", "Dry"],
+        flavor_profiles: [ "Rich", "Dry" ]
       }
     )
   end
@@ -35,7 +35,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
       {
         name: "Bourbon",
         ingredient_type: "Spirit",
-        flavor_profiles: ["Rich"],
+        flavor_profiles: [ "Rich" ]
       }.merge(attributes)
     )
   end
@@ -43,7 +43,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
   def log_in(user)
     post "/api/v1/login", params: {
                        email: user.email,
-                       password: "password123",
+                       password: "password123"
                      }
   end
 
@@ -54,7 +54,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
           @user,
           name: "Bitters",
           ingredient_type: "Bitters",
-          flavor_profiles: ["Bitter"],
+          flavor_profiles: [ "Bitter" ],
         )
 
         get "/api/v1/ingredients"
@@ -82,7 +82,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
           @user,
           name: "Angostura Bitters",
           ingredient_type: "Bitters",
-          flavor_profiles: ["Bitter"],
+          flavor_profiles: [ "Bitter" ],
         )
 
         get "/api/v1/ingredients",
@@ -100,7 +100,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
           @user,
           name: "FlipFlop",
           ingredient_type: "Mixer",
-          flavor_profiles: ["Savory"],
+          flavor_profiles: [ "Savory" ],
         )
 
         log_in(@user)
@@ -133,7 +133,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         ).to eq("FlipFlop")
 
         expect(ingredient_response["ingredient_type"]).to eq("Mixer")
-        expect(ingredient_response["flavor_profiles"]).to eq(["Savory"])
+        expect(ingredient_response["flavor_profiles"]).to eq([ "Savory" ])
 
         expect(
           ingredient_response["recipe_count"]
@@ -175,7 +175,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         post "/api/v1/ingredients", params: {
                                  name: "Simple Syrup",
                                  ingredient_type: "Syrup",
-                                 flavor_profiles: ["Sweet"],
+                                 flavor_profiles: [ "Sweet" ]
                                }
 
         expect(response).to have_http_status(:created)
@@ -184,7 +184,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
         expect(result["name"]).to eq("Simple Syrup")
         expect(result["ingredient_type"]).to eq("Syrup")
-        expect(result["flavor_profiles"]).to eq(["Sweet"])
+        expect(result["flavor_profiles"]).to eq([ "Sweet" ])
         expect(result["owned_by_current_user"]).to be(true)
         expect(Ingredient.last.name).to eq("Simple Syrup")
         expect(Ingredient.last.user).to eq(@user)
@@ -199,7 +199,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
               params: {
                 name: "Rye Whiskey",
                 ingredient_type: "Spirit",
-                flavor_profiles: ["Dry", "Smoky"],
+                flavor_profiles: [ "Dry", "Smoky" ]
               }
 
         expect(response).to have_http_status(:ok)
@@ -227,7 +227,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
               params: {
                 name: "Changed Name",
                 ingredient_type: "Spirit",
-                flavor_profiles: ["Sweet"],
+                flavor_profiles: [ "Sweet" ]
               }
 
         expect(response).to have_http_status(:forbidden)
@@ -279,7 +279,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         post "/api/v1/ingredients", params: {
                                  name: "Simple Syrup",
                                  ingredient_type: "Syrup",
-                                 flavor_profiles: ["Sweet"],
+                                 flavor_profiles: [ "Sweet" ]
                                }
 
         expect(response).to have_http_status(:unauthorized)
@@ -295,7 +295,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         post "/api/v1/ingredients", params: {
                                  name: nil,
                                  ingredient_type: "Syrup",
-                                 flavor_profiles: ["Sweet"],
+                                 flavor_profiles: [ "Sweet" ]
                                }
 
         expect(
@@ -315,7 +315,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         post "/api/v1/ingredients", params: {
                                  name: "Mystery Syrup",
                                  ingredient_type: "Potion",
-                                 flavor_profiles: ["Sweet"],
+                                 flavor_profiles: [ "Sweet" ]
                                }
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -333,7 +333,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
         post "/api/v1/ingredients", params: {
                                  name: "Odd Syrup",
                                  ingredient_type: "Syrup",
-                                 flavor_profiles: ["Sweet", "Alien"],
+                                 flavor_profiles: [ "Sweet", "Alien" ]
                                }
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -350,7 +350,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
           @user,
           name: "Unique Bourbon",
           ingredient_type: "Spirit",
-          flavor_profiles: ["Rich"],
+          flavor_profiles: [ "Rich" ],
         )
 
         log_in(@user)
@@ -359,7 +359,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
              params: {
                name: "unique bourbon",
                ingredient_type: "Spirit",
-               flavor_profiles: ["Rich"],
+               flavor_profiles: [ "Rich" ]
              },
              as: :json
 
@@ -381,7 +381,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
               params: {
                 name: "Rye Whiskey",
                 ingredient_type: "Spirit",
-                flavor_profiles: ["Dry"],
+                flavor_profiles: [ "Dry" ]
               }
 
         expect(response).to have_http_status(:unauthorized)
@@ -395,7 +395,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
               params: {
                 name: nil,
                 ingredient_type: "Spirit",
-                flavor_profiles: ["Dry"],
+                flavor_profiles: [ "Dry" ]
               }
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -409,7 +409,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
               params: {
                 name: "Bourbon",
                 ingredient_type: "Potion",
-                flavor_profiles: ["Rich"],
+                flavor_profiles: [ "Rich" ]
               }
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -428,7 +428,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
               params: {
                 name: "Bourbon",
                 ingredient_type: "Spirit",
-                flavor_profiles: ["Rich", "Alien"],
+                flavor_profiles: [ "Rich", "Alien" ]
               }
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -455,7 +455,7 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
               params: {
                 name: "Changed Name",
                 ingredient_type: "Spirit",
-                flavor_profiles: ["Sweet"],
+                flavor_profiles: [ "Sweet" ]
               }
 
         expect(response).to have_http_status(:forbidden)

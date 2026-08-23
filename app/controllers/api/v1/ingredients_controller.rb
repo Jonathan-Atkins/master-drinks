@@ -1,12 +1,12 @@
 class Api::V1::IngredientsController < ApplicationController
   skip_before_action :require_login,
-                     only: [:index, :show]
+                     only: [ :index, :show ]
 
   before_action :set_ingredient,
-                only: [:show, :update, :destroy]
+                only: [ :show, :update, :destroy ]
 
   before_action :authorize_owner!,
-                only: [:update, :destroy]
+                only: [ :update, :destroy ]
 
   def index
     ingredients = Ingredient.order(:name)
@@ -98,7 +98,7 @@ class Api::V1::IngredientsController < ApplicationController
               current_user.id
 
     render json: {
-             error: "Not authorized",
+             error: "Not authorized"
            },
            status: :forbidden
   end

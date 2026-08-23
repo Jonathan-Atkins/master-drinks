@@ -8,8 +8,8 @@ class Api::V1::PasswordsController < ApplicationController
     )
       render json: {
         errors: [
-          "Current password is incorrect",
-        ],
+          "Current password is incorrect"
+        ]
       },
              status: :unauthorized
 
@@ -23,7 +23,7 @@ class Api::V1::PasswordsController < ApplicationController
     )
       render json: {
         message:
-          "Password updated successfully",
+          "Password updated successfully"
       },
              status: :ok
     else
