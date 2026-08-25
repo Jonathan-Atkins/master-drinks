@@ -25,6 +25,10 @@ Rails.application.routes.draw do
                  controller: :passwords
       end
 
+      resources :profiles,
+                only: [ :show ],
+                param: :username
+
       resources :categories,
                 only: [ :index ]
 
