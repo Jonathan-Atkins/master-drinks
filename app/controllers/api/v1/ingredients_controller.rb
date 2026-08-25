@@ -18,6 +18,19 @@ class Api::V1::IngredientsController < ApplicationController
       )
     end
 
+    if params[:ingredient_type].present?
+      ingredients = ingredients.where(
+        ingredient_type: params[:ingredient_type]
+      )
+    end
+
+    if params[:flavor_profile].present?
+      ingredients = ingredients.where(
+        "? = ANY(flavor_profiles)",
+        params[:flavor_profile]
+      )
+    end
+
     render json: IngredientSerializer.format_collection(
              ingredients,
              current_user
