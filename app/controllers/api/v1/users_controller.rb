@@ -16,9 +16,26 @@ class Api::V1::UsersController < ApplicationController
                 ]
 
   def index
-    users = User.search(params)
+    page = params.fetch(:page, 1).to_i
+    per_page = 20
 
-    render json: UserSerializer.all_users(users),
+    users = User
+      .search(params)
+      .order(created_at: :desc)
+
+    paginated_users = users
+      .limit(per_page)
+      .offset((page - 1) * per_page)
+
+    render json: {
+      users: UserDirectorySerializer.format_collection(
+        paginated_users
+      ),
+      pagination: {
+        page: page,
+        per_page: per_page
+      }
+    },
            status: :ok
   end
 

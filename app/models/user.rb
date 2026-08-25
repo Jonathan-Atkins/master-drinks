@@ -4,11 +4,17 @@ class User < ApplicationRecord
     admin: "admin"
   }
 
-  has_many :user_recipes, dependent: :destroy
-  has_many :recipes, through: :user_recipes
+  has_many :user_recipes,
+           dependent: :destroy
 
-  has_many :drinks, dependent: :destroy
-  has_many :ingredients, dependent: :destroy
+  has_many :recipes,
+           through: :user_recipes
+
+  has_many :drinks,
+           dependent: :destroy
+
+  has_many :ingredients,
+           dependent: :destroy
 
   has_many :owned_recipes,
            through: :drinks,
@@ -16,22 +22,30 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  validates :name, presence: true
-  validates :username, presence: true, uniqueness: true
+  validates :name,
+            presence: true
+
+  validates :username,
+            presence: true,
+            uniqueness: true
+
   validates :email,
             presence: true,
             uniqueness: true,
-            format: { with: URI::MailTo::EMAIL_REGEXP }
+            format: {
+              with: URI::MailTo::EMAIL_REGEXP
+            }
 
   def self.search(params)
-    if params[:username].present?
-      by_username(params[:username])
-    else
-      all
-    end
+    return all unless params[:search].present?
+
+    by_username(params[:search])
   end
 
   def self.by_username(username)
-    where("username ILIKE ?", "%#{username}%")
+    where(
+      "username ILIKE ?",
+      "%#{username}%"
+    )
   end
 end

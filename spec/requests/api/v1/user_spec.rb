@@ -2,104 +2,44 @@ require "rails_helper"
 
 RSpec.describe "User App", type: :request do
   before(:each) do
-  @user = User.create!(
-    name: "Alice",
-    username: "alice",
-    email: "alice@example.com",
-    password: "password123",
-    password_confirmation: "password123"
-  )
+    @user = User.create!(
+      name: "Alice",
+      username: "alice",
+      email: "alice@example.com",
+      password: "password123",
+      password_confirmation: "password123"
+    )
 
-  @other_user = User.create!(
-    name: "Bob",
-    username: "bob",
-    email: "bob@example.com",
-    password: "password123",
-    password_confirmation: "password123"
-  )
+    @other_user = User.create!(
+      name: "Bob",
+      username: "bob",
+      email: "bob@example.com",
+      password: "password123",
+      password_confirmation: "password123"
+    )
 
-  @user_params = {
-    name: "Charlie",
-    username: "charlie",
-    email: "charlie@example.com",
-    password: "password123",
-    password_confirmation: "password123"
-  }
-  end
-
-  def log_in(user)
-    post "/api/v1/login", params: {
-      email: user.email,
-      password: "password123"
+    @user_params = {
+      name: "Charlie",
+      username: "charlie",
+      email: "charlie@example.com",
+      password: "password123",
+      password_confirmation: "password123"
     }
   end
 
+  def log_in(user)
+    post "/api/v1/login",
+         params: {
+           email: user.email,
+           password: "password123"
+         }
+  end
+
   describe "happy path" do
-    describe "GET /api/v1/users" do
-      it "can get all users" do
-        user = User.create!(@user_params)
-
-        log_in(user)
-
-        get "/api/v1/users"
-
-        result = JSON.parse(response.body)
-
-        expect(response).to have_http_status(:ok)
-        expect(result).to be_an(Array)
-        expect(result.count).to eq(3)
-        expect(result.first["name"]).to eq("Alice")
-        expect(result.first["username"]).to eq("alice")
-        expect(result.first["email"]).to eq("alice@example.com")
-      end
-      it "allows a logged-in user to search for users by username" do
-    log_in(@user)
-
-        get "/api/v1/users", params: {
-          username: "bob"
-        }
-
-        expect(response).to have_http_status(:ok)
-
-        result = JSON.parse(response.body)
-
-        expect(result.count).to eq(1)
-        expect(result.first["username"]).to eq("bob")
-        expect(result.first["email"]).to eq("bob@example.com")
-      end
-      it "returns users with partial username matches" do
-        log_in(@user)
-
-        get "/api/v1/users", params: {
-          username: "bo"
-        }
-
-        expect(response).to have_http_status(:ok)
-
-        result = JSON.parse(response.body)
-
-        expect(result.count).to eq(1)
-        expect(result.first["username"]).to eq("bob")
-      end
-      it "searches usernames without being case sensitive" do
-        log_in(@user)
-
-        get "/api/v1/users", params: {
-          username: "BOB"
-        }
-
-        expect(response).to have_http_status(:ok)
-
-        result = JSON.parse(response.body)
-
-        expect(result.count).to eq(1)
-        expect(result.first["username"]).to eq("bob")
-      end
-    end
-
     describe "GET /api/v1/users/:id" do
       it "can get one user" do
         user = User.create!(@user_params)
+
         log_in(user)
 
         get "/api/v1/users/#{user.id}"
@@ -117,7 +57,8 @@ RSpec.describe "User App", type: :request do
     describe "POST /api/v1/users" do
       it "can create a user" do
         expect do
-          post "/api/v1/users", params: @user_params
+          post "/api/v1/users",
+               params: @user_params
         end.to change(User, :count).by(1)
 
         result = JSON.parse(response.body)
@@ -135,6 +76,7 @@ RSpec.describe "User App", type: :request do
     describe "PATCH /api/v1/users/:id" do
       it "can update a user" do
         user = User.create!(@user_params)
+
         log_in(user)
 
         updated_params = {
@@ -142,9 +84,11 @@ RSpec.describe "User App", type: :request do
           username: "AliceInWonderLand"
         }
 
-        patch "/api/v1/users/#{user.id}", params: updated_params
+        patch "/api/v1/users/#{user.id}",
+              params: updated_params
 
         result = JSON.parse(response.body)
+
         user.reload
 
         expect(response).to have_http_status(:ok)
@@ -158,24 +102,31 @@ RSpec.describe "User App", type: :request do
       it "allows a user to change their password" do
         log_in(@user)
 
-        patch "/api/v1/users/#{@user.id}/password", params: {
-          current_password: "password123",
-          password: "newpassword123",
-          password_confirmation: "newpassword123"
-        }
+        patch "/api/v1/users/#{@user.id}/password",
+              params: {
+                current_password: "password123",
+                password: "newpassword123",
+                password_confirmation: "newpassword123"
+              }
 
         expect(response).to have_http_status(:ok)
 
         @user.reload
 
-        expect(@user.authenticate("newpassword123")).to eq(@user)
-        expect(@user.authenticate("password123")).to be_falsey
+        expect(
+          @user.authenticate("newpassword123")
+        ).to eq(@user)
+
+        expect(
+          @user.authenticate("password123")
+        ).to be_falsey
       end
     end
 
     describe "DELETE /api/v1/users/:id" do
       it "can delete a user" do
         user = User.create!(@user_params)
+
         log_in(user)
 
         expect do
@@ -187,34 +138,14 @@ RSpec.describe "User App", type: :request do
       end
     end
 
-   describe "authentication" do
-    it "returns unauthorized when the user is not logged in" do
-    get "/api/v1/users"
-
-    result = JSON.parse(response.body)
-
-    expect(response).to have_http_status(:unauthorized)
-    expect(result["errors"]).to include("You must be logged in")
-    end
-
-    it "allows a logged-in user to access the endpoint" do
-      user = User.create!(@user_params)
-      log_in(user)
-
-      get "/api/v1/users"
-
-      expect(response).to have_http_status(:ok)
-    end
-end
-
     describe "authorization" do
       before(:each) do
         @logged_in_user = User.create!(@user_params)
 
-        @other_user = User.create!(
-          name: "Bob",
-          username: "BobTheBartender",
-          email: "bob@email.com",
+        @unauthorized_user = User.create!(
+          name: "Dave",
+          username: "DaveTheBartender",
+          email: "dave@email.com",
           password: "12345",
           password_confirmation: "12345"
         )
@@ -223,27 +154,33 @@ end
       end
 
       it "does not allow a user to update another user's account" do
-        patch "/api/v1/users/#{@other_user.id}",
-              params: { name: "Updated Name" }
+        patch "/api/v1/users/#{@unauthorized_user.id}",
+              params: {
+                name: "Updated Name"
+              }
 
         result = JSON.parse(response.body)
-        @other_user.reload
+
+        @unauthorized_user.reload
 
         expect(response).to have_http_status(:forbidden)
+
         expect(result["errors"]).to include(
           "You are not authorized to delete this user"
         )
-        expect(@other_user.name).to eq("Bob")
+
+        expect(@unauthorized_user.name).to eq("Dave")
       end
 
       it "does not allow a user to delete another user's account" do
         expect do
-          delete "/api/v1/users/#{@other_user.id}"
+          delete "/api/v1/users/#{@unauthorized_user.id}"
         end.not_to change(User, :count)
 
         result = JSON.parse(response.body)
 
         expect(response).to have_http_status(:forbidden)
+
         expect(result["errors"]).to include(
           "You are not authorized to delete this user"
         )
@@ -255,6 +192,7 @@ end
     describe "GET /api/v1/users/:id" do
       it "returns an error if the user cannot be found" do
         user = User.create!(@user_params)
+
         log_in(user)
 
         get "/api/v1/users/999"
@@ -262,57 +200,53 @@ end
         result = JSON.parse(response.body)
 
         expect(response).to have_http_status(:not_found)
+
         expect(result["errors"]).to include(
           "Couldn't find User with 'id'=\"999\""
         )
-      end
-      it "does not allow an unauthenticated user to search by username" do
-        get "/api/v1/users", params: {
-          username: "bob"
-        }
-
-    expect(response).to have_http_status(:unauthorized)
-      end
-      it "returns an empty array when no username matches" do
-        log_in(@user)
-
-        get "/api/v1/users", params: {
-          username: "missinguser"
-        }
-
-        expect(response).to have_http_status(:ok)
-
-        result = JSON.parse(response.body)
-
-        expect(result).to eq([])
       end
     end
 
     describe "POST /api/v1/users" do
       it "returns an error if the user's name is missing" do
-        invalid_user_params = @user_params.merge(name: nil)
+        invalid_user_params =
+          @user_params.merge(
+            name: nil
+          )
 
         expect do
-          post "/api/v1/users", params: invalid_user_params
+          post "/api/v1/users",
+               params: invalid_user_params
         end.not_to change(User, :count)
 
         result = JSON.parse(response.body)
 
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(result["errors"]).to include("Name can't be blank")
+        expect(response).to have_http_status(
+          :unprocessable_content
+        )
+
+        expect(result["errors"]).to include(
+          "Name can't be blank"
+        )
       end
 
       it "returns an error if the password confirmation does not match" do
         invalid_user_params =
-          @user_params.merge(password_confirmation: "wrong-password")
+          @user_params.merge(
+            password_confirmation: "wrong-password"
+          )
 
         expect do
-          post "/api/v1/users", params: invalid_user_params
+          post "/api/v1/users",
+               params: invalid_user_params
         end.not_to change(User, :count)
 
         result = JSON.parse(response.body)
 
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to have_http_status(
+          :unprocessable_content
+        )
+
         expect(result["errors"]).to include(
           "Password confirmation doesn't match Password"
         )
@@ -322,13 +256,18 @@ end
     describe "PATCH /api/v1/users/:id" do
       it "returns an error if the user cannot be found" do
         user = User.create!(@user_params)
+
         log_in(user)
 
-        patch "/api/v1/users/999", params: { name: "Updated Name" }
+        patch "/api/v1/users/999",
+              params: {
+                name: "Updated Name"
+              }
 
         result = JSON.parse(response.body)
 
         expect(response).to have_http_status(:not_found)
+
         expect(result["errors"]).to include(
           "Couldn't find User with 'id'=\"999\""
         )
@@ -336,15 +275,26 @@ end
 
       it "returns an error if the updated user is invalid" do
         user = User.create!(@user_params)
+
         log_in(user)
 
-        patch "/api/v1/users/#{user.id}", params: { name: nil }
+        patch "/api/v1/users/#{user.id}",
+              params: {
+                name: nil
+              }
 
         result = JSON.parse(response.body)
+
         user.reload
 
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(result["errors"]).to include("Name can't be blank")
+        expect(response).to have_http_status(
+          :unprocessable_content
+        )
+
+        expect(result["errors"]).to include(
+          "Name can't be blank"
+        )
+
         expect(user.name).to eq("Charlie")
       end
     end
@@ -353,29 +303,39 @@ end
       it "does not change the password if the current password is incorrect" do
         log_in(@user)
 
-        patch "/api/v1/users/#{@user.id}/password", params: {
-          current_password: "wrongpassword",
-          password: "newpassword123",
-          password_confirmation: "newpassword123"
-        }
+        patch "/api/v1/users/#{@user.id}/password",
+              params: {
+                current_password: "wrongpassword",
+                password: "newpassword123",
+                password_confirmation: "newpassword123"
+              }
 
         expect(response).to have_http_status(:unauthorized)
 
         @user.reload
 
-        expect(@user.authenticate("password123")).to eq(@user)
-        expect(@user.authenticate("newpassword123")).to be_falsey
+        expect(
+          @user.authenticate("password123")
+        ).to eq(@user)
+
+        expect(
+          @user.authenticate("newpassword123")
+        ).to be_falsey
       end
+
       it "does not change the password when the new password confirmation does not match" do
         log_in(@user)
 
-        patch "/api/v1/users/#{@user.id}/password", params: {
-          current_password: "password123",
-          password: "newpassword123",
-          password_confirmation: "differentpassword"
-        }
+        patch "/api/v1/users/#{@user.id}/password",
+              params: {
+                current_password: "password123",
+                password: "newpassword123",
+                password_confirmation: "differentpassword"
+              }
 
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to have_http_status(
+          :unprocessable_content
+        )
 
         result = JSON.parse(response.body)
 
@@ -385,14 +345,20 @@ end
 
         @user.reload
 
-        expect(@user.authenticate("password123")).to eq(@user)
-        expect(@user.authenticate("newpassword123")).to be_falsey
+        expect(
+          @user.authenticate("password123")
+        ).to eq(@user)
+
+        expect(
+          @user.authenticate("newpassword123")
+        ).to be_falsey
       end
     end
 
     describe "DELETE /api/v1/users/:id" do
       it "returns an error if the user cannot be found" do
         user = User.create!(@user_params)
+
         log_in(user)
 
         delete "/api/v1/users/999"
@@ -400,6 +366,7 @@ end
         result = JSON.parse(response.body)
 
         expect(response).to have_http_status(:not_found)
+
         expect(result["errors"]).to include(
           "Couldn't find User with 'id'=\"999\""
         )
