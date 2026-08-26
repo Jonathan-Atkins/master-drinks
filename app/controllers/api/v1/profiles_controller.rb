@@ -4,7 +4,10 @@ class Api::V1::ProfilesController < ApplicationController
       username: params[:username]
     )
 
-    render json: UserProfileSerializer.format(user),
+    render json: UserProfileSerializer.format(
+             user,
+             current_user
+           ),
            status: :ok
   end
 end

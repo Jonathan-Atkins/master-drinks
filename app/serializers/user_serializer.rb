@@ -15,10 +15,4 @@ class UserSerializer
       email: user.email
     }
   end
-
-  def self.all_users(users)
-    users.map do |user|
-      format(user)
-    end
-  end
 end

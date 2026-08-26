@@ -27,7 +27,15 @@ Rails.application.routes.draw do
 
       resources :profiles,
                 only: [ :show ],
-                param: :username
+                param: :username do
+        resources :drinks,
+                  only: [ :index ],
+                  module: :profiles
+
+        resources :recipes,
+                  only: [ :index ],
+                  module: :profiles
+      end
 
       resources :categories,
                 only: [ :index ]
