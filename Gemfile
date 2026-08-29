@@ -44,6 +44,8 @@ group :development, :test do
   gem "pry-nav"
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
+  gem "faraday"
+  
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
@@ -51,6 +53,10 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
   gem "simplecov", require: false
+end
+
+group :test do
+  gem "webmock"
 end
 
 gem "rufo", "~> 0.18.2", group: :development
