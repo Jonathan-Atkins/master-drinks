@@ -44,8 +44,6 @@ group :development, :test do
   gem "pry-nav"
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
-  gem "faraday"
-
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
@@ -61,3 +59,5 @@ end
 
 gem "rufo", "~> 0.18.2", group: :development
 gem "bcrypt", "~> 3.1.7"
+gem "faraday", group: :development
+
