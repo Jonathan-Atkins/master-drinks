@@ -2,12 +2,10 @@ class WikimediaFactPoro
   attr_reader :title, :summary, :source_url
 
   def initialize(data)
-    @title = data[:title]
-    @summary = data[:extract]
-    @source_url = data.dig(
-      :content_urls,
-      :desktop,
-      :page
-    )
+    page = data[:pages].first
+
+    @title = page[:title]
+    @summary = page[:description]
+    @source_url = "#{WikimediaGateway::BASE_URL}/wiki/#{page[:key]}"
   end
 end

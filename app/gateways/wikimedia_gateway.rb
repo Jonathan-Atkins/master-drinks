@@ -1,14 +1,22 @@
-# app/gateways/wikimedia_gateway.rb
+require "faraday"
+require "json"
 
 class WikimediaGateway
-  BASE_URL = "https://en.wikipedia.org".freeze
+  BASE_URL = "https://en.wikipedia.org".freeze                 
 
-  def self.get_summary(topic)
+  def self.search_page(topic)
     response = connection.get(
-      "/api/rest_v1/page/summary/#{URI.encode_www_form_component(topic)}"
+      "/w/rest.php/v1/search/page",
+      {
+        q: topic,
+        limit: 1
+      }
     )
 
-    JSON.parse(response.body, symbolize_names: true)
+    JSON.parse(
+      response.body,
+      symbolize_names: true
+    )
   end
 
   def self.connection

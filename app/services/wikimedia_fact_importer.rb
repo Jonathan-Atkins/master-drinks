@@ -1,6 +1,6 @@
 class WikimediaFactImporter
   def self.import(topic)
-    data = WikimediaGateway.get_summary(topic)
+    data = WikimediaGateway.search_page(topic)
 
     fact = WikimediaFactPoro.new(data)
 
@@ -8,7 +8,7 @@ class WikimediaFactImporter
       body: fact.summary,
       source_name: "Wikipedia",
       source_url: fact.source_url,
-      category: "cocktail-history"
+      category: "cocktail-history",
     )
   end
 end

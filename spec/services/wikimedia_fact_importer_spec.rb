@@ -4,20 +4,20 @@ RSpec.describe WikimediaFactImporter do
   describe ".import" do
     context "happy path" do
       it "creates a FunFact from Wikimedia data" do
-        data = {
-          title: "Negroni",
-          extract: "The Negroni is an Italian cocktail.",
-          content_urls: {
-            desktop: {
-              page: "https://en.wikipedia.org/wiki/Negroni"
-            }
+       data = {
+        pages: [
+          {
+            key: "Negroni",
+            title: "Negroni",
+            description: "Italian cocktail",
+            excerpt: "The Negroni is an Italian cocktail."
           }
-        }
+        ]
+      }
 
-        allow(WikimediaGateway)
-          .to receive(:get_summary)
-          .with("Negroni")
-          .and_return(data)
+        allow(WikimediaGateway).to receive(:search_page)
+            .with("Negroni")
+            .and_return(data)
 
         expect {
           WikimediaFactImporter.import("Negroni")
@@ -26,7 +26,7 @@ RSpec.describe WikimediaFactImporter do
         fact = FunFact.last
 
         expect(fact.body).to eq(
-          "The Negroni is an Italian cocktail."
+          "Italian cocktail"
         )
         expect(fact.source_name).to eq("Wikipedia")
         expect(fact.source_url).to eq(
