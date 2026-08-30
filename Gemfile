@@ -60,4 +60,3 @@ end
 gem "rufo", "~> 0.18.2", group: :development
 gem "bcrypt", "~> 3.1.7"
 gem "faraday"
-
