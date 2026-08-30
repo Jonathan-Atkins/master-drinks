@@ -2,7 +2,7 @@ require "faraday"
 require "json"
 
 class WikimediaGateway
-  BASE_URL = "https://en.wikipedia.org".freeze                 
+  BASE_URL = "https://en.wikipedia.org".freeze
 
   def self.search_page(topic)
     response = connection.get(

@@ -54,7 +54,7 @@ Rails.application.routes.draw do
 
       resource :account,
                only: [ :destroy ]
-               
+
       resources :fun_facts, only: [ :index ]
 
       post "/login",
