@@ -10,8 +10,11 @@ class Drink < ApplicationRecord
   before_validation :normalize_name
 
   validates :name,
-            presence: true,
-            uniqueness: { case_sensitive: false }
+          presence: true,
+          uniqueness: {
+            case_sensitive: false,
+            scope: :user_id
+          }
 
   validates :alcoholic, inclusion: { in: [ true, false ] }
 

@@ -497,28 +497,20 @@ def ingredient_metadata_for(name, group_name)
   }
 end
 
-ingredient_names = ingredient_groups
-  .values
-  .flatten
-  .map(&:strip)
-  .reject(&:empty?)
-  .uniq
-  .sort
-
-
-
 # =========================
 # Seed / Backfill Ingredient Metadata
 # =========================
 
-seeded_count = 0
+created_count = 0
 updated_count = 0
-missing_count = 0
 
 Ingredient.transaction do
   ingredient_groups.each do |group_name, names|
     names.each do |ingredient_name|
-      metadata = ingredient_metadata_for(ingredient_name, group_name)
+      metadata = ingredient_metadata_for(
+        ingredient_name,
+        group_name
+      )
 
       ingredient = Ingredient.find_by(
         "LOWER(name) = ?",
@@ -526,29 +518,28 @@ Ingredient.transaction do
       )
 
       if ingredient.nil?
-        missing_count += 1
-        next
+        Ingredient.create!(
+          name: ingredient_name,
+          ingredient_type: metadata[:ingredient_type],
+          flavor_profiles: metadata[:flavor_profiles],
+          user: nil
+        )
+
+        created_count += 1
+      else
+        ingredient.update!(
+          ingredient_type: metadata[:ingredient_type],
+          flavor_profiles: metadata[:flavor_profiles]
+        )
+
+        updated_count += 1
       end
-
-      ingredient.update_columns(
-        ingredient_type: metadata[:ingredient_type],
-        flavor_profiles: metadata[:flavor_profiles],
-        updated_at: Time.current
-      )
-
-      updated_count += 1
     end
-  end
-
-  ingredient_names.each do |ingredient_name|
-    seeded_count += 1 if Ingredient.exists?(name: ingredient_name)
   end
 end
 
-puts "Seeded #{seeded_count} cocktail ingredients."
-puts "Backfilled metadata for #{updated_count} cocktail ingredients."
-puts "#{missing_count} seed ingredients were not found." if missing_count.positive?
-
+puts "Created #{created_count} global ingredients."
+puts "Updated #{updated_count} existing ingredients."
 
 # =========================
 # Categories

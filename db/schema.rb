@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_29_213656) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_31_040433) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,18 +41,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_213656) do
     t.boolean "publicly_visible", default: true, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index "lower((name)::text)", name: "index_drinks_on_lower_name", unique: true
+    t.index "user_id, lower((name)::text)", name: "index_drinks_on_user_id_and_lower_name", unique: true
     t.index ["user_id"], name: "index_drinks_on_user_id"
   end
 
   create_table "fun_facts", force: :cascade do |t|
     t.text "body", null: false
-    t.string "category", null: false
     t.datetime "created_at", null: false
-    t.string "source_name", null: false
-    t.string "source_url", null: false
+    t.string "drink_name"
     t.datetime "updated_at", null: false
-    t.index ["category"], name: "index_fun_facts_on_category"
+    t.index ["drink_name"], name: "index_fun_facts_on_drink_name"
   end
 
   create_table "ingredients", force: :cascade do |t|
@@ -61,7 +59,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_213656) do
     t.string "ingredient_type", default: "Other", null: false
     t.string "name"
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.index "lower((name)::text)", name: "index_ingredients_on_LOWER_name", unique: true
     t.index ["user_id"], name: "index_ingredients_on_user_id"
   end
