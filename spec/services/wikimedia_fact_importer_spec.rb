@@ -2,74 +2,302 @@ require "rails_helper"
 
 RSpec.describe WikimediaFactImporter do
   describe ".import" do
-    describe "happy path" do
-      it "creates a FunFact from Wikimedia data" do
-        data = {
+    context "happy path" do
+      it "searches for the drink as a cocktail and caches the full Wikipedia extract" do
+        search_response = {
           pages: [
             {
-              key: "Negroni",
-              title: "Negroni",
-              description: "Italian cocktail",
-              excerpt: "The Negroni is an Italian cocktail."
+              title: "Margarita",
+              description:
+                "Mexican cocktail"
             }
           ]
         }
 
-        allow(WikimediaGateway)
-          .to receive(:search_page)
-          .with("Negroni")
-          .and_return(data)
+        extract = <<~TEXT.squish
+          A margarita is a cocktail of tequila,
+          triple sec, lime juice, and sometimes
+          simple syrup. It is served shaken with
+          ice, straight up, or blended with ice.
+        TEXT
 
-        expect {
-          WikimediaFactImporter.import("Negroni")
-        }.to change(FunFact, :count).by(1)
+        extract_response = {
+          query: {
+            pages: [
+              {
+                title: "Margarita",
+                extract: extract
+              }
+            ]
+          }
+        }
 
-        fact = FunFact.last
-
-        expect(fact.body).to eq(
-          "Italian cocktail"
+        expect(
+          WikimediaGateway
+        ).to receive(
+          :search_page
+        ).with(
+          "Margarita cocktail"
+        ).and_return(
+          search_response
         )
 
-        expect(fact.drink_name).to eq(
-          "Negroni"
+        expect(
+          WikimediaGateway
+        ).to receive(
+          :fetch_extract
+        ).with(
+          "Margarita"
+        ).and_return(
+          extract_response
+        )
+
+        result = nil
+
+        expect {
+          result =
+            described_class.import(
+              "Margarita"
+            )
+        }.to change(
+          FunFact,
+          :count
+        ).by(1)
+
+        expect(
+          result.drink_name
+        ).to eq("Margarita")
+
+        expect(
+          result.body
+        ).to eq(extract)
+      end
+
+      it "uses the resolved Wikipedia title when fetching the extract" do
+        search_response = {
+          pages: [
+            {
+              title:
+                "Old fashioned (cocktail)"
+            }
+          ]
+        }
+
+        extract_response = {
+          query: {
+            pages: [
+              {
+                title:
+                  "Old fashioned (cocktail)",
+                extract:
+                  "The old fashioned is a cocktail made with whiskey, sugar, and bitters."
+              }
+            ]
+          }
+        }
+
+        allow(
+          WikimediaGateway
+        ).to receive(
+          :search_page
+        ).with(
+          "Old Fashioned cocktail"
+        ).and_return(
+          search_response
+        )
+
+        expect(
+          WikimediaGateway
+        ).to receive(
+          :fetch_extract
+        ).with(
+          "Old fashioned (cocktail)"
+        ).and_return(
+          extract_response
+        )
+
+        result =
+          described_class.import(
+            "Old Fashioned"
+          )
+
+        expect(
+          result.body
+        ).to eq(
+          "The old fashioned is a cocktail made with whiskey, sugar, and bitters."
+        )
+
+        expect(
+          result.drink_name
+        ).to eq(
+          "Old Fashioned"
         )
       end
 
-      it "returns the cached FunFact without calling Wikimedia" do
-        cached_fact = FunFact.create!(
-          body: "Italian cocktail",
-          drink_name: "Negroni"
+      it "returns the cached fact without calling Wikimedia again" do
+        cached_fact =
+          FunFact.create!(
+            body:
+              "Previously cached full extract.",
+            drink_name:
+              "Negroni"
+          )
+
+        expect(
+          WikimediaGateway
+        ).not_to receive(
+          :search_page
         )
 
-        expect(WikimediaGateway)
-          .not_to receive(:search_page)
+        expect(
+          WikimediaGateway
+        ).not_to receive(
+          :fetch_extract
+        )
 
         expect {
-          @result = WikimediaFactImporter.import("Negroni")
-        }.not_to change(FunFact, :count)
+          result =
+            described_class.import(
+              "Negroni"
+            )
 
-        expect(@result).to eq(cached_fact)
+          expect(result).to eq(
+            cached_fact
+          )
+        }.not_to change(
+          FunFact,
+          :count
+        )
       end
     end
 
-    describe "sad path" do
-      it "returns nil when Wikimedia returns no pages" do
-        data = {
-          pages: []
-        }
+    context "sad path" do
+      it "returns nil when Wikipedia does not find a matching page" do
+        allow(
+          WikimediaGateway
+        ).to receive(
+          :search_page
+        ).with(
+          "Fake Drink cocktail"
+        ).and_return(
+          {
+            pages: []
+          }
+        )
 
-        allow(WikimediaGateway)
-          .to receive(:search_page)
-          .with("Jonathan's Fire Water")
-          .and_return(data)
+        expect(
+          WikimediaGateway
+        ).not_to receive(
+          :fetch_extract
+        )
 
         expect {
-          @result = WikimediaFactImporter.import(
-            "Jonathan's Fire Water"
-          )
-        }.not_to change(FunFact, :count)
+          result =
+            described_class.import(
+              "Fake Drink"
+            )
 
-        expect(@result).to be_nil
+          expect(result).to be_nil
+        }.not_to change(
+          FunFact,
+          :count
+        )
+      end
+
+      it "returns nil when the resolved article has no extract" do
+        allow(
+          WikimediaGateway
+        ).to receive(
+          :search_page
+        ).with(
+          "Fake Drink cocktail"
+        ).and_return(
+          {
+            pages: [
+              {
+                title:
+                  "Fake Drink"
+              }
+            ]
+          }
+        )
+
+        allow(
+          WikimediaGateway
+        ).to receive(
+          :fetch_extract
+        ).with(
+          "Fake Drink"
+        ).and_return(
+          {
+            query: {
+              pages: []
+            }
+          }
+        )
+
+        expect {
+          result =
+            described_class.import(
+              "Fake Drink"
+            )
+
+          expect(result).to be_nil
+        }.not_to change(
+          FunFact,
+          :count
+        )
+      end
+
+      it "returns nil when the extract is blank" do
+        allow(
+          WikimediaGateway
+        ).to receive(
+          :search_page
+        ).with(
+          "Fake Drink cocktail"
+        ).and_return(
+          {
+            pages: [
+              {
+                title:
+                  "Fake Drink"
+              }
+            ]
+          }
+        )
+
+        allow(
+          WikimediaGateway
+        ).to receive(
+          :fetch_extract
+        ).with(
+          "Fake Drink"
+        ).and_return(
+          {
+            query: {
+              pages: [
+                {
+                  title:
+                    "Fake Drink",
+                  extract: ""
+                }
+              ]
+            }
+          }
+        )
+
+        expect {
+          result =
+            described_class.import(
+              "Fake Drink"
+            )
+
+          expect(result).to be_nil
+        }.not_to change(
+          FunFact,
+          :count
+        )
       end
     end
   end

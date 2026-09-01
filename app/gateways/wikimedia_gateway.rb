@@ -13,7 +13,7 @@ class WikimediaGateway
       }
     )
 
-    return empty_response unless response.success?
+    return empty_search_response unless response.success?
 
     JSON.parse(
       response.body,
@@ -22,7 +22,34 @@ class WikimediaGateway
   rescue Faraday::TimeoutError,
          Faraday::ConnectionFailed,
          JSON::ParserError
-    empty_response
+    empty_search_response
+  end
+
+  def self.fetch_extract(title)
+    response = connection.get(
+      "/w/api.php",
+      {
+        action: "query",
+        prop: "extracts",
+        exintro: 1,
+        explaintext: 1,
+        redirects: 1,
+        titles: title,
+        format: "json",
+        formatversion: 2
+      }
+    )
+
+    return empty_extract_response unless response.success?
+
+    JSON.parse(
+      response.body,
+      symbolize_names: true
+    )
+  rescue Faraday::TimeoutError,
+         Faraday::ConnectionFailed,
+         JSON::ParserError
+    empty_extract_response
   end
 
   def self.connection
@@ -37,11 +64,23 @@ class WikimediaGateway
     end
   end
 
-  def self.empty_response
+  def self.empty_search_response
     {
       pages: []
     }
   end
 
-  private_class_method :connection, :empty_response
+  def self.empty_extract_response
+    {
+      query: {
+        pages: []
+      }
+    }
+  end
+
+  private_class_method(
+    :connection,
+    :empty_search_response,
+    :empty_extract_response
+  )
 end
