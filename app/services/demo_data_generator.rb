@@ -849,25 +849,10 @@ class DemoDataGenerator
     end
   end
 
-  def categories_for(
-    drink_data
-  )
-    if drink_data[:alcoholic]
-      [
-        category_for(
-          "cocktails"
-        ),
-        category_for(
-          drink_data[:category]
-        )
-      ].uniq
-    else
-      [
-        category_for(
-          "non-alcoholic"
-        )
-      ]
-    end
+  def categories_for(drink_data)
+    [
+      category_for(drink_data[:category])
+    ]
   end
 
   def category_for(slug)
@@ -925,13 +910,9 @@ class DemoDataGenerator
 
   def required_category_slugs
     @required_category_slugs ||=
-      (
-        [ "cocktails" ] +
-        DRINK_CATALOG.map {
-          |drink|
-          drink[:category]
-        }
-      ).uniq
+      DRINK_CATALOG
+        .map { |drink| drink[:category] }
+        .uniq
   end
 
   def required_ingredient_names
