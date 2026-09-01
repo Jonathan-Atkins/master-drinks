@@ -22,24 +22,42 @@ RSpec.describe "FunFacts API", type: :request do
           name: "Negroni",
           alcoholic: true,
           publicly_visible: true,
-          categories: [ category ]
+          categories: [category]
         )
 
-        wikimedia_data = {
+        search_data = {
           pages: [
             {
               key: "Negroni",
               title: "Negroni",
               description: "Italian cocktail",
-              excerpt: "The Negroni is an Italian cocktail."
+              excerpt:
+                "The Negroni is an Italian cocktail."
             }
           ]
         }
 
+        extract_data = {
+          query: {
+            pages: [
+              {
+                title: "Negroni",
+                extract:
+                  "A Negroni is an Italian cocktail made with gin, vermouth, and Campari."
+              }
+            ]
+          }
+        }
+
         allow(WikimediaGateway)
           .to receive(:search_page)
+          .with("Negroni cocktail")
+          .and_return(search_data)
+
+        allow(WikimediaGateway)
+          .to receive(:fetch_extract)
           .with("Negroni")
-          .and_return(wikimedia_data)
+          .and_return(extract_data)
 
         get "/api/v1/fun_facts"
 
@@ -53,7 +71,7 @@ RSpec.describe "FunFacts API", type: :request do
         expect(data.count).to eq(1)
 
         expect(data.first[:body]).to eq(
-          "Italian cocktail"
+          "A Negroni is an Italian cocktail made with gin, vermouth, and Campari."
         )
 
         expect(data.first[:drink_name]).to eq(
@@ -84,15 +102,18 @@ RSpec.describe "FunFacts API", type: :request do
           name: "Jonathan's Fire Water",
           alcoholic: true,
           publicly_visible: true,
-          categories: [ category ]
+          categories: [category]
         )
 
         allow(WikimediaGateway)
           .to receive(:search_page)
-          .with("Jonathan's Fire Water")
+          .with("Jonathan's Fire Water cocktail")
           .and_return(
             pages: []
           )
+
+        expect(WikimediaGateway)
+          .not_to receive(:fetch_extract)
 
         get "/api/v1/fun_facts"
 

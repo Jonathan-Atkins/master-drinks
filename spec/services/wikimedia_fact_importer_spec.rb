@@ -8,8 +8,7 @@ RSpec.describe WikimediaFactImporter do
           pages: [
             {
               title: "Margarita",
-              description:
-                "Mexican cocktail"
+              description: "Mexican cocktail"
             }
           ]
         }
@@ -77,8 +76,8 @@ RSpec.describe WikimediaFactImporter do
         search_response = {
           pages: [
             {
-              title:
-                "Old fashioned (cocktail)"
+              title: "Old fashioned (cocktail)",
+              description: "Whiskey cocktail"
             }
           ]
         }
@@ -87,8 +86,7 @@ RSpec.describe WikimediaFactImporter do
           query: {
             pages: [
               {
-                title:
-                  "Old fashioned (cocktail)",
+                title: "Old fashioned (cocktail)",
                 extract:
                   "The old fashioned is a cocktail made with whiskey, sugar, and bitters."
               }
@@ -96,7 +94,7 @@ RSpec.describe WikimediaFactImporter do
           }
         }
 
-        allow(
+        expect(
           WikimediaGateway
         ).to receive(
           :search_page
@@ -173,7 +171,7 @@ RSpec.describe WikimediaFactImporter do
 
     context "sad path" do
       it "returns nil when Wikipedia does not find a matching page" do
-        allow(
+        expect(
           WikimediaGateway
         ).to receive(
           :search_page
@@ -204,8 +202,46 @@ RSpec.describe WikimediaFactImporter do
         )
       end
 
-      it "returns nil when the resolved article has no extract" do
-        allow(
+      it "skips a Wikipedia result that is not about a drink" do
+        expect(
+          WikimediaGateway
+        ).to receive(
+          :search_page
+        ).with(
+          "Cocktail 2 cocktail"
+        ).and_return(
+          {
+            pages: [
+              {
+                title: "Cocktail 2",
+                description:
+                  "2026 Indian Hindi-language romantic comedy drama film"
+              }
+            ]
+          }
+        )
+
+        expect(
+          WikimediaGateway
+        ).not_to receive(
+          :fetch_extract
+        )
+
+        expect {
+          result =
+            described_class.import(
+              "Cocktail 2"
+            )
+
+          expect(result).to be_nil
+        }.not_to change(
+          FunFact,
+          :count
+        )
+      end
+
+      it "returns nil when a drink article has no extract" do
+        expect(
           WikimediaGateway
         ).to receive(
           :search_page
@@ -215,14 +251,15 @@ RSpec.describe WikimediaFactImporter do
           {
             pages: [
               {
-                title:
-                  "Fake Drink"
+                title: "Fake Drink",
+                description:
+                  "Mixed drink cocktail"
               }
             ]
           }
         )
 
-        allow(
+        expect(
           WikimediaGateway
         ).to receive(
           :fetch_extract
@@ -249,8 +286,8 @@ RSpec.describe WikimediaFactImporter do
         )
       end
 
-      it "returns nil when the extract is blank" do
-        allow(
+      it "returns nil when a drink article has a blank extract" do
+        expect(
           WikimediaGateway
         ).to receive(
           :search_page
@@ -260,14 +297,15 @@ RSpec.describe WikimediaFactImporter do
           {
             pages: [
               {
-                title:
-                  "Fake Drink"
+                title: "Fake Drink",
+                description:
+                  "Alcoholic drink"
               }
             ]
           }
         )
 
-        allow(
+        expect(
           WikimediaGateway
         ).to receive(
           :fetch_extract
@@ -278,8 +316,7 @@ RSpec.describe WikimediaFactImporter do
             query: {
               pages: [
                 {
-                  title:
-                    "Fake Drink",
+                  title: "Fake Drink",
                   extract: ""
                 }
               ]
