@@ -213,9 +213,9 @@ class DemoDataGenerator
   RECIPE_CATALOG = {
     "Margarita" => {
       ingredients: [
-        ["Tequila Blanco", 2, "oz"],
-        ["Triple Sec", 0.75, "oz"],
-        ["Lime Juice", 0.75, "oz"]
+        [ "Tequila Blanco", 2, "oz" ],
+        [ "Triple Sec", 0.75, "oz" ],
+        [ "Lime Juice", 0.75, "oz" ]
       ],
       instructions:
         "Shake with ice and strain into a chilled glass."
@@ -223,9 +223,9 @@ class DemoDataGenerator
 
     "Negroni" => {
       ingredients: [
-        ["Gin", 1, "oz"],
-        ["Campari", 1, "oz"],
-        ["Sweet Vermouth", 1, "oz"]
+        [ "Gin", 1, "oz" ],
+        [ "Campari", 1, "oz" ],
+        [ "Sweet Vermouth", 1, "oz" ]
       ],
       instructions:
         "Stir with ice and strain over fresh ice."
@@ -233,9 +233,9 @@ class DemoDataGenerator
 
     "Old Fashioned" => {
       ingredients: [
-        ["Bourbon", 2, "oz"],
-        ["Simple Syrup", 0.25, "oz"],
-        ["Angostura Bitters", 3, "dash"]
+        [ "Bourbon", 2, "oz" ],
+        [ "Simple Syrup", 0.25, "oz" ],
+        [ "Angostura Bitters", 3, "dash" ]
       ],
       instructions:
         "Stir with ice and serve over a large cube."
@@ -243,9 +243,9 @@ class DemoDataGenerator
 
     "Daiquiri" => {
       ingredients: [
-        ["Light Rum", 2, "oz"],
-        ["Lime Juice", 1, "oz"],
-        ["Simple Syrup", 0.75, "oz"]
+        [ "Light Rum", 2, "oz" ],
+        [ "Lime Juice", 1, "oz" ],
+        [ "Simple Syrup", 0.75, "oz" ]
       ],
       instructions:
         "Shake with ice and strain into a chilled coupe."
@@ -253,11 +253,11 @@ class DemoDataGenerator
 
     "Mojito" => {
       ingredients: [
-        ["Light Rum", 2, "oz"],
-        ["Lime Juice", 0.75, "oz"],
-        ["Simple Syrup", 0.5, "oz"],
-        ["Mint", 8, "leaf"],
-        ["Club Soda", 2, "oz"]
+        [ "Light Rum", 2, "oz" ],
+        [ "Lime Juice", 0.75, "oz" ],
+        [ "Simple Syrup", 0.5, "oz" ],
+        [ "Mint", 8, "leaf" ],
+        [ "Club Soda", 2, "oz" ]
       ],
       instructions:
         "Combine rum, lime juice, syrup, and mint with ice. Top with club soda."
@@ -265,9 +265,9 @@ class DemoDataGenerator
 
     "Manhattan" => {
       ingredients: [
-        ["Rye Whiskey", 2, "oz"],
-        ["Sweet Vermouth", 1, "oz"],
-        ["Angostura Bitters", 2, "dash"]
+        [ "Rye Whiskey", 2, "oz" ],
+        [ "Sweet Vermouth", 1, "oz" ],
+        [ "Angostura Bitters", 2, "dash" ]
       ],
       instructions:
         "Stir with ice and strain into a chilled cocktail glass."
@@ -275,8 +275,8 @@ class DemoDataGenerator
 
     "Martini" => {
       ingredients: [
-        ["Gin", 2.5, "oz"],
-        ["Dry Vermouth", 0.5, "oz"]
+        [ "Gin", 2.5, "oz" ],
+        [ "Dry Vermouth", 0.5, "oz" ]
       ],
       instructions:
         "Stir with ice and strain into a chilled martini glass."
@@ -284,9 +284,9 @@ class DemoDataGenerator
 
     "Moscow Mule" => {
       ingredients: [
-        ["Vodka", 2, "oz"],
-        ["Lime Juice", 0.5, "oz"],
-        ["Ginger Beer", 4, "oz"]
+        [ "Vodka", 2, "oz" ],
+        [ "Lime Juice", 0.5, "oz" ],
+        [ "Ginger Beer", 4, "oz" ]
       ],
       instructions:
         "Build over ice and top with ginger beer."
@@ -294,9 +294,9 @@ class DemoDataGenerator
 
     "Paloma" => {
       ingredients: [
-        ["Tequila Blanco", 2, "oz"],
-        ["Lime Juice", 0.5, "oz"],
-        ["Grapefruit Soda", 3, "oz"]
+        [ "Tequila Blanco", 2, "oz" ],
+        [ "Lime Juice", 0.5, "oz" ],
+        [ "Grapefruit Soda", 3, "oz" ]
       ],
       instructions:
         "Build over ice and top with grapefruit soda."
@@ -304,10 +304,10 @@ class DemoDataGenerator
 
     "Whiskey Sour" => {
       ingredients: [
-        ["Bourbon", 2, "oz"],
-        ["Lemon Juice", 0.75, "oz"],
-        ["Simple Syrup", 0.75, "oz"],
-        ["Egg White", 1, "each"]
+        [ "Bourbon", 2, "oz" ],
+        [ "Lemon Juice", 0.75, "oz" ],
+        [ "Simple Syrup", 0.75, "oz" ],
+        [ "Egg White", 1, "each" ]
       ],
       instructions:
         "Dry shake, add ice, shake again, and strain."
@@ -315,10 +315,10 @@ class DemoDataGenerator
 
     "Tom Collins" => {
       ingredients: [
-        ["Gin", 2, "oz"],
-        ["Lemon Juice", 1, "oz"],
-        ["Simple Syrup", 0.5, "oz"],
-        ["Club Soda", 2, "oz"]
+        [ "Gin", 2, "oz" ],
+        [ "Lemon Juice", 1, "oz" ],
+        [ "Simple Syrup", 0.5, "oz" ],
+        [ "Club Soda", 2, "oz" ]
       ],
       instructions:
         "Shake the gin, lemon juice, and syrup with ice. Strain over fresh ice and top with club soda."
@@ -326,10 +326,10 @@ class DemoDataGenerator
 
     "French 75" => {
       ingredients: [
-        ["Gin", 1, "oz"],
-        ["Lemon Juice", 0.5, "oz"],
-        ["Simple Syrup", 0.5, "oz"],
-        ["Champagne", 3, "oz"]
+        [ "Gin", 1, "oz" ],
+        [ "Lemon Juice", 0.5, "oz" ],
+        [ "Simple Syrup", 0.5, "oz" ],
+        [ "Champagne", 3, "oz" ]
       ],
       instructions:
         "Shake the gin, lemon juice, and syrup with ice. Strain and top with Champagne."
@@ -337,9 +337,9 @@ class DemoDataGenerator
 
     "Gimlet" => {
       ingredients: [
-        ["Gin", 2, "oz"],
-        ["Lime Juice", 0.75, "oz"],
-        ["Simple Syrup", 0.75, "oz"]
+        [ "Gin", 2, "oz" ],
+        [ "Lime Juice", 0.75, "oz" ],
+        [ "Simple Syrup", 0.75, "oz" ]
       ],
       instructions:
         "Shake with ice and strain into a chilled glass."
@@ -347,9 +347,9 @@ class DemoDataGenerator
 
     "Sidecar" => {
       ingredients: [
-        ["Cognac", 2, "oz"],
-        ["Triple Sec", 0.75, "oz"],
-        ["Lemon Juice", 0.75, "oz"]
+        [ "Cognac", 2, "oz" ],
+        [ "Triple Sec", 0.75, "oz" ],
+        [ "Lemon Juice", 0.75, "oz" ]
       ],
       instructions:
         "Shake with ice and strain into a chilled coupe."
@@ -357,9 +357,9 @@ class DemoDataGenerator
 
     "Boulevardier" => {
       ingredients: [
-        ["Bourbon", 1.5, "oz"],
-        ["Campari", 1, "oz"],
-        ["Sweet Vermouth", 1, "oz"]
+        [ "Bourbon", 1.5, "oz" ],
+        [ "Campari", 1, "oz" ],
+        [ "Sweet Vermouth", 1, "oz" ]
       ],
       instructions:
         "Stir with ice and strain over fresh ice."
@@ -367,10 +367,10 @@ class DemoDataGenerator
 
     "Mai Tai" => {
       ingredients: [
-        ["Aged Rum", 2, "oz"],
-        ["Lime Juice", 0.75, "oz"],
-        ["Orange Curaçao", 0.5, "oz"],
-        ["Orgeat", 0.5, "oz"]
+        [ "Aged Rum", 2, "oz" ],
+        [ "Lime Juice", 0.75, "oz" ],
+        [ "Orange Curaçao", 0.5, "oz" ],
+        [ "Orgeat", 0.5, "oz" ]
       ],
       instructions:
         "Shake with ice and pour over crushed ice."
@@ -378,9 +378,9 @@ class DemoDataGenerator
 
     "Piña Colada" => {
       ingredients: [
-        ["Light Rum", 2, "oz"],
-        ["Pineapple Juice", 3, "oz"],
-        ["Coconut Cream", 1.5, "oz"]
+        [ "Light Rum", 2, "oz" ],
+        [ "Pineapple Juice", 3, "oz" ],
+        [ "Coconut Cream", 1.5, "oz" ]
       ],
       instructions:
         "Blend with ice until smooth."
@@ -388,9 +388,9 @@ class DemoDataGenerator
 
     "Dark and Stormy" => {
       ingredients: [
-        ["Dark Rum", 2, "oz"],
-        ["Ginger Beer", 4, "oz"],
-        ["Lime Juice", 0.5, "oz"]
+        [ "Dark Rum", 2, "oz" ],
+        [ "Ginger Beer", 4, "oz" ],
+        [ "Lime Juice", 0.5, "oz" ]
       ],
       instructions:
         "Build over ice and top with ginger beer."
@@ -398,10 +398,10 @@ class DemoDataGenerator
 
     "Espresso Martini" => {
       ingredients: [
-        ["Vodka", 2, "oz"],
-        ["Coffee Liqueur", 0.5, "oz"],
-        ["Espresso", 1, "oz"],
-        ["Simple Syrup", 0.25, "oz"]
+        [ "Vodka", 2, "oz" ],
+        [ "Coffee Liqueur", 0.5, "oz" ],
+        [ "Espresso", 1, "oz" ],
+        [ "Simple Syrup", 0.25, "oz" ]
       ],
       instructions:
         "Shake hard with ice and double strain into a chilled glass."
@@ -409,10 +409,10 @@ class DemoDataGenerator
 
     "Cosmopolitan" => {
       ingredients: [
-        ["Citrus Vodka", 1.5, "oz"],
-        ["Triple Sec", 0.75, "oz"],
-        ["Cranberry Juice", 0.75, "oz"],
-        ["Lime Juice", 0.5, "oz"]
+        [ "Citrus Vodka", 1.5, "oz" ],
+        [ "Triple Sec", 0.75, "oz" ],
+        [ "Cranberry Juice", 0.75, "oz" ],
+        [ "Lime Juice", 0.5, "oz" ]
       ],
       instructions:
         "Shake with ice and strain into a chilled cocktail glass."
@@ -420,9 +420,9 @@ class DemoDataGenerator
 
     "Aperol Spritz" => {
       ingredients: [
-        ["Prosecco", 3, "oz"],
-        ["Aperol", 2, "oz"],
-        ["Club Soda", 1, "oz"]
+        [ "Prosecco", 3, "oz" ],
+        [ "Aperol", 2, "oz" ],
+        [ "Club Soda", 1, "oz" ]
       ],
       instructions:
         "Build over ice and gently stir."
@@ -430,10 +430,10 @@ class DemoDataGenerator
 
     "Sazerac" => {
       ingredients: [
-        ["Rye Whiskey", 2, "oz"],
-        ["Peychaud's Bitters", 3, "dash"],
-        ["Simple Syrup", 0.25, "oz"],
-        ["Absinthe", 0.25, "oz"]
+        [ "Rye Whiskey", 2, "oz" ],
+        [ "Peychaud's Bitters", 3, "dash" ],
+        [ "Simple Syrup", 0.25, "oz" ],
+        [ "Absinthe", 0.25, "oz" ]
       ],
       instructions:
         "Rinse the glass with absinthe. Stir the remaining ingredients with ice and strain into the glass."
@@ -441,9 +441,9 @@ class DemoDataGenerator
 
     "Mint Julep" => {
       ingredients: [
-        ["Bourbon", 2.5, "oz"],
-        ["Simple Syrup", 0.5, "oz"],
-        ["Mint", 8, "leaf"]
+        [ "Bourbon", 2.5, "oz" ],
+        [ "Simple Syrup", 0.5, "oz" ],
+        [ "Mint", 8, "leaf" ]
       ],
       instructions:
         "Combine with crushed ice and gently stir."
@@ -451,11 +451,11 @@ class DemoDataGenerator
 
     "Penicillin" => {
       ingredients: [
-        ["Blended Scotch", 2, "oz"],
-        ["Lemon Juice", 0.75, "oz"],
-        ["Honey Syrup", 0.75, "oz"],
-        ["Ginger Cordial", 0.25, "oz"],
-        ["Peated Scotch", 0.25, "oz"]
+        [ "Blended Scotch", 2, "oz" ],
+        [ "Lemon Juice", 0.75, "oz" ],
+        [ "Honey Syrup", 0.75, "oz" ],
+        [ "Ginger Cordial", 0.25, "oz" ],
+        [ "Peated Scotch", 0.25, "oz" ]
       ],
       instructions:
         "Shake everything except the peated Scotch with ice. Strain over fresh ice and float the peated Scotch."
@@ -463,9 +463,9 @@ class DemoDataGenerator
 
     "Mezcal Negroni" => {
       ingredients: [
-        ["Mezcal", 1, "oz"],
-        ["Campari", 1, "oz"],
-        ["Sweet Vermouth", 1, "oz"]
+        [ "Mezcal", 1, "oz" ],
+        [ "Campari", 1, "oz" ],
+        [ "Sweet Vermouth", 1, "oz" ]
       ],
       instructions:
         "Stir with ice and strain over fresh ice."
@@ -473,9 +473,9 @@ class DemoDataGenerator
 
     "Caipirinha" => {
       ingredients: [
-        ["Cachaça", 2, "oz"],
-        ["Lime", 1, "each"],
-        ["Simple Syrup", 0.5, "oz"]
+        [ "Cachaça", 2, "oz" ],
+        [ "Lime", 1, "each" ],
+        [ "Simple Syrup", 0.5, "oz" ]
       ],
       instructions:
         "Muddle the lime with syrup, add Cachaça and ice, then stir."
@@ -483,10 +483,10 @@ class DemoDataGenerator
 
     "Irish Coffee" => {
       ingredients: [
-        ["Irish Whiskey", 1.5, "oz"],
-        ["Coffee", 4, "oz"],
-        ["Brown Sugar Syrup", 0.5, "oz"],
-        ["Heavy Cream", 1, "oz"]
+        [ "Irish Whiskey", 1.5, "oz" ],
+        [ "Coffee", 4, "oz" ],
+        [ "Brown Sugar Syrup", 0.5, "oz" ],
+        [ "Heavy Cream", 1, "oz" ]
       ],
       instructions:
         "Combine whiskey, hot coffee, and brown sugar syrup. Float the cream on top."
@@ -494,9 +494,9 @@ class DemoDataGenerator
 
     "Bee's Knees" => {
       ingredients: [
-        ["Gin", 2, "oz"],
-        ["Lemon Juice", 0.75, "oz"],
-        ["Honey Syrup", 0.75, "oz"]
+        [ "Gin", 2, "oz" ],
+        [ "Lemon Juice", 0.75, "oz" ],
+        [ "Honey Syrup", 0.75, "oz" ]
       ],
       instructions:
         "Shake with ice and strain into a chilled glass."
@@ -504,10 +504,10 @@ class DemoDataGenerator
 
     "Virgin Mojito" => {
       ingredients: [
-        ["Lime Juice", 0.75, "oz"],
-        ["Simple Syrup", 0.5, "oz"],
-        ["Mint", 8, "leaf"],
-        ["Club Soda", 3, "oz"]
+        [ "Lime Juice", 0.75, "oz" ],
+        [ "Simple Syrup", 0.5, "oz" ],
+        [ "Mint", 8, "leaf" ],
+        [ "Club Soda", 3, "oz" ]
       ],
       instructions:
         "Combine lime juice, syrup, and mint over ice. Top with club soda."
@@ -515,8 +515,8 @@ class DemoDataGenerator
 
     "Shirley Temple" => {
       ingredients: [
-        ["Lemon-Lime Soda", 4, "oz"],
-        ["Grenadine", 0.5, "oz"]
+        [ "Lemon-Lime Soda", 4, "oz" ],
+        [ "Grenadine", 0.5, "oz" ]
       ],
       instructions:
         "Build over ice and gently stir."
@@ -524,8 +524,8 @@ class DemoDataGenerator
 
     "Virgin Piña Colada" => {
       ingredients: [
-        ["Pineapple Juice", 3, "oz"],
-        ["Coconut Cream", 1.5, "oz"]
+        [ "Pineapple Juice", 3, "oz" ],
+        [ "Coconut Cream", 1.5, "oz" ]
       ],
       instructions:
         "Blend with ice until smooth."
@@ -533,8 +533,8 @@ class DemoDataGenerator
 
     "Roy Rogers" => {
       ingredients: [
-        ["Cola", 4, "oz"],
-        ["Grenadine", 0.5, "oz"]
+        [ "Cola", 4, "oz" ],
+        [ "Grenadine", 0.5, "oz" ]
       ],
       instructions:
         "Build over ice and gently stir."
@@ -542,10 +542,10 @@ class DemoDataGenerator
 
     "Cucumber Cooler" => {
       ingredients: [
-        ["Cucumber Juice", 2, "oz"],
-        ["Lime Juice", 0.75, "oz"],
-        ["Simple Syrup", 0.5, "oz"],
-        ["Club Soda", 2, "oz"]
+        [ "Cucumber Juice", 2, "oz" ],
+        [ "Lime Juice", 0.75, "oz" ],
+        [ "Simple Syrup", 0.5, "oz" ],
+        [ "Club Soda", 2, "oz" ]
       ],
       instructions:
         "Shake everything except the club soda with ice. Strain over fresh ice and top with soda."
@@ -553,9 +553,9 @@ class DemoDataGenerator
 
     "Ginger Lime Fizz" => {
       ingredients: [
-        ["Ginger Beer", 4, "oz"],
-        ["Lime Juice", 0.75, "oz"],
-        ["Simple Syrup", 0.25, "oz"]
+        [ "Ginger Beer", 4, "oz" ],
+        [ "Lime Juice", 0.75, "oz" ],
+        [ "Simple Syrup", 0.25, "oz" ]
       ],
       instructions:
         "Build over ice and gently stir."
@@ -563,10 +563,10 @@ class DemoDataGenerator
 
     "Pineapple Mint Cooler" => {
       ingredients: [
-        ["Pineapple Juice", 3, "oz"],
-        ["Lime Juice", 0.5, "oz"],
-        ["Mint", 6, "leaf"],
-        ["Club Soda", 2, "oz"]
+        [ "Pineapple Juice", 3, "oz" ],
+        [ "Lime Juice", 0.5, "oz" ],
+        [ "Mint", 6, "leaf" ],
+        [ "Club Soda", 2, "oz" ]
       ],
       instructions:
         "Shake pineapple juice, lime juice, and mint with ice. Strain and top with club soda."
@@ -574,9 +574,9 @@ class DemoDataGenerator
 
     "Grapefruit Spritz" => {
       ingredients: [
-        ["Grapefruit Juice", 3, "oz"],
-        ["Simple Syrup", 0.5, "oz"],
-        ["Club Soda", 2, "oz"]
+        [ "Grapefruit Juice", 3, "oz" ],
+        [ "Simple Syrup", 0.5, "oz" ],
+        [ "Club Soda", 2, "oz" ]
       ],
       instructions:
         "Build over ice and gently stir."
@@ -926,7 +926,7 @@ class DemoDataGenerator
   def required_category_slugs
     @required_category_slugs ||=
       (
-        ["cocktails"] +
+        [ "cocktails" ] +
         DRINK_CATALOG.map {
           |drink|
           drink[:category]

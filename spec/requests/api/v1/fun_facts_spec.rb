@@ -22,7 +22,7 @@ RSpec.describe "FunFacts API", type: :request do
           name: "Negroni",
           alcoholic: true,
           publicly_visible: true,
-          categories: [category]
+          categories: [ category ]
         )
 
         search_data = {
@@ -102,7 +102,7 @@ RSpec.describe "FunFacts API", type: :request do
           name: "Jonathan's Fire Water",
           alcoholic: true,
           publicly_visible: true,
-          categories: [category]
+          categories: [ category ]
         )
 
         allow(WikimediaGateway)
