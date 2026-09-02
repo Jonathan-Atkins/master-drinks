@@ -22,16 +22,22 @@ class User < ApplicationRecord
 
   has_secure_password
 
+  before_validation :normalize_email
+
   validates :name,
             presence: true
 
   validates :username,
             presence: true,
-            uniqueness: true
+            uniqueness: {
+              case_sensitive: false
+            }
 
   validates :email,
             presence: true,
-            uniqueness: true,
+            uniqueness: {
+              case_sensitive: false
+            },
             format: {
               with: URI::MailTo::EMAIL_REGEXP
             }
@@ -47,5 +53,22 @@ class User < ApplicationRecord
       "username ILIKE ?",
       "%#{username}%"
     )
+  end
+
+  def self.find_for_login(identifier)
+    normalized_identifier =
+      identifier.to_s.strip.downcase
+
+    find_by(
+      "LOWER(email) = :identifier OR LOWER(username) = :identifier",
+      identifier: normalized_identifier
+    )
+  end
+
+  private
+
+  def normalize_email
+    self.email =
+      email.to_s.strip.downcase
   end
 end

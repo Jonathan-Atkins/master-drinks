@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_070953) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_200435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -115,8 +115,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_070953) do
     t.boolean "seeded_account", default: false, null: false
     t.datetime "updated_at", null: false
     t.string "username"
+    t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
+    t.index "lower((username)::text)", name: "index_users_on_lower_username", unique: true
     t.index ["seeded_account"], name: "index_users_on_seeded_account"
-    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "drink_categories", "categories"
