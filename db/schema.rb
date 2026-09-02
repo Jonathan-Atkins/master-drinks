@@ -10,15 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_02_200435) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_222805) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "categories", force: :cascade do |t|
+    t.boolean "alcoholic", default: true, null: false
     t.datetime "created_at", null: false
+    t.bigint "ingredient_id", null: false
     t.string "name", null: false
     t.string "slug", null: false
     t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_categories_on_ingredient_id"
     t.index ["name"], name: "index_categories_on_name", unique: true
     t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
@@ -79,9 +82,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_200435) do
     t.datetime "created_at", null: false
     t.bigint "drink_id", null: false
     t.text "instructions"
-    t.string "name"
+    t.string "name", null: false
     t.boolean "publicly_visible", default: true, null: false
     t.datetime "updated_at", null: false
+    t.index "drink_id, lower((name)::text)", name: "index_recipes_on_drink_id_and_lower_name", unique: true
     t.index ["drink_id"], name: "index_recipes_on_drink_id"
   end
 
@@ -120,6 +124,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_200435) do
     t.index ["seeded_account"], name: "index_users_on_seeded_account"
   end
 
+  add_foreign_key "categories", "ingredients"
   add_foreign_key "drink_categories", "categories"
   add_foreign_key "drink_categories", "drinks"
   add_foreign_key "drinks", "users"

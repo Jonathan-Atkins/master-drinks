@@ -3,21 +3,18 @@ class Api::V1::SessionsController < ApplicationController
                      only: [ :create, :destroy ]
 
   def create
-    user =
-      User.find_for_login(
-        params[:identifier]
-      )
+    identifier =
+      params[:identifier].presence ||
+      params[:email]
 
-    if user&.authenticate(
-      params[:password]
-    )
+    user =
+      User.find_for_login(identifier)
+
+    if user&.authenticate(params[:password])
       session[:user_id] = user.id
 
       render json: {
-        user:
-          UserSerializer.created(
-            user
-          )
+        user: UserSerializer.created(user)
       }, status: :ok
     else
       render json: {
@@ -30,10 +27,9 @@ class Api::V1::SessionsController < ApplicationController
 
   def show
     render json: {
-      user:
-        UserSerializer.created(
-          current_user
-        )
+      user: UserSerializer.created(
+        current_user
+      )
     }, status: :ok
   end
 
@@ -42,8 +38,7 @@ class Api::V1::SessionsController < ApplicationController
       session.delete(:user_id)
 
       render json: {
-        message:
-          "Logged out successfully"
+        message: "Logged out successfully"
       }, status: :ok
     else
       render json: {

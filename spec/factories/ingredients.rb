@@ -1,5 +1,13 @@
 FactoryBot.define do
   factory :ingredient do
-    name { "MyString" }
+    sequence(:name) do |number|
+      "Ingredient #{number}"
+    end
+
+    ingredient_type { "Spirit" }
+
+    flavor_profiles { [] }
+
+    user { nil }
   end
 end

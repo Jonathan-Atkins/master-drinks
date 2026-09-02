@@ -7,7 +7,7 @@ RSpec.describe "Profile Recipes API", type: :request do
       username: "viewer",
       email: "viewer@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @profile_user = User.create!(
@@ -15,7 +15,7 @@ RSpec.describe "Profile Recipes API", type: :request do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
     @other_user = User.create!(
@@ -23,31 +23,32 @@ RSpec.describe "Profile Recipes API", type: :request do
       username: "bob",
       email: "bob@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
     )
 
-    @category = Category.create!(
-      name: "Whiskey",
-      slug: "whiskey"
-    )
+    @category =
+      create_category(
+        "Whiskey",
+        alcoholic: true,
+      )
 
     @public_drink =
       create_drink(
         user: @profile_user,
-        name: "Public Old Fashioned"
+        name: "Public Old Fashioned",
       )
 
     @private_drink =
       create_drink(
         user: @profile_user,
         name: "Private Manhattan",
-        publicly_visible: false
+        publicly_visible: false,
       )
 
     @other_drink =
       create_drink(
         user: @other_user,
-        name: "Bob's Negroni"
+        name: "Bob's Negroni",
       )
   end
 
@@ -70,8 +71,7 @@ RSpec.describe "Profile Recipes API", type: :request do
         @category.slug
       ],
       alcoholic: true,
-      publicly_visible:
-        publicly_visible
+      publicly_visible: publicly_visible,
     )
   end
 
@@ -82,10 +82,8 @@ RSpec.describe "Profile Recipes API", type: :request do
   )
     drink.recipes.create!(
       name: name,
-      instructions:
-        "Stir and serve.",
-      publicly_visible:
-        publicly_visible
+      instructions: "Stir and serve.",
+      publicly_visible: publicly_visible,
     )
   end
 
@@ -95,27 +93,26 @@ RSpec.describe "Profile Recipes API", type: :request do
         public_recipe =
           create_recipe(
             drink: @public_drink,
-            name: "Public Recipe"
+            name: "Public Recipe",
           )
 
         private_recipe =
           create_recipe(
             drink: @public_drink,
             name: "Private Recipe",
-            publicly_visible: false
+            publicly_visible: false,
           )
 
         recipe_on_private_drink =
           create_recipe(
             drink: @private_drink,
-            name:
-              "Recipe On Private Drink"
+            name: "Recipe On Private Drink",
           )
 
         other_recipe =
           create_recipe(
             drink: @other_drink,
-            name: "Bob's Recipe"
+            name: "Bob's Recipe",
           )
 
         log_in(@viewer)
@@ -153,8 +150,7 @@ RSpec.describe "Profile Recipes API", type: :request do
         11.times do |number|
           create_recipe(
             drink: @public_drink,
-            name:
-              "Profile Recipe #{number}"
+            name: "Profile Recipe #{number}",
           )
         end
 
@@ -180,7 +176,7 @@ RSpec.describe "Profile Recipes API", type: :request do
           "total_count" => 11,
           "total_pages" => 2,
           "has_previous" => false,
-          "has_next" => true
+          "has_next" => true,
         )
       end
     end

@@ -584,6 +584,78 @@ RSpec.describe "Api::V1::Recipes", type: :request do
           Recipe.last.drink
         ).to eq(@drink)
       end
+      it "uses the drink name when the recipe name is blank" do
+        drink = create_drink(
+          @user,
+          {
+            name: "User Specialty Drink",
+            alcoholic: true
+          },
+          category_names: [ "Gin" ]
+        )
+
+        log_in(@user)
+
+        post "/api/v1/drinks/#{drink.id}/recipes",
+            params: {
+              name: nil,
+              instructions:
+                "Stir and serve."
+            }
+
+        result =
+          JSON.parse(response.body)
+
+        expect(response).to have_http_status(
+          :created
+        )
+
+        expect(
+          result["name"]
+        ).to eq(
+          "User Specialty Drink"
+        )
+      end
+
+      it "numbers additional unnamed recipes automatically" do
+        drink = create_drink(
+          @user,
+          {
+            name: "House Margarita",
+            alcoholic: true
+          },
+          category_names: [ "Tequila" ]
+        )
+
+        Recipe.create!(
+          drink: drink,
+          name: nil,
+          instructions:
+            "First recipe."
+        )
+
+        log_in(@user)
+
+        post "/api/v1/drinks/#{drink.id}/recipes",
+            params: {
+              name: nil,
+              instructions:
+                "Second recipe."
+            }
+
+        result =
+          JSON.parse(response.body)
+
+        expect(response).to have_http_status(
+          :created
+        )
+
+        expect(
+          result["name"]
+        ).to eq(
+          "House Margarita (2)"
+        )
+      end
     end
 
     describe "PATCH /api/v1/recipes/:id" do
@@ -935,28 +1007,6 @@ RSpec.describe "Api::V1::Recipes", type: :request do
     end
 
     describe "POST /api/v1/drinks/:drink_id/recipes" do
-      it "does not create a recipe with invalid attributes" do
-        log_in(@user)
-
-        post "/api/v1/drinks/#{@drink.id}/recipes",
-             params: {
-               name: nil,
-               instructions: "Stir with ice."
-             }
-
-        expect(response).to have_http_status(
-          :unprocessable_content
-        )
-
-        result =
-          JSON.parse(response.body)
-
-        expect(
-          result["errors"]
-        ).to include(
-          "Name can't be blank"
-        )
-      end
     end
 
     describe "PATCH /api/v1/recipes/:id" do

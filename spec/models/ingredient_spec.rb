@@ -4,26 +4,41 @@ RSpec.describe Ingredient, type: :model do
   let(:user) do
     create(
       :user,
-      username: "ingredient_tester",
-      email: "ingredient@example.com",
+      username:
+        "ingredient_tester",
+      email:
+        "ingredient@example.com",
       password: "password",
-      password_confirmation: "password"
+      password_confirmation:
+        "password"
     )
   end
 
   describe "relationships" do
-    context "happy path" do
-      it "belongs to a user" do
+    describe "happy path" do
+      it "can belong to a user" do
         ingredient = create(
           :ingredient,
           user: user
         )
 
-        expect(ingredient.user)
-          .to eq(user)
+        expect(
+          ingredient.user
+        ).to eq(user)
       end
 
-      it "has many recipe_ingredients" do
+      it "can exist without a user as a global ingredient" do
+        ingredient = build(
+          :ingredient,
+          user: nil
+        )
+
+        expect(
+          ingredient
+        ).to be_valid
+      end
+
+      it "has many recipe ingredients" do
         ingredient = create(
           :ingredient,
           user: user
@@ -39,18 +54,23 @@ RSpec.describe Ingredient, type: :model do
           drink: drink
         )
 
-        recipe_ingredient = create(
-          :recipe_ingredient,
-          ingredient: ingredient,
-          recipe: recipe
-        )
+        recipe_ingredient =
+          create(
+            :recipe_ingredient,
+            ingredient:
+              ingredient,
+            recipe: recipe
+          )
 
         expect(
-          ingredient.recipe_ingredients
-        ).to include(recipe_ingredient)
+          ingredient
+            .recipe_ingredients
+        ).to include(
+          recipe_ingredient
+        )
       end
 
-      it "has many recipes through recipe_ingredients" do
+      it "has many recipes through recipe ingredients" do
         ingredient = create(
           :ingredient,
           user: user
@@ -68,7 +88,8 @@ RSpec.describe Ingredient, type: :model do
 
         create(
           :recipe_ingredient,
-          ingredient: ingredient,
+          ingredient:
+            ingredient,
           recipe: recipe
         )
 
@@ -76,35 +97,88 @@ RSpec.describe Ingredient, type: :model do
           ingredient.recipes
         ).to include(recipe)
       end
+
+      it "has many categories" do
+        ingredient = create(
+          :ingredient,
+          name: "Category Spirit"
+        )
+
+        category = create(
+          :category,
+          name: "Category Spirit",
+          ingredient: ingredient
+        )
+
+        expect(
+          ingredient.categories
+        ).to include(category)
+      end
+    end
+
+    describe "sad path" do
+      it "does not delete an ingredient that is used by a category" do
+        ingredient = create(
+          :ingredient,
+          name:
+            "Protected Bourbon"
+        )
+
+        create(
+          :category,
+          name:
+            "Protected Bourbon",
+          ingredient: ingredient
+        )
+
+        result =
+          ingredient.destroy
+
+        expect(result).to be(false)
+
+        expect(
+          Ingredient.exists?(
+            ingredient.id
+          )
+        ).to be(true)
+
+        expect(
+          ingredient.errors[:base]
+        ).to be_present
+      end
     end
   end
 
   describe "validations" do
-    context "happy path" do
+    describe "happy path" do
       it "is valid with valid attributes" do
         ingredient = build(
           :ingredient,
           user: user,
-          ingredient_type: "Spirit",
+          ingredient_type:
+            "Spirit",
           flavor_profiles: [
             "Sweet",
             "Rich"
           ]
         )
 
-        expect(ingredient)
-          .to be_valid
+        expect(
+          ingredient
+        ).to be_valid
       end
 
       it "allows an approved ingredient type" do
         ingredient = build(
           :ingredient,
           user: user,
-          ingredient_type: "Spirit"
+          ingredient_type:
+            "Spirit"
         )
 
-        expect(ingredient)
-          .to be_valid
+        expect(
+          ingredient
+        ).to be_valid
       end
 
       it "allows approved flavor profiles" do
@@ -118,8 +192,9 @@ RSpec.describe Ingredient, type: :model do
           ]
         )
 
-        expect(ingredient)
-          .to be_valid
+        expect(
+          ingredient
+        ).to be_valid
       end
 
       it "allows an empty flavor profile array" do
@@ -129,12 +204,13 @@ RSpec.describe Ingredient, type: :model do
           flavor_profiles: []
         )
 
-        expect(ingredient)
-          .to be_valid
+        expect(
+          ingredient
+        ).to be_valid
       end
     end
 
-    context "sad path" do
+    describe "sad path" do
       it "requires a name" do
         ingredient = build(
           :ingredient,
@@ -142,8 +218,9 @@ RSpec.describe Ingredient, type: :model do
           name: nil
         )
 
-        expect(ingredient)
-          .not_to be_valid
+        expect(
+          ingredient
+        ).not_to be_valid
 
         expect(
           ingredient.errors[:name]
@@ -163,8 +240,9 @@ RSpec.describe Ingredient, type: :model do
           name: "Lime Juice"
         )
 
-        expect(duplicate)
-          .not_to be_valid
+        expect(
+          duplicate
+        ).not_to be_valid
 
         expect(
           duplicate.errors[:name]
@@ -184,8 +262,9 @@ RSpec.describe Ingredient, type: :model do
           name: "lime juice"
         )
 
-        expect(duplicate)
-          .not_to be_valid
+        expect(
+          duplicate
+        ).not_to be_valid
 
         expect(
           duplicate.errors[:name]
@@ -196,14 +275,19 @@ RSpec.describe Ingredient, type: :model do
         ingredient = build(
           :ingredient,
           user: user,
-          ingredient_type: "Unknown"
+          ingredient_type:
+            "Unknown"
         )
 
-        expect(ingredient)
-          .not_to be_valid
+        expect(
+          ingredient
+        ).not_to be_valid
 
         expect(
-          ingredient.errors[:ingredient_type]
+          ingredient
+            .errors[
+              :ingredient_type
+            ]
         ).to be_present
       end
 
@@ -217,21 +301,26 @@ RSpec.describe Ingredient, type: :model do
           ]
         )
 
-        expect(ingredient)
-          .not_to be_valid
+        expect(
+          ingredient
+        ).not_to be_valid
 
         expect(
-          ingredient.errors[:flavor_profiles]
+          ingredient
+            .errors[
+              :flavor_profiles
+            ]
         ).to be_present
       end
     end
   end
 
   describe "ingredient options" do
-    context "happy path" do
+    describe "happy path" do
       it "defines the supported ingredient types" do
         expect(
-          Ingredient::INGREDIENT_TYPES
+          Ingredient::
+            INGREDIENT_TYPES
         ).to eq(
           [
             "Spirit",
@@ -255,7 +344,8 @@ RSpec.describe Ingredient, type: :model do
 
       it "defines the supported flavor profiles" do
         expect(
-          Ingredient::FLAVOR_PROFILES
+          Ingredient::
+            FLAVOR_PROFILES
         ).to eq(
           [
             "Sweet",

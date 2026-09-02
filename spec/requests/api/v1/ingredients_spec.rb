@@ -63,9 +63,10 @@ RSpec.describe "Api::V1::Ingredients", type: :request do
 
         result = JSON.parse(response.body)
 
-        expect(result.count).to eq(2)
+        expect(result.count).to eq(3)
 
         expect(result.pluck("name")).to contain_exactly(
+          "Whiskey",
           "Bourbon",
           "Bitters"
         )

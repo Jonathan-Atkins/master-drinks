@@ -10,13 +10,33 @@ class Recipe < ApplicationRecord
   has_many :user_recipes,
            dependent: :destroy
 
-  validates :name, presence: true
+  before_validation(
+    :assign_default_name,
+    on: :create
+  )
+
+  before_validation :normalize_name
+
+  validates :name,
+            presence: true,
+            uniqueness: {
+              case_sensitive: false,
+              scope: :drink_id
+            }
 
   scope :publicly_visible,
-        -> { where(publicly_visible: true) }
+        -> {
+          where(
+            publicly_visible: true
+          )
+        }
 
   scope :most_recent,
-        -> { order(created_at: :desc) }
+        -> {
+          order(
+            created_at: :desc
+          )
+        }
 
   scope :most_saved,
         -> {
@@ -30,7 +50,9 @@ class Recipe < ApplicationRecord
         }
 
   def self.by_drink_id(drink_id)
-    Drink.find(drink_id).recipes
+    Drink
+      .find(drink_id)
+      .recipes
   end
 
   def self.by_drink_name(drink_name)
@@ -73,5 +95,20 @@ class Recipe < ApplicationRecord
     else
       all
     end
+  end
+
+  private
+
+  def assign_default_name
+    return if name.present?
+    return unless drink
+
+    self.name =
+      drink.next_recipe_name
+  end
+
+  def normalize_name
+    self.name =
+      name&.squish
   end
 end

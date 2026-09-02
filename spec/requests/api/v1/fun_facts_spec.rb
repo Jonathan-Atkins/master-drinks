@@ -4,10 +4,11 @@ RSpec.describe "FunFacts API", type: :request do
   describe "GET /api/v1/fun_facts" do
     describe "happy path" do
       it "returns a fun fact built from a public drink" do
-        category = Category.create!(
-          name: "Cocktails",
-          slug: "cocktails"
-        )
+        category =
+          create_category(
+            "Gin",
+            alcoholic: true
+          )
 
         user = User.create!(
           name: "Alice",
@@ -84,10 +85,11 @@ RSpec.describe "FunFacts API", type: :request do
 
     describe "sad path" do
       it "returns an empty array when Wikimedia cannot find a fact" do
-        category = Category.create!(
-          name: "Cocktails",
-          slug: "cocktails"
-        )
+        category =
+          create_category(
+            "Gin",
+            alcoholic: true
+          )
 
         user = User.create!(
           name: "Alice",

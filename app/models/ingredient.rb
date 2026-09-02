@@ -34,13 +34,18 @@ class Ingredient < ApplicationRecord
     "Rich"
   ].freeze
 
-  belongs_to :user, optional: true
+  belongs_to :user,
+             optional: true
 
   has_many :recipe_ingredients,
            dependent: :destroy
 
   has_many :recipes,
            through: :recipe_ingredients
+
+  has_many :categories,
+           dependent:
+             :restrict_with_error
 
   validates :name,
             presence: true,
@@ -62,7 +67,9 @@ class Ingredient < ApplicationRecord
   private
 
   def flavor_profiles_must_be_valid
-    invalid_flavor_profiles = flavor_profiles - FLAVOR_PROFILES
+    invalid_flavor_profiles =
+      flavor_profiles -
+      FLAVOR_PROFILES
 
     return if invalid_flavor_profiles.empty?
 

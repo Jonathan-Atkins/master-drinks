@@ -545,89 +545,402 @@ puts "Updated #{updated_count} existing ingredients."
 # Categories
 # =========================
 
-categories = [
+category_definitions = [
   # Vodka
-  "Vodka",
+  {
+    name: "Vodka",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Gin
-  "Gin",
-  "Genever",
+  {
+    name: "Gin",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Genever",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Rum
-  "Rum",
-  "White Rum",
-  "Dark Rum",
-  "Aged Rum",
-  "Spiced Rum",
-  "Overproof Rum",
-  "Rhum Agricole",
-  "Cachaca",
+  {
+    name: "Rum",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "White Rum",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Dark Rum",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Aged Rum",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Spiced Rum",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Overproof Rum",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Rhum Agricole",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Cachaca",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Agave
-  "Tequila",
-  "Mezcal",
+  {
+    name: "Tequila",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Mezcal",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Whiskey / Whisky
-  "Whiskey",
-  "Bourbon",
-  "Rye",
-  "Scotch",
-  "Irish Whiskey",
-  "Japanese Whisky",
-  "Canadian Whisky",
-  "Tennessee Whiskey",
+  {
+    name: "Whiskey",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Bourbon",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Rye",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Scotch",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Irish Whiskey",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Japanese Whisky",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Canadian Whisky",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Tennessee Whiskey",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Brandy
-  "Brandy",
-  "Cognac",
-  "Armagnac",
-  "Calvados",
-  "Pisco",
-  "Grappa",
+  {
+    name: "Brandy",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Cognac",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Armagnac",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Calvados",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Pisco",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Grappa",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Asian Spirits
-  "Soju",
-  "Shochu",
-  "Sake",
-  "Baijiu",
+  {
+    name: "Soju",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Shochu",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Sake",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Baijiu",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Liqueurs / Aperitifs
-  "Liqueur",
-  "Amaro",
-  "Aperitif",
-  "Vermouth",
-  "Absinthe",
+  {
+    name: "Liqueur",
+    alcoholic: true,
+    ingredient_type: "Liqueur"
+  },
+  {
+    name: "Amaro",
+    alcoholic: true,
+    ingredient_type: "Liqueur"
+  },
+  {
+    name: "Aperitif",
+    alcoholic: true,
+    ingredient_type: "Liqueur"
+  },
+  {
+    name: "Vermouth",
+    alcoholic: true,
+    ingredient_type: "Liqueur"
+  },
+  {
+    name: "Absinthe",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Wine
-  "Wine",
-  "Red Wine",
-  "White Wine",
-  "Rose Wine",
-  "Fortified Wine",
-  "Port",
-  "Sherry",
-  "Madeira",
-  "Marsala",
+  {
+    name: "Wine",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Red Wine",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "White Wine",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Rose Wine",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Fortified Wine",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Port",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Sherry",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Madeira",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Marsala",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
 
   # Sparkling Wine
-  "Champagne",
-  "Sparkling Wine",
-  "Prosecco",
+  {
+    name: "Champagne",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Sparkling Wine",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
+  {
+    name: "Prosecco",
+    alcoholic: true,
+    ingredient_type: "Wine"
+  },
 
   # Beer / Cider
-  "Beer",
-  "Cider",
+  {
+    name: "Beer",
+    alcoholic: true,
+    ingredient_type: "Beer"
+  },
+  {
+    name: "Cider",
+    alcoholic: true,
+    ingredient_type: "Beer"
+  },
 
   # Regional Spirits
-  "Aquavit",
-  "Ouzo",
-  "Raki",
-  "Arak",
+  {
+    name: "Aquavit",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Ouzo",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Raki",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Arak",
+    alcoholic: true,
+    ingredient_type: "Spirit"
+  },
 
   # Non-Alcoholic
-  "Non Alcoholic"
-]
+  {
+    name: "Nonalcoholic Spirit",
+    alcoholic: false,
+    ingredient_type: "Spirit"
+  },
+  {
+    name: "Nonalcoholic Aperitif",
+    alcoholic: false,
+    ingredient_type: "Liqueur"
+  },
+  {
+    name: "Nonalcoholic Vermouth",
+    alcoholic: false,
+    ingredient_type: "Liqueur"
+  },
+  {
+    name: "Nonalcoholic Beer",
+    alcoholic: false,
+    ingredient_type: "Beer"
+  },
+  {
+    name: "Nonalcoholic Sparkling Wine",
+    alcoholic: false,
+    ingredient_type: "Wine"
+  }
+].freeze
 
-categories.each do |name|
-  Category.find_or_create_by!(name: name)
+
+# =========================
+# Seed Category Ingredients
+# =========================
+
+category_ingredient_created_count = 0
+
+category_definitions.each do |definition|
+  ingredient =
+    Ingredient.find_by(
+      "LOWER(name) = ?",
+      definition[:name].downcase
+    )
+
+  next if ingredient
+
+  Ingredient.create!(
+    name: definition[:name],
+    ingredient_type:
+      definition[:ingredient_type],
+    flavor_profiles: [],
+    user: nil
+  )
+
+  category_ingredient_created_count += 1
 end
+
+
+# =========================
+# Seed Categories
+# =========================
+
+category_created_count = 0
+category_updated_count = 0
+
+Category.transaction do
+  category_definitions.each do |definition|
+    ingredient =
+      Ingredient.find_by!(
+        "LOWER(name) = ?",
+        definition[:name].downcase
+      )
+
+    category =
+      Category.find_or_initialize_by(
+        name: definition[:name]
+      )
+
+    if category.new_record?
+      category_created_count += 1
+    else
+      category_updated_count += 1
+    end
+
+    category.alcoholic =
+      definition[:alcoholic]
+
+    category.ingredient =
+      ingredient
+
+    category.save!
+  end
+end
+
+
+puts(
+  "Created #{category_ingredient_created_count} missing category ingredients."
+)
+
+puts(
+  "Created #{category_created_count} categories."
+)
+
+puts(
+  "Updated #{category_updated_count} existing categories."
+)

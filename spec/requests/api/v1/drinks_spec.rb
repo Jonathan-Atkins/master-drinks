@@ -15,26 +15,42 @@ RSpec.describe "Drinks App", type: :request do
 
   def log_in(user)
     post "/api/v1/login", params: {
-      email: user.email,
-      password: "12345"
-    }
+                            email: user.email,
+                            password: "12345"
+                          }
   end
 
   def create_drink(user, attributes = {})
-    category_names = attributes.delete(:category_names) { [ "Rum" ] }
+    category_names =
+      attributes.delete(
+        :category_names
+      ) { [ "Rum" ] }
 
-    categories = category_names.map do |name|
-      Category.find_or_create_by!(name: name)
-    end
+    alcoholic =
+      attributes.fetch(
+        :alcoholic,
+        true
+      )
 
-    drink = user.drinks.new(
-      {
-        name: "Mojito",
-        alcoholic: true
-      }.merge(attributes)
-    )
+    categories =
+      category_names.map do |name|
+        create_category(
+          name,
+          alcoholic: alcoholic,
+        )
+      end
 
-    drink.categories = categories
+    drink =
+      user.drinks.new(
+        {
+          name: "Mojito",
+          alcoholic: true
+        }.merge(attributes)
+      )
+
+    drink.categories =
+      categories
+
     drink.save!
 
     drink
@@ -69,21 +85,19 @@ RSpec.describe "Drinks App", type: :request do
           expect(drinks.count).to eq(2)
 
           expect(drinks.first["name"]).to eq("Mojito")
-          expect(drinks.first["categories"]).to eq([
-            {
-              "name" => "Rum",
-              "slug" => "rum"
-            }
-          ])
+          category = drinks.first["categories"].first
+          expect(category["name"]).to eq("Rum")
+          expect(category["slug"]).to eq("rum")
+          expect(category["alcoholic"]).to be(true)
+          expect(category["ingredient"]["name"]).to eq("Rum")
           expect(drinks.first["alcoholic"]).to eq(true)
 
           expect(drinks.second["name"]).to eq("Old Fashioned")
-          expect(drinks.second["categories"]).to eq([
-            {
-              "name" => "Whiskey",
-              "slug" => "whiskey"
-            }
-          ])
+          category = drinks.second["categories"].first
+          expect(category["name"]).to eq("Whiskey")
+          expect(category["slug"]).to eq("whiskey")
+          expect(category["alcoholic"]).to be(true)
+          expect(category["ingredient"]["name"]).to eq("Whiskey")
           expect(drinks.second["alcoholic"]).to eq(true)
         end
       end
@@ -204,12 +218,11 @@ RSpec.describe "Drinks App", type: :request do
         expect(response).to have_http_status(:ok)
         expect(drink["id"]).to eq(mojito.id)
         expect(drink["name"]).to eq(mojito.name)
-        expect(drink["categories"]).to eq([
-          {
-            "name" => "Rum",
-            "slug" => "rum"
-          }
-        ])
+        category = drink["categories"].first
+        expect(category["name"]).to eq("Rum")
+        expect(category["slug"]).to eq("rum")
+        expect(category["alcoholic"]).to be(true)
+        expect(category["ingredient"]["name"]).to eq("Rum")
       end
     end
 
@@ -219,25 +232,27 @@ RSpec.describe "Drinks App", type: :request do
 
         log_in(user)
 
-        Category.find_or_create_by!(name: "Tequila")
+        create_category(
+          "Tequila",
+          alcoholic: true,
+        )
 
         post "/api/v1/drinks", params: {
-          category_slugs: [ "tequila" ],
-          name: "Margarita",
-          alcoholic: true
-        }
+                                 category_slugs: [ "tequila" ],
+                                 name: "Margarita",
+                                 alcoholic: true
+                               }
 
         drink = JSON.parse(response.body)
         created_drink = Drink.last
 
         expect(response).to have_http_status(:created)
         expect(drink["name"]).to eq("Margarita")
-        expect(drink["categories"]).to eq([
-          {
-            "name" => "Tequila",
-            "slug" => "tequila"
-          }
-        ])
+        category = drink["categories"].first
+        expect(category["name"]).to eq("Tequila")
+        expect(category["slug"]).to eq("tequila")
+        expect(category["alcoholic"]).to be(true)
+        expect(category["ingredient"]["name"]).to eq("Tequila")
         expect(drink["alcoholic"]).to eq(true)
         expect(created_drink.user_id).to eq(user.id)
       end
@@ -247,21 +262,22 @@ RSpec.describe "Drinks App", type: :request do
 
         log_in(user)
 
-        Category.find_or_create_by!(name: "Vodka")
-        Category.find_or_create_by!(name: "Gin")
-        Category.find_or_create_by!(name: "Rum")
-        Category.find_or_create_by!(name: "Tequila")
+        create_category("Vodka", alcoholic: true)
+        create_category("Gin", alcoholic: true)
+        create_category("Rum", alcoholic: true)
+        create_category("White Rum", alcoholic: true)
+        create_category("Tequila", alcoholic: true)
 
         post "/api/v1/drinks", params: {
-          name: "Long Island Iced Tea",
-          category_slugs: [
-            "vodka",
-            "gin",
-            "rum",
-            "tequila"
-          ],
-          alcoholic: true
-        }
+                                 name: "Long Island Iced Tea",
+                                 category_slugs: [
+                                   "vodka",
+                                   "gin",
+                                   "rum",
+                                   "tequila"
+                                 ],
+                                 alcoholic: true
+                               }
 
         drink = Drink.last
 
@@ -283,25 +299,27 @@ RSpec.describe "Drinks App", type: :request do
       end
 
       it "can update a drink owned by the logged-in user" do
-        Category.find_or_create_by!(name: "White Rum")
+        create_category(
+          "White Rum",
+          alcoholic: true,
+        )
 
         log_in(@user)
 
         patch "/api/v1/drinks/#{@drink.id}", params: {
-          category_slugs: [ "white-rum" ],
-          name: "Mojito Rio"
-        }
+                                               category_slugs: [ "white-rum" ],
+                                               name: "Mojito Rio"
+                                             }
 
         drink = JSON.parse(response.body)
 
         expect(response).to have_http_status(:ok)
         expect(drink["name"]).to eq("Mojito Rio")
-        expect(drink["categories"]).to eq([
-          {
-            "name" => "White Rum",
-            "slug" => "white-rum"
-          }
-        ])
+        category = drink["categories"].first
+        expect(category["name"]).to eq("White Rum")
+        expect(category["slug"]).to eq("white-rum")
+        expect(category["alcoholic"]).to be(true)
+        expect(category["ingredient"]["name"]).to eq("White Rum")
       end
 
       it "allows the owner to make their drink private" do
@@ -375,13 +393,16 @@ RSpec.describe "Drinks App", type: :request do
       end
 
       it "returns unauthorized when creating a drink without being logged in" do
-        Category.find_or_create_by!(name: "Tequila")
+        create_category(
+          "Tequila",
+          alcoholic: true,
+        )
 
         post "/api/v1/drinks", params: {
-          category_slugs: [ "tequila" ],
-          name: "Margarita",
-          alcoholic: true
-        }
+                                 category_slugs: [ "tequila" ],
+                                 name: "Margarita",
+                                 alcoholic: true
+                               }
 
         result = JSON.parse(response.body)
 
@@ -394,8 +415,8 @@ RSpec.describe "Drinks App", type: :request do
         drink = create_drink(user)
 
         patch "/api/v1/drinks/#{drink.id}", params: {
-          name: "Updated Drink"
-        }
+                                              name: "Updated Drink"
+                                            }
 
         result = JSON.parse(response.body)
 
@@ -435,8 +456,8 @@ RSpec.describe "Drinks App", type: :request do
 
       it "does not allow a user to update another user's drink" do
         patch "/api/v1/drinks/#{@drink.id}", params: {
-          name: "Changed Drink"
-        }
+                                               name: "Changed Drink"
+                                             }
 
         result = JSON.parse(response.body)
 
@@ -536,25 +557,31 @@ RSpec.describe "Drinks App", type: :request do
       end
 
       it "returns a 422 status code if the drink is not created" do
-        Category.find_or_create_by!(name: "Tequila")
+        create_category(
+          "Tequila",
+          alcoholic: true,
+        )
 
         post "/api/v1/drinks", params: {
-          category_slugs: [ "tequila" ],
-          name: nil,
-          alcoholic: true
-        }
+                                 category_slugs: [ "tequila" ],
+                                 name: nil,
+                                 alcoholic: true
+                               }
 
         expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "returns an error message if the drink is not created" do
-        Category.find_or_create_by!(name: "Tequila")
+        create_category(
+          "Tequila",
+          alcoholic: true,
+        )
 
         post "/api/v1/drinks", params: {
-          category_slugs: [ "tequila" ],
-          name: nil,
-          alcoholic: true
-        }
+                                 category_slugs: [ "tequila" ],
+                                 name: nil,
+                                 alcoholic: true
+                               }
 
         error = JSON.parse(response.body)
 
@@ -563,13 +590,16 @@ RSpec.describe "Drinks App", type: :request do
       end
 
       it "returns an error message for duplicate drink names" do
-        Category.find_or_create_by!(name: "Tequila")
+        create_category(
+          "Tequila",
+          alcoholic: true,
+        )
 
         post "/api/v1/drinks", params: {
-          category_slugs: [ "tequila" ],
-          name: "Mojito",
-          alcoholic: true
-        }
+                                 category_slugs: [ "tequila" ],
+                                 name: "Mojito",
+                                 alcoholic: true
+                               }
 
         error = JSON.parse(response.body)
 
@@ -579,10 +609,10 @@ RSpec.describe "Drinks App", type: :request do
 
       it "returns an error message for invalid category slug" do
         post "/api/v1/drinks", params: {
-          name: "Milkshake",
-          category_slugs: [ "milkshake" ],
-          alcoholic: true
-        }
+                                 name: "Milkshake",
+                                 category_slugs: [ "milkshake" ],
+                                 alcoholic: true
+                               }
 
         error = JSON.parse(response.body)
 
@@ -600,7 +630,10 @@ RSpec.describe "Drinks App", type: :request do
 
         @mojito = create_drink(@user)
 
-        Category.find_or_create_by!(name: "White Rum")
+        create_category(
+          "White Rum",
+          alcoholic: true,
+        )
 
         @old_fashioned = create_drink(
           @user,
@@ -613,9 +646,9 @@ RSpec.describe "Drinks App", type: :request do
 
       it "returns a 404 if the drink does not exist" do
         patch "/api/v1/drinks/999", params: {
-          category_slugs: [ "white-rum" ],
-          name: "Mojito Rio"
-        }
+                                      category_slugs: [ "white-rum" ],
+                                      name: "Mojito Rio"
+                                    }
 
         error = JSON.parse(response.body)
 
@@ -628,9 +661,9 @@ RSpec.describe "Drinks App", type: :request do
 
       it "returns a 422 if the update has invalid attributes" do
         patch "/api/v1/drinks/#{@mojito.id}", params: {
-          category_slugs: [ "white-rum" ],
-          name: nil
-        }
+                                                category_slugs: [ "white-rum" ],
+                                                name: nil
+                                              }
 
         error = JSON.parse(response.body)
 
@@ -640,9 +673,9 @@ RSpec.describe "Drinks App", type: :request do
 
       it "returns an error if the updated name is already taken" do
         patch "/api/v1/drinks/#{@mojito.id}", params: {
-          category_slugs: [ "rum" ],
-          name: "Old Fashioned"
-        }
+                                                category_slugs: [ "rum" ],
+                                                name: "Old Fashioned"
+                                              }
 
         error = JSON.parse(response.body)
 
@@ -652,9 +685,9 @@ RSpec.describe "Drinks App", type: :request do
 
       it "returns an error if the updated category slug is invalid" do
         patch "/api/v1/drinks/#{@mojito.id}", params: {
-          category_slugs: [ "milkshake" ],
-          name: "Mojito Rio"
-        }
+                                                category_slugs: [ "milkshake" ],
+                                                name: "Mojito Rio"
+                                              }
 
         error = JSON.parse(response.body)
 

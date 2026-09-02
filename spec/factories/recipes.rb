@@ -1,7 +1,15 @@
 FactoryBot.define do
   factory :recipe do
-    drink { nil }
-    name { "MyString" }
-    instructions { "MyText" }
+    association :drink
+
+    sequence(:name) do |number|
+      "Recipe #{number}"
+    end
+
+    instructions {
+      "Combine ingredients and serve."
+    }
+
+    publicly_visible { true }
   end
 end

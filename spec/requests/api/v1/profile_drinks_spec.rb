@@ -26,10 +26,11 @@ RSpec.describe "Profile Drinks API", type: :request do
       password_confirmation: "password123"
     )
 
-    @category = Category.create!(
-      name: "Whiskey",
-      slug: "whiskey"
-    )
+    @category =
+      create_category(
+        "Whiskey",
+        alcoholic: true
+      )
   end
 
   def log_in(user)

@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :recipe_ingredient do
-    recipe { nil }
-    ingredient { nil }
-    amount { "9.99" }
-    measurement_unit { "MyString" }
+    association :recipe
+    association :ingredient
+
+    amount { 1.0 }
+    measurement_unit { "oz" }
   end
 end

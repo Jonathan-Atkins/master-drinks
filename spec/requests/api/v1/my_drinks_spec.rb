@@ -44,12 +44,26 @@ RSpec.describe "My Drinks API", type: :request do
         expect(result.count).to eq(1)
         expect(result.first["id"]).to eq(@drink.id)
         expect(result.first["name"]).to eq("Old Fashioned")
-        expect(result.first["categories"]).to eq([
-          {
-            "name" => "Whiskey",
-            "slug" => "whiskey"
-          }
-        ])
+        category =
+          result
+            .first["categories"]
+            .first
+
+        expect(
+          category["name"]
+        ).to eq("Whiskey")
+
+        expect(
+          category["slug"]
+        ).to eq("whiskey")
+
+        expect(
+          category["alcoholic"]
+        ).to be(true)
+
+        expect(
+          category["ingredient"]["name"]
+        ).to eq("Whiskey")
         expect(result.first["alcoholic"]).to be(true)
       end
 

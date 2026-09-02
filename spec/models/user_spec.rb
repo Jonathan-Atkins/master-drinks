@@ -15,7 +15,7 @@ RSpec.describe User, type: :model do
       username: "alice",
       email: "alice@example.com",
       password: "password123",
-      password_confirmation: "password123",
+      password_confirmation: "password123"
     )
   end
 
@@ -27,21 +27,31 @@ RSpec.describe User, type: :model do
     end
 
     it "requires a name" do
-      user = User.new(@valid_attributes.merge(name: nil))
+      user = User.new(
+        @valid_attributes.merge(name: nil)
+      )
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include(
+
+      expect(
+        user.errors.full_messages
+      ).to include(
         "Name can't be blank"
       )
     end
 
     it "requires a username" do
       user = User.new(
-        @valid_attributes.merge(username: nil)
+        @valid_attributes.merge(
+          username: nil
+        )
       )
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include(
+
+      expect(
+        user.errors.full_messages
+      ).to include(
         "Username can't be blank"
       )
     end
@@ -52,23 +62,63 @@ RSpec.describe User, type: :model do
       duplicate = User.new(
         @valid_attributes.merge(
           name: "Another User",
-          email: "other@example.com",
+          email: "other@example.com"
         )
       )
 
       expect(duplicate).not_to be_valid
-      expect(duplicate.errors.full_messages).to include(
+
+      expect(
+        duplicate.errors.full_messages
+      ).to include(
         "Username has already been taken"
+      )
+    end
+
+    it "requires usernames to be unique regardless of capitalization" do
+      User.create!(@valid_attributes)
+
+      duplicate = User.new(
+        @valid_attributes.merge(
+          name: "Another User",
+          username: "JOHNDOE",
+          email: "other@example.com"
+        )
+      )
+
+      expect(duplicate).not_to be_valid
+
+      expect(
+        duplicate.errors.full_messages
+      ).to include(
+        "Username has already been taken"
+      )
+    end
+
+    it "preserves the username's original capitalization" do
+      user = User.create!(
+        @valid_attributes.merge(
+          username: "JohnDoe"
+        )
+      )
+
+      expect(user.username).to eq(
+        "JohnDoe"
       )
     end
 
     it "requires an email" do
       user = User.new(
-        @valid_attributes.merge(email: nil)
+        @valid_attributes.merge(
+          email: nil
+        )
       )
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include(
+
+      expect(
+        user.errors.full_messages
+      ).to include(
         "Email can't be blank"
       )
     end
@@ -81,7 +131,10 @@ RSpec.describe User, type: :model do
       )
 
       expect(user).not_to be_valid
-      expect(user.errors.full_messages).to include(
+
+      expect(
+        user.errors.full_messages
+      ).to include(
         "Email is invalid"
       )
     end
@@ -92,38 +145,151 @@ RSpec.describe User, type: :model do
       duplicate = User.new(
         @valid_attributes.merge(
           name: "Other User",
-          username: "otheruser",
+          username: "otheruser"
         )
       )
 
       expect(duplicate).not_to be_valid
-      expect(duplicate.errors.full_messages).to include(
+
+      expect(
+        duplicate.errors.full_messages
+      ).to include(
         "Email has already been taken"
       )
     end
 
+    it "requires emails to be unique regardless of capitalization" do
+      User.create!(@valid_attributes)
+
+      duplicate = User.new(
+        @valid_attributes.merge(
+          name: "Other User",
+          username: "otheruser",
+          email: "JOHNDOE@EXAMPLE.COM"
+        )
+      )
+
+      expect(duplicate).not_to be_valid
+
+      expect(
+        duplicate.errors.full_messages
+      ).to include(
+        "Email has already been taken"
+      )
+    end
+
+    it "normalizes email capitalization and surrounding whitespace" do
+      user = User.create!(
+        @valid_attributes.merge(
+          email: "  JohnDoe@Example.COM  "
+        )
+      )
+
+      expect(user.email).to eq(
+        "johndoe@example.com"
+      )
+    end
+  end
+
+  describe ".find_for_login" do
+    it "finds a user by email" do
+      result = User.find_for_login(
+        @user.email
+      )
+
+      expect(result).to eq(@user)
+    end
+
+    it "finds a user by username" do
+      result = User.find_for_login(
+        @user.username
+      )
+
+      expect(result).to eq(@user)
+    end
+
+    it "finds a user by email regardless of capitalization" do
+      result = User.find_for_login(
+        "ALICE@EXAMPLE.COM"
+      )
+
+      expect(result).to eq(@user)
+    end
+
+    it "finds a user by username regardless of capitalization" do
+      result = User.find_for_login(
+        "ALICE"
+      )
+
+      expect(result).to eq(@user)
+    end
+
+    it "ignores surrounding whitespace in the login identifier" do
+      result = User.find_for_login(
+        "  ALICE  "
+      )
+
+      expect(result).to eq(@user)
+    end
+
+    it "returns nil when no user matches the identifier" do
+      result = User.find_for_login(
+        "not-a-user"
+      )
+
+      expect(result).to be_nil
+    end
+  end
+
+  describe "password authentication" do
     it "authenticates with the correct password" do
       user = User.create!(
         name: "Jonathan",
         username: "jonathan",
         email: "jonathan@example.com",
-        password: "password123",
-        password_confirmation: "password123",
+        password: "Password123",
+        password_confirmation: "Password123"
+      )
+
+      expect(
+        user.authenticate("Password123")
+      ).to eq(user)
+    end
+
+    it "rejects an incorrect password" do
+      user = User.create!(
+        name: "Jonathan",
+        username: "jonathan",
+        email: "jonathan@example.com",
+        password: "Password123",
+        password_confirmation: "Password123"
+      )
+
+      expect(
+        user.authenticate("wrong-password")
+      ).to eq(false)
+    end
+
+    it "treats passwords as case-sensitive" do
+      user = User.create!(
+        name: "Jonathan",
+        username: "jonathan",
+        email: "jonathan@example.com",
+        password: "Password123",
+        password_confirmation: "Password123"
       )
 
       expect(
         user.authenticate("password123")
-      ).to eq(user)
-
-      expect(
-        user.authenticate("wrong-password")
       ).to eq(false)
     end
   end
 
   describe "relationships" do
     it "can have many drinks" do
-      user = User.create!(@valid_attributes)
+      user = User.create!(
+        @valid_attributes
+      )
 
       margarita = create_drink(
         user,
@@ -131,14 +297,20 @@ RSpec.describe User, type: :model do
           name: "Margarita",
           alcoholic: true
         },
-        category_names: [ "Tequila" ]
+        category_names: [
+          "Tequila"
+        ]
       )
 
-      expect(user.drinks).to include(margarita)
+      expect(
+        user.drinks
+      ).to include(margarita)
     end
 
     it "can have many recipes through user_recipes" do
-      user = User.create!(@valid_attributes)
+      user = User.create!(
+        @valid_attributes
+      )
 
       margarita = create_drink(
         user,
@@ -146,32 +318,40 @@ RSpec.describe User, type: :model do
           name: "Margarita",
           alcoholic: true
         },
-        category_names: [ "Tequila" ]
+        category_names: [
+          "Tequila"
+        ]
       )
 
-      classic_recipe = Recipe.create!(
-        drink: margarita,
-        name: "Classic Margarita",
-        instructions: "Shake with ice and strain.",
-      )
+      classic_recipe =
+        Recipe.create!(
+          drink: margarita,
+          name: "Classic Margarita",
+          instructions:
+            "Shake with ice and strain."
+        )
 
-      spicy_recipe = Recipe.create!(
-        drink: margarita,
-        name: "Spicy Margarita",
-        instructions: "Shake with jalapeño, ice, and strain.",
+      spicy_recipe =
+        Recipe.create!(
+          drink: margarita,
+          name: "Spicy Margarita",
+          instructions:
+            "Shake with jalapeño, ice, and strain."
+        )
+
+      UserRecipe.create!(
+        user: user,
+        recipe: classic_recipe
       )
 
       UserRecipe.create!(
         user: user,
-        recipe: classic_recipe,
+        recipe: spicy_recipe
       )
 
-      UserRecipe.create!(
-        user: user,
-        recipe: spicy_recipe,
-      )
-
-      expect(user.recipes).to contain_exactly(
+      expect(
+        user.recipes
+      ).to contain_exactly(
         classic_recipe,
         spicy_recipe
       )
@@ -184,24 +364,30 @@ RSpec.describe User, type: :model do
           name: "Margarita",
           alcoholic: true
         },
-        category_names: [ "Tequila" ]
+        category_names: [
+          "Tequila"
+        ]
       )
 
       recipe = Recipe.create!(
         drink: drink,
         name: "Classic Margarita",
-        instructions: "Shake with ice."
+        instructions:
+          "Shake with ice."
       )
 
-      user_recipe = UserRecipe.create!(
-        user: @user,
-        recipe: recipe
-      )
+      user_recipe =
+        UserRecipe.create!(
+          user: @user,
+          recipe: recipe
+        )
 
       @user.destroy
 
       expect(
-        UserRecipe.exists?(user_recipe.id)
+        UserRecipe.exists?(
+          user_recipe.id
+        )
       ).to be(false)
     end
 
@@ -212,24 +398,31 @@ RSpec.describe User, type: :model do
           name: "Mojito",
           alcoholic: true
         },
-        category_names: [ "Rum" ]
-      )
-
-      @user.destroy
-
-      expect(Drink.exists?(drink.id)).to be(false)
-    end
-
-    it "destroys its ingredients when destroyed" do
-      ingredient = Ingredient.create!(
-        user: @user,
-        name: "Mint"
+        category_names: [
+          "Rum"
+        ]
       )
 
       @user.destroy
 
       expect(
-        Ingredient.exists?(ingredient.id)
+        Drink.exists?(drink.id)
+      ).to be(false)
+    end
+
+    it "destroys its ingredients when destroyed" do
+      ingredient =
+        Ingredient.create!(
+          user: @user,
+          name: "Mint"
+        )
+
+      @user.destroy
+
+      expect(
+        Ingredient.exists?(
+          ingredient.id
+        )
       ).to be(false)
     end
   end

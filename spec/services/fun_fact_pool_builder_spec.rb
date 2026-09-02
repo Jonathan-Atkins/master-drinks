@@ -4,10 +4,11 @@ RSpec.describe FunFactPoolBuilder do
   describe ".call" do
     describe "happy path" do
       it "builds facts from distinct publicly visible drink names" do
-        category = Category.create!(
-          name: "Cocktails",
-          slug: "cocktails"
-        )
+        category =
+  create_category(
+    "Gin",
+    alcoholic: true
+  )
 
         user_one = User.create!(
           name: "Alice",
@@ -90,10 +91,11 @@ RSpec.describe FunFactPoolBuilder do
       end
 
       it "returns no more than 20 facts" do
-        category = Category.create!(
-          name: "Cocktails",
-          slug: "cocktails"
-        )
+        category =
+          create_category(
+            "Gin",
+            alcoholic: true
+          )
 
         user = User.create!(
           name: "Alice",
@@ -134,10 +136,11 @@ RSpec.describe FunFactPoolBuilder do
 
     describe "sad path" do
       it "skips a drink when no fun fact can be produced" do
-        category = Category.create!(
-          name: "Cocktails",
-          slug: "cocktails"
-        )
+        category =
+          create_category(
+            "Gin",
+            alcoholic: true
+          )
 
         user = User.create!(
           name: "Alice",
